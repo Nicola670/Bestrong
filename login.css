@@ -9,6 +9,18 @@ body{
 	background: url("sfondo.jpg");
 }
 
+body::before {
+	content: "";
+	position: fixed;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+	background-color: rgba(0, 0, 0, 0.6);
+	z-index: 0;
+	pointer-events: none;
+  }
+
 .main{
 	width: 350px;
 	height: 500px;
@@ -77,5 +89,15 @@ button:hover{
 }
 .login label{
 	color: #1e0303;
+	transform: scale(.6);
+}
+
+#chk:checked ~ .login{
+	transform: translateY(-500px);
+}
+#chk:checked ~ .login label{
+	transform: scale(1);	
+}
+#chk:checked ~ .signup label{
 	transform: scale(.6);
 }
