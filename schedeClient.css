@@ -7,11 +7,12 @@
 
 body {
     font-family: 'Jost', sans-serif;
-    background: #f0f0f0;
+    background: #f4f4f4;
     min-height: 100vh;
     display: flex;
     flex-direction: column;
     align-items: center;
+    color: #333;
 }
 
 /* Menu a tendina */
@@ -79,6 +80,7 @@ body {
 h1 {
     font-size: 2.5em;
     margin-bottom: 20px;
+    color: #333;
 }
 
 /* Griglia di schede */
@@ -90,41 +92,46 @@ h1 {
 }
 
 .card {
-    background: linear-gradient(to bottom, #761a1a, #c00e0e, #901212);
+    background-color: #fff;
+    border-radius: 8px;
     padding: 20px;
-    border-radius: 10px;
-    box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.2);
-    color: #fff;
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+    color: #333;
     text-align: center;
-    transition: transform 0.3s ease;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    border: 1px solid #ddd;
 }
 
 .card:hover {
     transform: translateY(-5px);
+    box-shadow: 0px 6px 15px rgba(0, 0, 0, 0.2);
 }
 
 .card h2 {
-    font-size: 1.8em;
+    font-size: 1.5em;
     margin-bottom: 15px;
+    color: #444;
 }
 
 .card p {
     font-size: 1em;
     margin-bottom: 20px;
+    color: #666;
 }
 
 .card-link {
-    color: #fff;
+    color: #333;
     font-weight: bold;
     text-decoration: none;
-    border: 2px solid #fff;
+    border: 2px solid #333;
     padding: 10px 20px;
     border-radius: 5px;
     transition: background-color 0.3s ease;
 }
 
 .card-link:hover {
-    background-color: #e01515;
+    background-color: #f0f0f0;
+    color: #000;
 }
 
 /* Responsività */
