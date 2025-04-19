@@ -53,12 +53,26 @@ function formatObjective(objective){
 
 //funzione per calcolare l'eta
 function calculateAge(birthDate){
-
+    const today = new Date();
+    const birth = new Date(birthDate);
+    let age = today.getFullYear() - birth.getFullYear();
+    const monthDiff = today.getMonth() - birth.getMonth();
+    
+    if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birth.getDate())) {
+        age--;
+    }
+    
+    return age;
 }
 
 //funzione per formattare la data
 function formatDate(dateString){
-
+    const date = new Date(dateString);
+    return date.toLocaleDateString('it-IT', {
+        day: '2-digit',
+        month: '2-digit',
+        year: 'numeric'
+    });
 }
 
 //funzione per mostrare i dettagli di un cliente
