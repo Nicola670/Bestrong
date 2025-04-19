@@ -11,17 +11,44 @@ const searchInput = document.getElementById('searchInput');
 
 //funzione per ottenere le iniziali di nome e cognome
 function getInitials(nome, cognome){
-
+    return nome.charAt(0) + cognome.charAt(0);
 }
 
 //funzione per creare la card dell'utente
 function createClientCard(client){
-
+    const card = document.createElement('div');
+    card.className = 'client-card';
+    card.dataset.clientId = client.id;
+    
+    const initials = getInitials(client.nome, client.cognome);
+    
+    card.innerHTML = `
+        <div class="client-avatar">
+            <span>${initials}</span>
+        </div>
+        <div class="client-info">
+            <h3>${client.nome} ${client.cognome}</h3>
+            <p>${client.email}</p>
+            <span class="client-tag tag-${client.obiettivo}">${formatObjective(client.obiettivo)}</span>
+        </div>
+    `;
+    
+    card.addEventListener('click', () => showClientDetails(client));
+    
+    return card;
 }
 
 //funzione per formattare l'obbiettivo
 function formatObjective(objective){
-
+    const objectives = {
+        'dimagrimento': 'Dimagrimento',
+        'tonificazione': 'Tonificazione',
+        'massa': 'Massa muscolare',
+        'forza': 'Forza',
+        'benessere': 'Benessere'
+    };
+    
+    return objectives[objective] || objective;
 }
 
 //funzione per calcolare l'eta
@@ -46,5 +73,5 @@ function setupTabs(){
 
 // Funzione per caricare i clienti
 function loadClients(clientsData){
-    
+
 }
