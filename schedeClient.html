@@ -10,36 +10,45 @@
 
 <body>
     <div class="app-container">
-        <!-- Menu Toggle Button -->
-        <button class="menu-toggle" id="menuToggle">
-            <i class="fas fa-bars"></i>
-        </button>
-
         <!-- Sidebar -->
         <aside class="sidebar" id="sidebar">
-            <div class="logo">
-                <i class="fas fa-dumbbell"></i>
-                <span>BeStrong</span>
+            
+            
+            <!-- Contenuto principale della sidebar -->
+            <div class="sidebar-content">
+                <div class="logo">
+                    <i class="fas fa-dumbbell"></i>
+                    <span>BeStrong</span>
+                </div>
+                <nav class="nav-menu">
+                    <ul>
+                        <li class="active"><a href="#"><i class="fas fa-home"></i> <span>Home</span></a></li>
+                        <li><a href="#"><i class="fas fa-user"></i> <span>Profilo</span></a></li>
+                        <li><a href="#"><i class="fas fa-calendar-alt"></i> <span>Programmazione</span></a></li>
+                        <li><a href="#"><i class="fas fa-cog"></i> <span>Impostazioni</span></a></li>
+                        <li><a href="#"><i class="fas fa-sign-out-alt"></i> <span>Logout</span></a></li>
+                    </ul>
+                </nav>
+                <div class="trainer-profile">
+                    <div class="avatar">
+                        <span>GC</span>
+                    </div>
+                    <div class="trainer-info">
+                        <h4>Giovanni Cei</h4>
+                        <p>Cliente</p>
+                    </div>
+                </div>
+                
             </div>
-            <nav class="nav-menu">
-                <ul>
-                    <li class="active"><a href="#"><i class="fas fa-home"></i> <span>Home</span></a></li>
-                    <li><a href="#"><i class="fas fa-user"></i> <span>Profilo</span></a></li>
-                    <li><a href="#"><i class="fas fa-calendar-alt"></i> <span>Programmazione</span></a></li>
-                    <li><a href="#"><i class="fas fa-cog"></i> <span>Impostazioni</span></a></li>
-                    <li><a href="#"><i class="fas fa-sign-out-alt"></i> <span>Logout</span></a></li>
-                </ul>
-            </nav>
-            <div class="trainer-profile">
-                <div class="avatar">
-                    <span>GC</span>
-                </div>
-                <div class="trainer-info">
-                    <h4>Giovanni Cei</h4>
-                    <p>Cliente</p>
-                </div>
+            <!-- Parte visibile con pulsante menu -->
+            <div class="sidebar-peek">
+                <button class="menu-toggle" id="menuToggle">
+                    <i class="fas fa-bars"></i>
+                </button>
             </div>
         </aside>
+
+        
 
         <!-- Main Content -->
         <main class="main-content" id="mainContent">
@@ -165,14 +174,12 @@
             const menuToggle = document.getElementById('menuToggle');
             const sidebar = document.getElementById('sidebar');
             const mainContent = document.getElementById('mainContent');
-            const appContainer = document.querySelector('.app-container');
             
             // Chiudi la sidebar all'inizio su schermi piccoli
             function checkScreenSize() {
                 if (window.innerWidth <= 1024) {
                     sidebar.classList.add('collapsed');
                     mainContent.classList.add('expanded');
-                    appContainer.classList.add('sidebar-collapsed');
                 }
             }
             
@@ -186,7 +193,6 @@
             menuToggle.addEventListener('click', function() {
                 sidebar.classList.toggle('collapsed');
                 mainContent.classList.toggle('expanded');
-                appContainer.classList.toggle('sidebar-collapsed');
             });
             
             // Chiudi la sidebar quando si fa clic su un link su schermi piccoli
@@ -196,7 +202,6 @@
                     if (window.innerWidth <= 768) {
                         sidebar.classList.add('collapsed');
                         mainContent.classList.add('expanded');
-                        appContainer.classList.add('sidebar-collapsed');
                     }
                 });
             });

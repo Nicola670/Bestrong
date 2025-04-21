@@ -28,7 +28,8 @@
     --border-radius-xl: 16px;
     --border-radius-full: 9999px;
     --sidebar-width: 260px;
-    --sidebar-collapsed-width: 80px;
+    --sidebar-collapsed-width: 50px;
+    --sidebar-peek-width: 20px;
 }
 
 /* Reset & Global Styles */
@@ -74,49 +75,71 @@ button {
     position: relative;
 }
 
-/* Menu Toggle Button */
-.menu-toggle {
-    position: fixed;
-    top: 1rem;
-    left: 1rem;
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
-    background-color: var(--primary-color);
-    color: white;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 1.2rem;
-    z-index: 20;
-    box-shadow: var(--shadow-md);
-    transition: all var(--transition-speed) ease;
-}
-
-.sidebar-collapsed .menu-toggle {
-    left: calc(var(--sidebar-collapsed-width) - 20px);
-}
-
 /* Sidebar */
 .sidebar {
     width: var(--sidebar-width);
     background: linear-gradient(180deg, var(--primary-color) 0%, var(--secondary-color) 100%);
     color: white;
-    padding: 1.5rem;
-    display: flex;
-    flex-direction: column;
-    box-shadow: var(--shadow-lg);
     position: fixed;
     height: 100vh;
     transition: all var(--transition-speed) ease;
     z-index: 10;
     left: 0;
+    display: flex;
+    box-shadow: var(--shadow-lg);
 }
 
 .sidebar.collapsed {
     width: var(--sidebar-collapsed-width);
-    padding: 1.5rem 0.5rem;
-    transform: translateX(calc(-1 * var(--sidebar-width) + var(--sidebar-collapsed-width)));
+}
+
+/* La parte della sidebar che rimane sempre visibile */
+.sidebar-peek {
+    width: var(--sidebar-collapsed-width);
+    background: linear-gradient(180deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding-top: 1rem;
+    z-index: 15;
+    flex-shrink: 0;
+}
+
+/* Pulsante menu */
+.menu-toggle {
+    width: 36px;
+    height: 36px;
+    border-radius: var(--border-radius);
+    background-color: rgba(255, 255, 255, 0.2);
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.2rem;
+    transition: all var(--transition-speed) ease;
+}
+
+.menu-toggle:hover {
+    background-color: rgba(255, 255, 255, 0.3);
+}
+
+/* Contenuto principale della sidebar */
+.sidebar-content {
+    flex: 1;
+    padding: 1.5rem 1.5rem 1.5rem 0;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    width: calc(var(--sidebar-width) - var(--sidebar-collapsed-width));
+    transition: all var(--transition-speed) ease;
+    margin-left: 1rem;
+}
+
+.collapsed .sidebar-content {
+    opacity: 0;
+    width: 0;
+    padding: 0;
 }
 
 .logo {
@@ -130,10 +153,6 @@ button {
 .logo i {
     font-size: 1.8rem;
     margin-right: 0.5rem;
-}
-
-.collapsed .logo span {
-    display: none;
 }
 
 .nav-menu {
@@ -160,20 +179,6 @@ button {
     font-size: 1.2rem;
 }
 
-.collapsed .nav-menu ul li a {
-    justify-content: center;
-    padding: 0.75rem;
-}
-
-.collapsed .nav-menu ul li a i {
-    margin-right: 0;
-    font-size: 1.5rem;
-}
-
-.collapsed .nav-menu ul li a span {
-    display: none;
-}
-
 .nav-menu ul li:hover {
     background-color: rgba(255, 255, 255, 0.1);
 }
@@ -188,10 +193,6 @@ button {
     border-top: 1px solid rgba(255, 255, 255, 0.2);
     display: flex;
     align-items: center;
-}
-
-.collapsed .trainer-profile {
-    justify-content: center;
 }
 
 .avatar {
@@ -223,14 +224,6 @@ button {
     opacity: 0.8;
 }
 
-.collapsed .trainer-info {
-    display: none;
-}
-
-.collapsed .avatar {
-    margin-right: 0;
-}
-
 /* Main Content */
 .main-content {
     flex: 1;
@@ -250,7 +243,6 @@ button {
     margin-bottom: 2rem;
     flex-wrap: wrap;
     gap: 1rem;
-    padding-top: 2rem;
 }
 
 .content-header h1 {
@@ -428,28 +420,25 @@ button {
 /* Responsive Styles */
 @media (max-width: 1024px) {
     .sidebar {
-        transform: translateX(-100%);
-    }
-    
-    .sidebar.collapsed {
-        transform: translateX(0);
         width: var(--sidebar-collapsed-width);
     }
     
-    .main-content {
-        margin-left: 0;
+    .sidebar.collapsed {
+        width: var(--sidebar-width);
     }
     
-    .main-content.expanded {
+    .sidebar.collapsed .sidebar-content {
+        opacity: 1;
+        width: calc(var(--sidebar-width) - var(--sidebar-collapsed-width));
+        padding: 1.5rem 1.5rem 1.5rem 0;
+    }
+    
+    .main-content {
         margin-left: var(--sidebar-collapsed-width);
     }
     
-    .menu-toggle {
-        left: 1rem;
-    }
-    
-    .sidebar-collapsed .menu-toggle {
-        left: calc(var(--sidebar-collapsed-width) - 20px);
+    .main-content.expanded {
+        margin-left: var(--sidebar-width);
     }
 }
 
@@ -467,41 +456,38 @@ button {
         grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
     }
     
+    /* Comportamento invertito per schermi piccoli */
+    .sidebar {
+        width: var(--sidebar-collapsed-width);
+    }
+    
     .sidebar.collapsed {
-        width: 240px;
-        padding: 1.5rem;
+        width: 100%;
     }
     
-    .sidebar.collapsed .logo span,
-    .sidebar.collapsed .nav-menu ul li a span,
-    .sidebar.collapsed .trainer-info {
-        display: block;
+    .sidebar.collapsed .sidebar-content {
+        width: calc(100% - var(--sidebar-collapsed-width));
     }
     
-    .sidebar.collapsed .nav-menu ul li a {
-        justify-content: flex-start;
-        padding: 0.75rem 1rem;
-    }
-    
-    .sidebar.collapsed .nav-menu ul li a i {
-        margin-right: 0.75rem;
-        font-size: 1.2rem;
-    }
-    
-    .sidebar.collapsed .trainer-profile {
-        justify-content: flex-start;
-    }
-    
-    .sidebar.collapsed .avatar {
-        margin-right: 0.75rem;
-    }
-    
-    .sidebar-collapsed .menu-toggle {
-        left: 200px;
+    .main-content {
+        margin-left: var(--sidebar-collapsed-width);
     }
     
     .main-content.expanded {
         margin-left: 0;
+        position: relative;
+    }
+    
+    /* Quando la sidebar è aperta su mobile, crea un overlay */
+    .sidebar.collapsed::before {
+        content: '';
+        position: fixed;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        left: 0;
+        background-color: rgba(0, 0, 0, 0.5);
+        z-index: -1;
     }
 }
 
@@ -520,23 +506,5 @@ button {
 
     .clients-grid {
         grid-template-columns: 1fr;
-    }
-    
-    .content-header {
-        padding-top: 3rem;
-    }
-    
-    .menu-toggle {
-        top: 0.5rem;
-        left: 0.5rem;
-    }
-    
-    .sidebar.collapsed {
-        width: 100%;
-    }
-    
-    .sidebar-collapsed .menu-toggle {
-        left: calc(100% - 60px);
-        top: 0.5rem;
     }
 }
