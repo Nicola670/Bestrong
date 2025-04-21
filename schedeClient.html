@@ -1,105 +1,160 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="it">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>BeStrong - Dashboard</title>
+    <title>BeStrong - Dashboard Cliente</title>
     <link rel="stylesheet" href="schedeClient.css">
-    <link href='https://unpkg.com/boxicons@2.0.7/css/boxicons.min.css' rel='stylesheet'>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
+
 <body>
-    <!-- Menu a tendina -->
-    <div class="sidebar">
-        <div class="logo-details">
-            <i class='bx bx-notepad icon'></i>
-            <div class="logo_name">BeStrong</div>
-            <i class='bx bx-menu' id="btn"></i>
-        </div>
-        <ul class="nav-list">
-            <li>
-                <i class='bx bx-search'></i>
-                <input type="text" placeholder="Search...">
-                <span class="tooltip">Search</span>
-            </li>
-            <li>
-                <a href="#">
-                    <i class='bx bx-grid-alt'></i>
-                    <span class="links_name">Home</span>
-                </a>
-                <span class="tooltip">Home</span>
-            </li>
-            <li>
-                <a href="#">
-                    <i class='bx bx-user'></i>
-                    <span class="links_name">Profile</span>
-                </a>
-                <span class="tooltip">Profile</span>
-            </li>
-            <li>
-                <a href="#">
-                    <i class='bx bx-cog'></i>
-                    <span class="links_name">Settings</span>
-                </a>
-                <span class="tooltip">Settings</span>
-            </li>
-            <li>
-                <a href="#">
-                    <i class='bx bx-log-out'></i>
-                    <span class="links_name">Logout</span>
-                </a>
-                <span class="tooltip">Logout</span>
-            </li>
-        </ul>
+    <div class="app-container">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="logo">
+                <i class="fas fa-dumbbell"></i>
+                <span>bestrong a.s.d</span>
+            </div>
+            <nav class="nav-menu">
+                <ul>
+                    <li class="active"><a href="#"><i class="fas fa-home"></i> Home</span></a></li>
+                    <li><a href="#"><i class="fas fa-user"></i> Profilo</span></a></li>
+                    <li><a href="#"><i class="fas fa-calendar-alt"></i> Programmazione</span></a></li>
+                    <li><a href="#"><i class="fas fa-cog"></i> Impostazioni</span></a></li>
+                    <li><a href="#"><i class="fas fa-sign-out-alt"></i> Logout</span></a></li>
+                </ul>
+            </nav>
+            <div class="trainer-profile">
+                <div class="avatar">
+                    <img src="/api/placeholder/40/40" alt="Utente">
+                </div>
+                <div class="trainer-info">
+                    <h4>Mario Rossi</h4>
+                    <p>Cliente</p>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <header class="content-header">
+                <h1>Le Tue Schede</h1>
+                <div class="search-container">
+                    <input type="text" id="searchInput" placeholder="Cerca scheda...">
+                    <i class="fas fa-search"></i>
+                </div>
+            </header>
+
+            <!-- Schede Grid -->
+            <section class="clients-grid" id="schedeGrid">
+                <div class="client-card">
+                    <div class="client-avatar" style="background: linear-gradient(135deg, #e74c3c, #c0392b);">
+                        <i class="fas fa-dumbbell"></i>
+                    </div>
+                    <div class="client-info">
+                        <h3>Petto</h3>
+                        <p>Esercizi per pettorali</p>
+                        <span class="client-tag tag-massa">Ipertrofia</span>
+                    </div>
+                </div>
+
+                <div class="client-card">
+                    <div class="client-avatar" style="background: linear-gradient(135deg, #3498db, #2980b9);">
+                        <i class="fas fa-running"></i>
+                    </div>
+                    <div class="client-info">
+                        <h3>Gambe</h3>
+                        <p>Esercizi per quadricipiti e femorali</p>
+                        <span class="client-tag tag-forza">Forza</span>
+                    </div>
+                </div>
+
+                <div class="client-card">
+                    <div class="client-avatar" style="background: linear-gradient(135deg, #9b59b6, #8e44ad);">
+                        <i class="fas fa-fist-raised"></i>
+                    </div>
+                    <div class="client-info">
+                        <h3>Braccia</h3>
+                        <p>Esercizi per bicipiti e tricipiti</p>
+                        <span class="client-tag tag-tonificazione">Definizione</span>
+                    </div>
+                </div>
+
+                <div class="client-card">
+                    <div class="client-avatar" style="background: linear-gradient(135deg, #f1c40f, #f39c12);">
+                        <i class="fas fa-child"></i>
+                    </div>
+                    <div class="client-info">
+                        <h3>Spalle</h3>
+                        <p>Esercizi per deltoidi</p>
+                        <span class="client-tag tag-massa">Ipertrofia</span>
+                    </div>
+                </div>
+
+                <div class="client-card">
+                    <div class="client-avatar" style="background: linear-gradient(135deg, #2ecc71, #27ae60);">
+                        <i class="fas fa-bone"></i>
+                    </div>
+                    <div class="client-info">
+                        <h3>Schiena</h3>
+                        <p>Esercizi per dorsali e trapezi</p>
+                        <span class="client-tag tag-massa">Ipertrofia</span>
+                    </div>
+                </div>
+
+                <div class="client-card">
+                    <div class="client-avatar" style="background: linear-gradient(135deg, #e67e22, #d35400);">
+                        <i class="fas fa-fire-alt"></i>
+                    </div>
+                    <div class="client-info">
+                        <h3>Glutei</h3>
+                        <p>Esercizi per glutei</p>
+                        <span class="client-tag tag-tonificazione">Definizione</span>
+                    </div>
+                </div>
+
+                <div class="client-card">
+                    <div class="client-avatar" style="background: linear-gradient(135deg, #1abc9c, #16a085);">
+                        <i class="fas fa-heartbeat"></i>
+                    </div>
+                    <div class="client-info">
+                        <h3>Cardio</h3>
+                        <p>Esercizi cardiovascolari</p>
+                        <span class="client-tag tag-dimagrimento">Dimagrimento</span>
+                    </div>
+                </div>
+            </section>
+        </main>
     </div>
 
-    <!-- Contenuto principale -->
-    <div class="home-section">
-        <div class="text">Benvenuto, [Nome Utente]</div>
-        <div class="cards-container">
-            <div class="card">
-                <h2>Petto</h2>
-                <p>Descrizione della scheda 1</p>
-                <a href="pagina1.html" class="card-link">Vai alla pagina 1</a>
+    <!-- Modal per Visualizzare Dettagli Scheda -->
+    <div class="modal" id="schedaDetailsModal">
+        <div class="modal-content modal-large">
+            <div class="modal-header">
+                <h2>Dettagli Scheda</h2>
+                <span class="close-modal">&times;</span>
             </div>
-            <div class="card">
-                <h2>Gambe</h2>
-                <p>Descrizione della scheda 2</p>
-                <a href="pagina2.html" class="card-link">Vai alla pagina 2</a>
-            </div>
-            <div class="card">
-                <h2>Braccia</h2>
-                <p>Descrizione della scheda 3</p>
-                <a href="pagina3.html" class="card-link">Vai alla pagina 3</a>
-            </div>
-            <div class="card">
-                <h2>Spalle</h2>
-                <p>Descrizione della scheda 4</p>
-                <a href="pagina4.html" class="card-link">Vai alla pagina 4</a>
-            </div>
-            <div class="card">
-                <h2>Schiena</h2>
-                <p>Descrizione della scheda 5</p>
-                <a href="pagina5.html" class="card-link">Vai alla pagina 5</a>
-            </div>
-            <div class="card">
-                <h2>Glutei</h2>
-                <p>Descrizione della scheda 6</p>
-                <a href="pagina6.html" class="card-link">Vai alla pagina 6</a>
-            </div>
-            <div class="card">
-                <h2>Cardio</h2>
-                <p>Descrizione della scheda 7</p>
-                <a href="pagina7.html" class="card-link">Vai alla pagina 7</a>
+            <div class="modal-body">
+                <!-- contenuto generato dinamicamente -->
             </div>
         </div>
     </div>
 
-    <script src="schedeClient.js"></script>
     <script>
-        let sidebar = document.querySelector(".sidebar");
-        let closeBtn = document.querySelector("#btn");
-        closeBtn.addEventListener("click", ()=>{
-            sidebar.classList.toggle("open");
+        document.addEventListener('DOMContentLoaded', function() {
+            const cards = document.querySelectorAll('.client-card');
+            
+            cards.forEach(card => {
+                card.addEventListener('click', function() {
+                    // aggiungere la logica per aprire il modale con i dettagli della scheda
+                    document.getElementById('schedaDetailsModal').classList.add('open');
+                });
+            });
+            
+            document.querySelector('.close-modal').addEventListener('click', function() {
+                document.getElementById('schedaDetailsModal').classList.remove('open');
+            });
         });
     </script>
 </body>
