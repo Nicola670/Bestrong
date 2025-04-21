@@ -10,34 +10,39 @@
 
 <body>
     <div class="app-container">
+        <!-- Menu Toggle Button -->
+        <button class="menu-toggle" id="menuToggle">
+            <i class="fas fa-bars"></i>
+        </button>
+
         <!-- Sidebar -->
-        <aside class="sidebar">
+        <aside class="sidebar" id="sidebar">
             <div class="logo">
                 <i class="fas fa-dumbbell"></i>
-                <span>bestrong a.s.d</span>
+                <span>BeStrong</span>
             </div>
             <nav class="nav-menu">
                 <ul>
-                    <li class="active"><a href="#"><i class="fas fa-home"></i> Home</span></a></li>
-                    <li><a href="#"><i class="fas fa-user"></i> Profilo</span></a></li>
-                    <li><a href="#"><i class="fas fa-calendar-alt"></i> Programmazione</span></a></li>
-                    <li><a href="#"><i class="fas fa-cog"></i> Impostazioni</span></a></li>
-                    <li><a href="#"><i class="fas fa-sign-out-alt"></i> Logout</span></a></li>
+                    <li class="active"><a href="#"><i class="fas fa-home"></i> <span>Home</span></a></li>
+                    <li><a href="#"><i class="fas fa-user"></i> <span>Profilo</span></a></li>
+                    <li><a href="#"><i class="fas fa-calendar-alt"></i> <span>Programmazione</span></a></li>
+                    <li><a href="#"><i class="fas fa-cog"></i> <span>Impostazioni</span></a></li>
+                    <li><a href="#"><i class="fas fa-sign-out-alt"></i> <span>Logout</span></a></li>
                 </ul>
             </nav>
             <div class="trainer-profile">
                 <div class="avatar">
-                    <img src="/api/placeholder/40/40" alt="Utente">
+                    <span>GC</span>
                 </div>
                 <div class="trainer-info">
-                    <h4>Mario Rossi</h4>
+                    <h4>Giovanni Cei</h4>
                     <p>Cliente</p>
                 </div>
             </div>
         </aside>
 
         <!-- Main Content -->
-        <main class="main-content">
+        <main class="main-content" id="mainContent">
             <header class="content-header">
                 <h1>Le Tue Schede</h1>
                 <div class="search-container">
@@ -55,7 +60,7 @@
                     <div class="client-info">
                         <h3>Petto</h3>
                         <p>Esercizi per pettorali</p>
-                        <span class="client-tag tag-massa">Ipertrofia</span>
+                        <span class="client-tag tag-bottone">Dettagli</span>
                     </div>
                 </div>
 
@@ -66,7 +71,7 @@
                     <div class="client-info">
                         <h3>Gambe</h3>
                         <p>Esercizi per quadricipiti e femorali</p>
-                        <span class="client-tag tag-forza">Forza</span>
+                        <span class="client-tag tag-bottone">Dettagli</span>
                     </div>
                 </div>
 
@@ -77,7 +82,7 @@
                     <div class="client-info">
                         <h3>Braccia</h3>
                         <p>Esercizi per bicipiti e tricipiti</p>
-                        <span class="client-tag tag-tonificazione">Definizione</span>
+                        <span class="client-tag tag-bottone">Dettagli</span>
                     </div>
                 </div>
 
@@ -88,7 +93,7 @@
                     <div class="client-info">
                         <h3>Spalle</h3>
                         <p>Esercizi per deltoidi</p>
-                        <span class="client-tag tag-massa">Ipertrofia</span>
+                        <span class="client-tag tag-bottone">Dettagli</span>
                     </div>
                 </div>
 
@@ -99,7 +104,7 @@
                     <div class="client-info">
                         <h3>Schiena</h3>
                         <p>Esercizi per dorsali e trapezi</p>
-                        <span class="client-tag tag-massa">Ipertrofia</span>
+                        <span class="client-tag tag-bottone">Dettagli</span>
                     </div>
                 </div>
 
@@ -110,7 +115,7 @@
                     <div class="client-info">
                         <h3>Glutei</h3>
                         <p>Esercizi per glutei</p>
-                        <span class="client-tag tag-tonificazione">Definizione</span>
+                        <span class="client-tag tag-bottone">Dettagli</span>
                     </div>
                 </div>
 
@@ -121,7 +126,7 @@
                     <div class="client-info">
                         <h3>Cardio</h3>
                         <p>Esercizi cardiovascolari</p>
-                        <span class="client-tag tag-dimagrimento">Dimagrimento</span>
+                        <span class="client-tag tag-bottone">Dettagli</span>
                     </div>
                 </div>
             </section>
@@ -143,17 +148,57 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {
+            // Gestione delle schede
             const cards = document.querySelectorAll('.client-card');
             
             cards.forEach(card => {
                 card.addEventListener('click', function() {
-                    // aggiungere la logica per aprire il modale con i dettagli della scheda
                     document.getElementById('schedaDetailsModal').classList.add('open');
                 });
             });
             
             document.querySelector('.close-modal').addEventListener('click', function() {
                 document.getElementById('schedaDetailsModal').classList.remove('open');
+            });
+
+            // Gestione della sidebar
+            const menuToggle = document.getElementById('menuToggle');
+            const sidebar = document.getElementById('sidebar');
+            const mainContent = document.getElementById('mainContent');
+            const appContainer = document.querySelector('.app-container');
+            
+            // Chiudi la sidebar all'inizio su schermi piccoli
+            function checkScreenSize() {
+                if (window.innerWidth <= 1024) {
+                    sidebar.classList.add('collapsed');
+                    mainContent.classList.add('expanded');
+                    appContainer.classList.add('sidebar-collapsed');
+                }
+            }
+            
+            // Controlla la dimensione dello schermo quando si carica la pagina
+            checkScreenSize();
+            
+            // Controlla la dimensione dello schermo quando viene ridimensionata la finestra
+            window.addEventListener('resize', checkScreenSize);
+            
+            // Toggle della sidebar quando si fa clic sul pulsante del menu
+            menuToggle.addEventListener('click', function() {
+                sidebar.classList.toggle('collapsed');
+                mainContent.classList.toggle('expanded');
+                appContainer.classList.toggle('sidebar-collapsed');
+            });
+            
+            // Chiudi la sidebar quando si fa clic su un link su schermi piccoli
+            const navLinks = document.querySelectorAll('.nav-menu a');
+            navLinks.forEach(link => {
+                link.addEventListener('click', function() {
+                    if (window.innerWidth <= 768) {
+                        sidebar.classList.add('collapsed');
+                        mainContent.classList.add('expanded');
+                        appContainer.classList.add('sidebar-collapsed');
+                    }
+                });
             });
         });
     </script>
