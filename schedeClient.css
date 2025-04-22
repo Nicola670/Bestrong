@@ -340,7 +340,7 @@ button {
 }
 
 .tag-bottone {
-    background-color: var(--accent-color);
+    color:black;
 }
 
 /* Modal Styles */
