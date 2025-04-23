@@ -1,16 +1,19 @@
 import sqlite3
+import os
 
 DB_FILE = "database.db"
 
 # Se il database non esiste, lo inizializza
 def initialize_db():
-    con = sqlite3.connect(DB_FILE)
-    cursor = con.cursor()
+    current_dir = os.path.dirname(os.path.abspath(__file__))
+    db_path = os.path.join(current_dir, DB_FILE)
+    conn = sqlite3.connect(db_path)
+    cursor = conn.cursor()
 
     # --- UTENTI ---
     # is_trainer = TRUE se è un personal trainer
     cursor.execute("""
-        CREATE TABLE Utenti (
+        CREATE TABLE IF NOT EXISTS Utenti (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             is_trainer BOOLEAN NOT NULL,
             username TEXT NOT NULL UNIQUE,
@@ -20,7 +23,7 @@ def initialize_db():
 
     # --- GRUPPO MUSCOLARE --- 
     cursor.execute("""
-        CREATE TABLE Gruppi_Muscolari (
+        CREATE TABLE IF NOT EXISTS Gruppi_Muscolari (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             nome TEXT NOT NULL UNIQUE
         );
@@ -28,7 +31,7 @@ def initialize_db():
 
     # --- OBIETTIVI --- 
     cursor.execute("""
-        CREATE TABLE Obiettivi (
+        CREATE TABLE IF NOT EXISTS Obiettivi (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             nome TEXT NOT NULL UNIQUE
         );
@@ -36,7 +39,7 @@ def initialize_db():
 
     # --- DIFFICOLTA --- 
     cursor.execute("""
-        CREATE TABLE Difficolta (
+        CREATE TABLE IF NOT EXISTS Difficolta (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             livello TEXT NOT NULL UNIQUE
         );
@@ -44,7 +47,7 @@ def initialize_db():
 
     # --- ESERCIZI --- 
     cursor.execute("""
-        CREATE TABLE Esercizi (
+        CREATE TABLE IF NOT EXISTS Esercizi (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             nome TEXT NOT NULL,
             descrizione TEXT,
@@ -59,7 +62,7 @@ def initialize_db():
 
     # --- ASSOCIAZIONE ESERCIZI --- 
     cursor.execute("""
-        CREATE TABLE Esercizi_Muscoli (
+        CREATE TABLE IF NOT EXISTS Esercizi_Muscoli (
             esercizio_id INTEGER NOT NULL,
             muscolo_id INTEGER NOT NULL,
             tipo TEXT CHECK(tipo IN ('primario', 'secondario')) NOT NULL,
@@ -71,7 +74,7 @@ def initialize_db():
 
     # --- MACCHINARI ---
     cursor.execute("""
-        CREATE TABLE Macchinari (
+        CREATE TABLE IF NOT EXISTS Macchinari (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             nome TEXT NOT NULL UNIQUE
         );
@@ -79,7 +82,7 @@ def initialize_db():
 
     # --- SCHEDE ALLENAMETO ---
     cursor.execute("""
-        CREATE TABLE Schede (
+        CREATE TABLE IF NOT EXISTS Schede (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             cliente_id INTEGER NOT NULL,
             trainer_id INTEGER NOT NULL,
@@ -92,7 +95,7 @@ def initialize_db():
 
     # --- ESERCIZI DELLE SCHEDE ---
     cursor.execute("""
-        CREATE TABLE Schede_Esercizi (
+        CREATE TABLE IF NOT EXISTS Schede_Esercizi (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             scheda_id INTEGER NOT NULL,
             esercizio_id INTEGER NOT NULL,
@@ -110,7 +113,7 @@ def initialize_db():
 
     # --- STORICO DELLE SCHEDE ---
     cursor.execute("""
-        CREATE TABLE Storico_Schede (
+        CREATE TABLE IF NOT EXISTS Storico_Schede (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             scheda_id INTEGER NOT NULL,
             cliente_id INTEGER NOT NULL,
@@ -119,7 +122,5 @@ def initialize_db():
             FOREIGN KEY (scheda_id) REFERENCES Schede(id),
             FOREIGN KEY (cliente_id) REFERENCES Utenti(id),
             FOREIGN KEY (trainer_id) REFERENCES Utenti(id)
-);    
-    """)  
-
-init_db()
+        );    
+    """)
