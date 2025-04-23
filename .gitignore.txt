@@ -1,0 +1,5 @@
+# Ignora tutti i file .html .css .js
+
+*.html
+*.css
+*.js
