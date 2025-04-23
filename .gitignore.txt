@@ -1,5 +1,8 @@
 # Ignora la cartella templates
 templates/
 
+# Ignora la cartella static
+static/
+
 # Ignora la cartella __pycache__
 __pycache__/
