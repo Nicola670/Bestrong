@@ -1,7 +1,5 @@
-# Ignora tutti i file .html .css .js
-*.html
-*.css
-*.js
+# Ignora la cartella templates
+templates/
 
 # Ignora la cartella __pycache__
 __pycache__/
