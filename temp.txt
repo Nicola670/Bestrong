@@ -82,7 +82,7 @@ FOREIGN KEY (esercizio_id) REFERENCES Esercizi(id),
 FOREIGN KEY (macchinario_id) REFERENCES Macchinari(id)
 );
 
--- STORICO DELLE SCHEDE (snapshot serializzato)
+-- STORICO DELLE SCHEDE
 CREATE TABLE Storico_Schede (
 id INTEGER PRIMARY KEY AUTOINCREMENT,
 scheda_id INTEGER NOT NULL,
