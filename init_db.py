@@ -1,5 +1,6 @@
 import sqlite3
 import os
+import bcrypt
 
 DB_FILE = "database.db"
 
@@ -124,3 +125,15 @@ def initialize_db():
             FOREIGN KEY (trainer_id) REFERENCES Utenti(id)
         );    
     """)
+
+    # Hash della password admin
+    admin_password = bcrypt.hashpw('admin'.encode('utf-8'), bcrypt.gensalt())
+    
+    # Inserisci l'utente admin con password hashata
+    cursor.execute("""
+        INSERT OR IGNORE INTO Utenti (is_trainer, username, password_hash)
+        VALUES (False, 'admin', ?);    
+    """, (admin_password,))
+    
+    conn.commit()
+    conn.close()

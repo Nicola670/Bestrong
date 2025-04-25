@@ -34,11 +34,10 @@ def is_valid_password(password):
 
 @login_manager.user_loader
 def load_user(user_id):
-    # Qui dovrai implementare la logica per caricare l'utente dal database
-    # Esempio:
-    # user = database.get_user(user_id)
-    # return User(user['id'], user['email'], user['username'])
-    pass
+    user = database.get_user_by_id(user_id)
+    if user:
+        return User(user['id'], user['username'])
+    return None
 
 @app.route('/')
 def home():
