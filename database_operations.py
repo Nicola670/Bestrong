@@ -7,27 +7,6 @@ def get_db_connection():
     db_path = os.path.join(current_dir, DB_FILE)
     return sqlite3.connect(db_path)
 
-# ----- OPERAZIONI -----
-def register_user(username, hashed_password, is_trainer=False):
-    try:
-        conn = get_db_connection()
-        cursor = conn.cursor()
-        
-        cursor.execute("""
-            INSERT INTO Utenti (username, password_hash, is_trainer)
-            VALUES (?, ?, ?)
-        """, (username, hashed_password, is_trainer))
-        
-        conn.commit()
-        return True
-    except sqlite3.IntegrityError:
-        return False
-    except Exception as e:
-        print(f"Errore durante la registrazione: {e}")
-        return False
-    finally:
-        conn.close()
-
 def get_user_by_username(username):
     try:
         conn = get_db_connection()
@@ -44,12 +23,12 @@ def get_user_by_username(username):
             return {
                 'id': user[0],
                 'username': user[1],
-                'password': user[2],
-                'is_trainer': user[3]
+                'password': user[2],  # password_hash
+                'is_trainer': bool(user[3])  # Converti in boolean
             }
         return None
     except Exception as e:
-        print(f"Errore durante il recupero dell'utente: {e}")
+        print(f"Errore nel recupero dell'utente: {e}")
         return None
     finally:
         conn.close()
@@ -74,7 +53,27 @@ def get_user_by_id(user_id):
             }
         return None
     except Exception as e:
-        print(f"Errore durante il recupero dell'utente: {e}")
+        print(f"Errore nel recupero dell'utente: {e}")
         return None
+    finally:
+        conn.close()
+
+def register_user(username, hashed_password, is_trainer=False):
+    try:
+        conn = get_db_connection()
+        cursor = conn.cursor()
+        
+        cursor.execute("""
+            INSERT INTO Utenti (username, password_hash, is_trainer)
+            VALUES (?, ?, ?)
+        """, (username, hashed_password, is_trainer))
+        
+        conn.commit()
+        return True
+    except sqlite3.IntegrityError:
+        return False
+    except Exception as e:
+        print(f"Errore durante la registrazione: {e}")
+        return False
     finally:
         conn.close()
