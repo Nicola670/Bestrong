@@ -7,16 +7,16 @@ import secrets
 import bcrypt
 from datetime import timedelta
 import re
-
-# Inizializzazione del database
-initialize_db()
-populate_database()
+from api import api
 
 app = Flask(__name__)
+
+# Registra il Blueprint delle API
+app.register_blueprint(api)
+
 app.config["DEBUG"] = True
 # Chiave segreta per le sessioni - genera una chiave casuale
 app.config['SECRET_KEY'] = secrets.token_hex(16)
-
 # Configurazione delle sessioni
 app.config['SESSION_TYPE'] = 'filesystem'
 app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(minutes=30)  # Sessione scade dopo 30 minuti
@@ -157,4 +157,7 @@ def logout():
     return redirect(url_for('home'))
 
 if __name__ == "__main__":
+    # Inizializza e popola il database
+    initialize_db()
+    populate_database()
     app.run()

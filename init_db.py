@@ -4,6 +4,11 @@ import bcrypt
 
 DB_FILE = "database.db"
 
+def get_db_connection():
+    current_dir = os.path.dirname(os.path.abspath(__file__))
+    db_path = os.path.join(current_dir, DB_FILE)
+    return sqlite3.connect(db_path)
+
 # Se il database non esiste, lo inizializza
 def initialize_db():
     current_dir = os.path.dirname(os.path.abspath(__file__))
