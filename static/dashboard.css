@@ -796,6 +796,8 @@ button {
 }
 
 /* Responsive Styles */
+
+/*
 @media (max-width: 1024px) {
     .sidebar {
         width: 80px;
@@ -914,6 +916,96 @@ button {
         margin-right: 0;
     }
 }
+*/
+
+/* Aggiungi questi media query in fondo al file CSS */
+
+@media (max-width: 480px) {
+    .sidebar {
+        width: 60px;
+        padding: 1rem 0.25rem;
+    }
+
+    .main-content {
+        margin-left: 60px;
+        padding: 1rem 0.5rem;
+    }
+
+    .logo i {
+        font-size: 1.5rem;
+    }
+
+    .client-card {
+        width: 100%;
+        padding: 1rem;
+    }
+
+    .modal-content {
+        margin: 0.5rem;
+    }
+
+    .modal-header h2 {
+        font-size: 1.2rem;
+    }
+
+    .client-details-header {
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+    }
+
+    .client-actions {
+        flex-direction: row;
+        width: 100%;
+        margin-top: 1rem;
+    }
+
+    .btn-edit, .btn-delete {
+        font-size: 0.8rem;
+        padding: 0.5rem;
+    }
+
+    .tabs-nav li {
+        padding: 0.5rem 0.75rem;
+        font-size: 0.9rem;
+    }
+
+    .info-item p {
+        font-size: 1rem;
+    }
+
+    .search-container input {
+        padding-left: 2rem;
+    }
+
+    .trainer-profile {
+        padding-top: 0.5rem;
+        border-top: none;
+    }
+}
+
+@media (max-width: 360px) {
+    .sidebar {
+        width: 50px;
+    }
+
+    .main-content {
+        margin-left: 50px;
+    }
+
+    .nav-menu ul li a i {
+        font-size: 1.2rem;
+    }
+
+    .content-header h1 {
+        font-size: 1.5rem;
+    }
+
+    .modal-body {
+        padding: 1rem 0.5rem;
+    }
+}
+
 
 /* Animations */
 @keyframes pulse {
