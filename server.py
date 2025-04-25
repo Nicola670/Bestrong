@@ -83,7 +83,7 @@ def login():
             if user['is_trainer']:
                 return redirect(url_for('dashboard'))
             else:
-                return redirect(url_for('client_dashboard'))  # Nota: ho corretto il nome della route
+                return redirect(url_for('client_dashboard'))
         else:
             flash('Username o password non validi')
             return redirect(url_for('home'))
@@ -125,7 +125,7 @@ def register():
             user_obj = User(user['id'], user['username'])
             login_user(user_obj)
             flash('Registrazione completata!')
-            return redirect(url_for('dashboard'))
+            return redirect(url_for('client_dashboard'))
         
         flash('Registrazione fallita')
         return redirect(url_for('home'))
