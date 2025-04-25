@@ -140,6 +140,115 @@ def get_workout_details(workout_id):
     finally:
         conn.close()
 
+# --- ENDPOINTS PER GESTIONE SCHEDE ---
+@api.route('/api/workout', methods=['POST'])
+@login_required
+def create_workout():
+    if not current_user.is_trainer:
+        return jsonify({'error': 'Unauthorized'}), 403
+    
+    data = request.get_json()
+    client_id = data.get('client_id')
+    exercises = data.get('exercises', [])
+    
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    
+    try:
+        # Crea nuova scheda
+        cursor.execute("""
+            INSERT INTO Schede (cliente_id, trainer_id)
+            VALUES (?, ?)
+        """, (client_id, current_user.id))
+        
+        workout_id = cursor.lastrowid
+        
+        # Inserisci esercizi
+        for ex in exercises:
+            cursor.execute("""
+                INSERT INTO Schede_Esercizi 
+                (scheda_id, esercizio_id, macchinario_id, ripetizioni, 
+                serie, durata_secondi, recupero_secondi, peso_kg)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+            """, (workout_id, ex['exercise_id'], ex.get('machine_id'), 
+                  ex.get('reps'), ex.get('sets'), ex.get('duration'),
+                  ex.get('rest'), ex.get('weight')))
+        
+        conn.commit()
+        return jsonify({'id': workout_id}), 201
+    except Exception as e:
+        conn.rollback()
+        return jsonify({'error': str(e)}), 400
+    finally:
+        conn.close()
+
+@api.route('/api/workout/<int:workout_id>', methods=['PUT'])
+@login_required
+def update_workout(workout_id):
+    if not current_user.is_trainer:
+        return jsonify({'error': 'Unauthorized'}), 403
+    
+    data = request.get_json()
+    exercises = data.get('exercises', [])
+    
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    
+    try:
+        # Verifica che la scheda esista
+        cursor.execute("SELECT id FROM Schede WHERE id = ?", (workout_id,))
+        if not cursor.fetchone():
+            return jsonify({'error': 'Workout not found'}), 404
+            
+        # Elimina vecchi esercizi
+        cursor.execute("DELETE FROM Schede_Esercizi WHERE scheda_id = ?", (workout_id,))
+        
+        # Inserisci nuovi esercizi
+        for ex in exercises:
+            cursor.execute("""
+                INSERT INTO Schede_Esercizi 
+                (scheda_id, esercizio_id, macchinario_id, ripetizioni, 
+                serie, durata_secondi, recupero_secondi, peso_kg)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+            """, (workout_id, ex['exercise_id'], ex.get('machine_id'), 
+                  ex.get('reps'), ex.get('sets'), ex.get('duration'),
+                  ex.get('rest'), ex.get('weight')))
+        
+        # Aggiorna timestamp
+        cursor.execute("""
+            UPDATE Schede 
+            SET aggiornato = CURRENT_TIMESTAMP
+            WHERE id = ?
+        """, (workout_id,))
+        
+        conn.commit()
+        return jsonify({'success': True})
+    except Exception as e:
+        conn.rollback()
+        return jsonify({'error': str(e)}), 400
+    finally:
+        conn.close()
+
+@api.route('/api/workout/<int:workout_id>', methods=['DELETE'])
+@login_required
+def delete_workout(workout_id):
+    if not current_user.is_trainer:
+        return jsonify({'error': 'Unauthorized'}), 403
+    
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    
+    try:
+        cursor.execute("DELETE FROM Schede_Esercizi WHERE scheda_id = ?", (workout_id,))
+        cursor.execute("DELETE FROM Schede WHERE id = ?", (workout_id,))
+        conn.commit()
+        return jsonify({'success': True})
+    except Exception as e:
+        conn.rollback()
+        return jsonify({'error': str(e)}), 400
+    finally:
+        conn.close()
+
 # --- ENDPOINTS PER CLIENTI ---
 @api.route('/api/my-workouts', methods=['GET'])
 @login_required
