@@ -6,21 +6,22 @@
     <link rel="stylesheet" href="404.css">
 </head>
 <body>
+
+    <!-- Contenitore particelle -->
+    <div id="particles-js"></div>
+
     <div class="wrapper">
         <div class="card">
             <h1>404</h1>
-            <p>Purtroppo la pagina che cerchi si è lanciata giù da un balcone.</p>
-            
-            <!-- Area centrale per GIF o Video -->
+            <p>Purtroppo la pagina che stai cercando si è buttata giù da un balcone.</p>
             <div class="media-container">
                 <video src="video404.mp4" autoplay loop muted playsinline class="media"></video>
-                <!-- Oppure per una GIF:
-                <img src="{{ url_for('static', filename='images/errore.gif') }}" alt="Errore divertente" class="media">
-                -->
             </div>
-
-            <a href="/" class="button">Torna alla Home</a>
         </div>
     </div>
+
+    <!-- Particles.js library -->
+    <script src="https://cdn.jsdelivr.net/npm/particles.js@2.0.0/particles.min.js"></script>
+    <script src="{{ url_for('static', filename='particles-config.js') }}"></script>
 </body>
 </html>
