@@ -1,40 +1,83 @@
-body {
-    background-color: #f8f9fa;
-    font-family: 'Arial', sans-serif;
-    text-align: center;
-    padding: 50px;
-}
-
-.container {
-    max-width: 600px;
-    margin: 0 auto;
-}
-
-h1 {
-    font-size: 10rem;
-    color: #ff6b6b;
+/* Reset base */
+* {
     margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+/* Corpo */
+body {
+    height: 100vh;
+    background: linear-gradient(135deg, #f2f2f2, #d9e4f5);
+    font-family: 'Poppins', sans-serif;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Wrapper */
+.wrapper {
+    text-align: center;
+}
+
+/* Card principale */
+.card {
+    background: white;
+    padding: 40px 30px;
+    border-radius: 20px;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+    max-width: 600px;
+    width: 90%;
+    margin: auto;
+    animation: float 3s ease-in-out infinite;
+}
+
+/* Animazione card */
+@keyframes float {
+    0% { transform: translatey(0px); }
+    50% { transform: translatey(-10px); }
+    100% { transform: translatey(0px); }
+}
+
+/* Testi */
+h1 {
+    font-size: 7rem;
+    color: #ff4d4f;
+    margin-bottom: 10px;
 }
 
 p {
-    font-size: 1.5rem;
-    margin: 20px 0;
+    font-size: 1.4rem;
+    color: #555;
+    margin-bottom: 20px;
 }
 
-.gif {
+/* Contenitore media */
+.media-container {
     width: 100%;
-    max-width: 400px;
-    margin: 20px 0;
+    height: auto;
+    overflow: hidden;
+    border-radius: 15px;
+    margin-bottom: 25px;
+    background: #f8f9fa;
 }
 
+.media {
+    width: 100%;
+    height: auto;
+    display: block;
+    border-radius: 15px;
+}
+
+/* Bottone */
 .button {
     display: inline-block;
-    padding: 10px 20px;
+    padding: 12px 25px;
     background-color: #4dabf7;
     color: white;
     text-decoration: none;
-    border-radius: 8px;
     font-size: 1.2rem;
+    border-radius: 8px;
     transition: background-color 0.3s;
 }
 
