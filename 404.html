@@ -2,15 +2,25 @@
 <html lang="it">
 <head>
     <meta charset="UTF-8">
-    <title>Pagina non trovata</title>
+    <title>Oops! Pagina non trovata</title>
     <link rel="stylesheet" href="404.css">
 </head>
 <body>
-    <div class="container">
-        <h1>404</h1>
-        <p>Ops! Sembra che tu abbia perso la strada...</p>
-        <img src="https://media.giphy.com/media/14uQ3cOFteDaU/giphy.gif" alt="Perso" class="gif">
-        <a href="/" class="button">Torna alla Home</a>
+    <div class="wrapper">
+        <div class="card">
+            <h1>404</h1>
+            <p>.</p>
+            
+            <!-- Area centrale per GIF o Video -->
+            <div class="media-container">
+                <video src="" autoplay loop muted playsinline class="media"></video>
+                <!-- Oppure per una GIF:
+                <img src="{{ url_for('static', filename='images/errore.gif') }}" alt="Errore divertente" class="media">
+                -->
+            </div>
+
+            <a href="/" class="button">Torna alla Home</a>
+        </div>
     </div>
 </body>
 </html>
