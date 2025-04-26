@@ -84,3 +84,22 @@ p {
 .button:hover {
     background-color: #339af0;
 }
+
+@media (max-width: 480px) {
+    h1 {
+        font-size: 5rem;
+    }
+
+    p {
+        font-size: 1.1rem;
+    }
+
+    .card {
+        padding: 30px 20px;
+    }
+
+    .button {
+        font-size: 1rem;
+        padding: 10px 20px;
+    }
+}
