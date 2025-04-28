@@ -22,44 +22,82 @@
             </ul>
         </nav>
     </header>
-
-    <section class="exercise-container">
-        <div class="exercise-header">
-            <h2 id="exercise-name">Squat</h2>
-            <div class="badge">Gambe</div>
-        </div>
-
-        <div class="video-container">
-            <div class="video-wrapper">
-                <video id="exercise-video" controls>
-                    <source src="/api/placeholder/640/360" type="video/mp4">
-                    Il tuo browser non supporta il tag video.
-                </video>
-                <div class="video-overlay">
-                    <button id="play-btn" class="play-button">
-                        <i class="fas fa-play"></i>
-                    </button>
+    <main>
+        <section class="exercise-container">
+            <div class="exercise-header">
+                <h2 id="exercise-name">Squat</h2>
+                <div class="badge">Gambe</div>
+            </div>
+    
+            <div class="video-container">
+                <div class="video-wrapper">
+                    <video id="exercise-video" controls>
+                        <source src="/api/placeholder/640/360" type="video/mp4">
+                        Il tuo browser non supporta il tag video.
+                    </video>
+                    <div class="video-overlay">
+                        <button id="play-btn" class="play-button">
+                            <i class="fas fa-play"></i>
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="exercise-info">
+                    <div class="info-box sets">
+                        <span class="label">Serie</span>
+                        <span class="value">4</span>
+                    </div>
+                    <div class="info-box reps">
+                        <span class="label">Ripetizioni</span>
+                        <span class="value">12</span>
+                    </div>
+                    <div class="info-box rest">
+                        <span class="label">Riposo</span>
+                        <span class="value">60s</span>
+                    </div>
                 </div>
             </div>
-            
-            <div class="exercise-info">
-                <div class="info-box sets">
-                    <span class="label">Serie</span>
-                    <span class="value">4</span>
+            <div class="timer-container">
+                <div class="timer-display">
+                    <div id="timer">01:00</div>
+                    <div class="timer-controls">
+                        <button id="start-timer" class="timer-btn">
+                            <i class="fas fa-play"></i>
+                        </button>
+                        <button id="pause-timer" class="timer-btn">
+                            <i class="fas fa-pause"></i>
+                        </button>
+                        <button id="reset-timer" class="timer-btn">
+                            <i class="fas fa-redo"></i>
+                        </button>
+                    </div>
                 </div>
-                <div class="info-box reps">
-                    <span class="label">Ripetizioni</span>
-                    <span class="value">12</span>
-                </div>
-                <div class="info-box rest">
-                    <span class="label">Riposo</span>
-                    <span class="value">60s</span>
+                <div class="progress-container">
+                    <div id="timer-progress" class="progress-bar"></div>
                 </div>
             </div>
-        </div>
-
-
         </section>
+        <section class="instructions">
+            <h3>Istruzioni</h3>
+            <p>
+                1. jnvsVJ <br>
+                2.disn  sdnm kjsdkjn dnszl<br>
+                3. ijda  szN id m  iksdm m<br>
+                4. Va casa
+            </p>
+        </section>
+
+        <div class="navigation-buttons">
+            <button id="prev-exercise" class="nav-btn">
+                <i class="fas fa-arrow-left"></i> Esercizio precedente
+            </button>
+            <button id="next-exercise" class="nav-btn primary">
+                Esercizio successivo <i class="fas fa-arrow-right"></i>
+            </button>
+        </div>
+
+    </main>
+    
 
 </body>
 
