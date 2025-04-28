@@ -122,3 +122,236 @@ main {
     font-size: 0.9rem;
     font-weight: 500;
 }
+
+/* Video container */
+.video-container {
+    padding: 1.5rem;
+}
+
+.video-wrapper {
+    position: relative;
+    width: 100%;
+    border-radius: var(--radius);
+    overflow: hidden;
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+    margin-bottom: 1.5rem;
+    background-color: #000;
+    aspect-ratio: 16/9;
+}
+
+video {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: var(--radius);
+}
+
+.video-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: rgba(0, 0, 0, 0.3);
+    opacity: 0;
+    transition: var(--transition);
+}
+
+.video-wrapper:hover .video-overlay {
+    opacity: 1;
+}
+
+.play-button {
+    background-color: rgba(255, 255, 255, 0.8);
+    border: none;
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    transition: var(--transition);
+}
+
+.play-button i {
+    font-size: 1.5rem;
+    color: var(--primary-color);
+}
+
+.play-button:hover {
+    background-color: var(--white);
+    transform: scale(1.1);
+}
+
+/* Exercise info */
+.exercise-info {
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+}
+
+.info-box {
+    flex: 1;
+    background-color: var(--light-gray);
+    border-radius: var(--radius);
+    padding: 1rem;
+    text-align: center;
+    transition: var(--transition);
+}
+
+.info-box:hover {
+    transform: translateY(-3px);
+    box-shadow: var(--shadow);
+}
+
+.info-box .label {
+    display: block;
+    font-size: 0.9rem;
+    color: var(--dark-gray);
+    margin-bottom: 0.5rem;
+}
+
+.info-box .value {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--secondary-color);
+}
+
+/* Timer container */
+.timer-container {
+    background-color: var(--light-gray);
+    padding: 1.5rem;
+    border-radius: var(--radius);
+    margin-bottom: 1.5rem;
+}
+
+.timer-display {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+}
+
+#timer {
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: var(--secondary-color);
+    font-family: monospace;
+}
+
+.timer-controls {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.timer-btn {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    border: none;
+    background-color: var(--white);
+    color: var(--secondary-color);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    transition: var(--transition);
+}
+
+.timer-btn:hover {
+    background-color: var(--primary-color);
+    color: var(--white);
+}
+
+#start-timer {
+    background-color: var(--primary-color);
+    color: var(--white);
+}
+
+.progress-container {
+    width: 100%;
+    height: 8px;
+    background-color: var(--white);
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+.progress-bar {
+    height: 100%;
+    width: 100%;
+    background-color: var(--primary-color);
+    border-radius: 4px;
+    transform-origin: left;
+    transform: scaleX(1);
+    transition: transform 1s linear;
+}
+
+/* Instructions */
+.instructions {
+    background-color: var(--white);
+    border-radius: var(--radius);
+    padding: 1.5rem;
+    margin-bottom: 2rem;
+    box-shadow: var(--shadow);
+}
+
+.instructions h3 {
+    margin-bottom: 1rem;
+    font-size: 1.3rem;
+    color: var(--secondary-color);
+    border-bottom: 2px solid var(--light-gray);
+    padding-bottom: 0.5rem;
+}
+
+.instructions p {
+    line-height: 1.8;
+}
+
+/* Navigation buttons */
+.navigation-buttons {
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+    margin-bottom: 2rem;
+}
+
+.nav-btn {
+    padding: 0.8rem 1.5rem;
+    border-radius: var(--radius);
+    border: 1px solid var(--light-gray);
+    background-color: var(--white);
+    color: var(--secondary-color);
+    font-weight: 500;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    transition: var(--transition);
+}
+
+.nav-btn:hover {
+    background-color: var(--light-gray);
+}
+
+.nav-btn.primary {
+    background-color: var(--primary-color);
+    color: var(--white);
+    border: none;
+}
+
+.nav-btn.primary:hover {
+    background-color: #e63e3e;
+}
+
+/* Footer */
+footer {
+    text-align: center;
+    padding: 2rem 1rem;
+    background-color: var(--secondary-color);
+    color: var(--white);
+}
