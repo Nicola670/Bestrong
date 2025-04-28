@@ -355,3 +355,80 @@ footer {
     background-color: var(--secondary-color);
     color: var(--white);
 }
+
+/* Animations */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes pulse {
+    0% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(1.05);
+    }
+    100% {
+        transform: scale(1);
+    }
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+    .exercise-info {
+        flex-direction: column;
+    }
+    
+    .navigation-buttons {
+        flex-direction: column;
+    }
+    
+    #timer {
+        font-size: 2rem;
+    }
+    
+    .exercise-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.5rem;
+    }
+    
+    .timer-display {
+        flex-direction: column;
+        gap: 1rem;
+    }
+}
+
+@media (max-width: 480px) {
+    header {
+        flex-direction: column;
+        gap: 1rem;
+    }
+    
+    nav ul {
+        gap: 1rem;
+    }
+    
+    .info-box {
+        padding: 0.8rem;
+    }
+    
+    .info-box .value {
+        font-size: 1.2rem;
+    }
+    
+    #timer {
+        font-size: 1.8rem;
+    }
+    
+    .logo h1 {
+        font-size: 1.3rem;
+    }
+}
