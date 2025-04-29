@@ -51,7 +51,7 @@ def load_user(user_id):
 def home():
     if current_user.is_authenticated:
         return redirect(url_for('dashboard'))
-    return render_template("login.html")
+    return render_template("dashboard.html")
 
 @app.route('/login', methods=['POST'])
 def login():
