@@ -1,27 +1,16 @@
 from flask import Flask, request, render_template, session, redirect, url_for, flash
 from flask_login import LoginManager, UserMixin, login_user, login_required, logout_user, current_user
 from flask_session import Session
+
 from init_db import initialize_db, populate_database
 import database_operations as database
-import secrets
-import bcrypt
-from datetime import timedelta
-import re
-from api import api
+
+
+#import bcrypt
 
 app = Flask(__name__)
 
-# Registra il Blueprint delle API
-app.register_blueprint(api)
-
 app.config["DEBUG"] = True
-# Chiave segreta per le sessioni - genera una chiave casuale
-app.config['SECRET_KEY'] = secrets.token_hex(16)
-# Configurazione delle sessioni
-app.config['SESSION_TYPE'] = 'filesystem'
-app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(minutes=30)  # Sessione scade dopo 30 minuti
-app.config['SESSION_FILE_DIR'] = 'flask_session'  # Directory per i file di sessione
-Session(app)
 
 login_manager = LoginManager()
 login_manager.init_app(app)
@@ -39,6 +28,7 @@ def is_valid_password(password):
             any(c.isupper() for c in password) and 
             any(c.islower() for c in password) and 
             any(c.isdigit() for c in password))
+
 
 @login_manager.user_loader
 def load_user(user_id):
@@ -151,8 +141,6 @@ def client_dashboard():
 @app.route('/logout')
 @login_required
 def logout():
-    # Pulisci la sessione
-    session.clear()
     logout_user()
     return redirect(url_for('home'))
 
