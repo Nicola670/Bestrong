@@ -4,16 +4,9 @@ import bcrypt
 
 DB_FILE = "database.db"
 
-def get_db_connection():
-    current_dir = os.path.dirname(os.path.abspath(__file__))
-    db_path = os.path.join(current_dir, DB_FILE)
-    return sqlite3.connect(db_path)
-
 # Se il database non esiste, lo inizializza
 def initialize_db():
-    current_dir = os.path.dirname(os.path.abspath(__file__))
-    db_path = os.path.join(current_dir, DB_FILE)
-    conn = sqlite3.connect(db_path)
+    conn = sqlite3.connect(DB_FILE)
     cursor = conn.cursor()
 
     # --- UTENTI ---
@@ -131,16 +124,6 @@ def initialize_db():
         );    
     """)
 
-    # Hash della password admin
-    admin_password = bcrypt.hashpw('admin'.encode('utf-8'), bcrypt.gensalt())
-    
-    # Inserisci l'utente admin con password hashata
-    cursor.execute("""
-        INSERT OR IGNORE INTO Utenti (is_trainer, username, password_hash)
-        VALUES (False, 'admin', ?);    
-    """, (admin_password,))
-    
-    conn.commit()
     conn.close()
 
 def populate_database():

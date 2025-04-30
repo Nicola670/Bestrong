@@ -12,8 +12,11 @@ app = Flask(__name__)
 
 app.config["DEBUG"] = True
 
+# gesotore degli account di Flask
 login_manager = LoginManager()
+# collegamento gestore all'app
 login_manager.init_app(app)
+# route che prende l'utente se non è autenticato
 login_manager.login_view = 'login'
 
 # Classe User per gestire gli utenti
