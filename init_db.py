@@ -127,132 +127,56 @@ def initialize_db():
     conn.close()
 
 def populate_database():
-    # Assicurati che il database sia inizializzato
-    initialize_db()
-    
     conn = sqlite3.connect(DB_FILE)
     cursor = conn.cursor()
 
-    # --- INSERIMENTO TRAINER ---
-    trainers = [
-        ('paolo ambruoso', '123', True),
-    ]
-    
-    for username, password, is_trainer in trainers:
-        hashed_pw = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt())
-        cursor.execute("""
-            INSERT OR IGNORE INTO Utenti (username, password_hash, is_trainer)
-            VALUES (?, ?, ?)
-        """, (username, hashed_pw, is_trainer))
-
-    # --- INSERIMENTO CLIENTI ---
-    clients = [
-        ('matteo martini', '123'),
-    ]
-    
-    for username, password in clients:
-        hashed_pw = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt())
-        cursor.execute("""
-            INSERT OR IGNORE INTO Utenti (username, password_hash, is_trainer)
-            VALUES (?, ?, FALSE)
-        """, (username, hashed_pw))
-
     # --- INSERIMENTO GRUPPI MUSCOLARI ---
     muscle_groups = [
-        'Pettorali',
-        'Dorsali',
         'Spalle',
+        'Pettorali',
         'Bicipiti',
-        'Tricipiti',
+        'Avambracci',
         'Addominali',
+        'Abduttori',
         'Quadricipiti',
+        'Cardio',
+        'Stretching',
+        'Trapezi',
+        'Tricipiti',
+        'Dorsali',
+        'Glutei',
+        'Adduttori',
         'Femorali',
         'Polpacci'
     ]
     
-    for muscle in muscle_groups:
-        cursor.execute("INSERT OR IGNORE INTO Gruppi_Muscolari (nome) VALUES (?)", (muscle,))
+    for i in muscle_groups:
+        # Inserisci dentro la tabella Gruppi_Muscolari, nel campo nome, il valore di i
+        # ? è il placeholder per i valori da inserire, i con la virgola indica che è una tupla
+        cursor.execute("INSERT INTO Gruppi_Muscolari (nome) VALUES (?)", (i,))
 
     # --- INSERIMENTO OBIETTIVI ---
     objectives = [
+        'Dimagrimento',
+        'Tonificazione',
         'Massa muscolare',
-        'Definizione',
-        'Forza',
-        'Resistenza',
-        'Dimagrimento'
+        'Mobilità',
+        'Propriocezione'
     ]
     
-    for obj in objectives:
-        cursor.execute("INSERT OR IGNORE INTO Obiettivi (nome) VALUES (?)", (obj,))
+    for i in objectives:
+        cursor.execute("INSERT INTO Obiettivi (nome) VALUES (?)", (i,))
 
     # --- INSERIMENTO DIFFICOLTÀ ---
-    difficulties = ['Principiante', 'Intermedio', 'Avanzato']
-    
-    for diff in difficulties:
-        cursor.execute("INSERT OR IGNORE INTO Difficolta (livello) VALUES (?)", (diff,))
-
-    # --- INSERIMENTO MACCHINARI ---
-    machines = [
-        'Panca piana',
-        'Lat machine',
-        'Leg press',
-        'Chest press',
-        'Shoulder press',
-        'Cyclette',
-        'Tapis roulant',
-        'Cable machine'
+    difficulties = [
+        'Facile',
+        'Medio', 
+        'Difficile',
     ]
     
-    for machine in machines:
-        cursor.execute("INSERT OR IGNORE INTO Macchinari (nome) VALUES (?)", (machine,))
+    for i in difficulties:
+        cursor.execute("INSERT INTO Difficolta (livello) VALUES (?)", (i,))
 
-    # --- INSERIMENTO ESERCIZI ---
-    exercises = [
-        ('Panca Piana', 'Distendersi sulla panca e spingere il bilanciere', 1, 2),
-        ('Trazioni', 'Trazione alla sbarra', 1, 3),
-        ('Military Press', 'Press sopra la testa', 1, 2),
-        ('Squat', 'Piegamenti gambe con bilanciere', 3, 2),
-        ('Curl Bicipiti', 'Curl con manubri', 1, 1),
-        ('Crunch', 'Addominali a terra', 2, 1)
-    ]
-    
-    for nome, descrizione, obiettivo_id, difficolta_id in exercises:
-        cursor.execute("""
-            INSERT OR IGNORE INTO Esercizi (nome, descrizione, obiettivo_id, difficolta_id)
-            VALUES (?, ?, ?, ?)
-        """, (nome, descrizione, obiettivo_id, difficolta_id))
-
-    # --- INSERIMENTO SCHEDE ---
-    # Prima otteniamo alcuni ID necessari
-    cursor.execute("SELECT id FROM Utenti WHERE is_trainer = TRUE LIMIT 1")
-    trainer_id = cursor.fetchone()[0]
-    
-    cursor.execute("SELECT id FROM Utenti WHERE is_trainer = FALSE AND username != 'admin' LIMIT 2")
-    client_ids = [row[0] for row in cursor.fetchall()]
-
-    # Creiamo alcune schede
-    for client_id in client_ids:
-        cursor.execute("""
-            INSERT INTO Schede (cliente_id, trainer_id)
-            VALUES (?, ?)
-        """, (client_id, trainer_id))
-        
-        scheda_id = cursor.lastrowid
-        
-        # Aggiungiamo esercizi alle schede
-        esercizi_scheda = [
-            (1, 1, 4, 12, 60, None),  # (esercizio_id, macchinario_id, serie, ripetizioni, recupero, peso)
-            (2, None, 3, 10, 90, None),
-            (4, 3, 4, 15, 60, 60.0)
-        ]
-        
-        for es_id, mac_id, serie, reps, rec, peso in esercizi_scheda:
-            cursor.execute("""
-                INSERT INTO Schede_Esercizi 
-                (scheda_id, esercizio_id, macchinario_id, serie, ripetizioni, recupero_secondi, peso_kg)
-                VALUES (?, ?, ?, ?, ?, ?, ?)
-            """, (scheda_id, es_id, mac_id, serie, reps, rec, peso))
-
+    # commit serve per salvare le modifiche nel database quando si fa un INSERT 
     conn.commit()
     conn.close()
-    print("Database popolato con successo!")
