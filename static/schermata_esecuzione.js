@@ -170,7 +170,57 @@ function updateTimerDisplay(){
 //da implementare se si vorra aggiungere un file audio per la fine del timer
 function playTimerEndSound(){}
 
-function showTimerCompleteNotification(){}
+function showTimerCompleteNotification(){
+    // Create a notification element
+    const notification = document.createElement('div');
+    notification.className = 'timer-notification';
+    notification.innerHTML = '<i class="fas fa-check-circle"></i> Riposo completato!';
+    
+    // Style the notification
+    notification.style.position = 'fixed';
+    notification.style.bottom = '20px';
+    notification.style.right = '20px';
+    notification.style.backgroundColor = 'var(--primary-color)';
+    notification.style.color = 'white';
+    notification.style.padding = '1rem';
+    notification.style.borderRadius = 'var(--radius)';
+    notification.style.boxShadow = 'var(--shadow)';
+    notification.style.zIndex = '1000';
+    notification.style.animation = 'slideIn 0.5s ease';
+    
+    // Add animation keyframes
+    const style = document.createElement('style');
+    style.innerHTML = `
+        @keyframes slideIn {
+            from {
+                transform: translateX(100%);
+            }
+            to {
+                transform: translateX(0);
+            }
+        }
+        @keyframes slideOut {
+            from {
+                transform: translateX(0);
+            }
+            to {
+                transform: translateX(100%);
+            }
+        }
+    `;
+    document.head.appendChild(style);
+    
+    // Add to document
+    document.body.appendChild(notification);
+    
+    // Remove after 3 seconds
+    setTimeout(() => {
+        notification.style.animation = 'slideOut 0.5s ease';
+        setTimeout(() => {
+            document.body.removeChild(notification);
+        }, 500);
+    }, 3000);
+}
 
 
 // navigazione esercizi
