@@ -76,7 +76,25 @@ function initializePage() {
 }
 
 // Setup event listeners
-function setupEventListeners(){}
+function setupEventListeners(){
+    // Video controls
+    playButton.addEventListener('click', toggleVideo);
+    exerciseVideo.addEventListener('play', () => {
+        videoOverlay.style.opacity = '0';
+    });
+    exerciseVideo.addEventListener('pause', () => {
+        videoOverlay.style.opacity = '1';
+    });
+    
+    // Timer controls
+    startTimerBtn.addEventListener('click', startTimer);
+    pauseTimerBtn.addEventListener('click', pauseTimer);
+    resetTimerBtn.addEventListener('click', resetTimer);
+    
+    // Navigation controls
+    nextExerciseBtn.addEventListener('click', nextExercise);
+    prevExerciseBtn.addEventListener('click', prevExercise);
+}
 
 // Video functions
 function toggleVideo(){}
@@ -96,6 +114,7 @@ function updateTimerDisplay(){}
 function playTimerEndSound(){}
 
 function showTimerCompleteNotification(){}
+
 
 // navigazione esercizi
 function nextExercise(){}
