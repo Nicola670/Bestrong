@@ -161,8 +161,13 @@ function updateTimer(){
     }
 }
 
-function updateTimerDisplay(){}
+function updateTimerDisplay(){
+    const minutes = Math.floor(currentSeconds / 60);
+    const seconds = currentSeconds % 60;
+    timerElement.textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+}
 
+//da implementare se si vorra aggiungere un file audio per la fine del timer
 function playTimerEndSound(){}
 
 function showTimerCompleteNotification(){}
