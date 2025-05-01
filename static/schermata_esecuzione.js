@@ -97,4 +97,11 @@ function playTimerEndSound(){}
 
 function showTimerCompleteNotification(){}
 
+// navigazione esercizi
+function nextExercise(){}
 
+function prevExercise(){}
+
+function updateExerciseWithAnimation(){}
+
+function updateExerciseDisplay(index){}
