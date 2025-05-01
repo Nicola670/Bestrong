@@ -224,9 +224,19 @@ function showTimerCompleteNotification(){
 
 
 // navigazione esercizi
-function nextExercise(){}
+function nextExercise(){
+    if (currentExerciseIndex < exercises.length - 1) {
+        currentExerciseIndex++;
+        updateExerciseWithAnimation();
+    }
+}
 
-function prevExercise(){}
+function prevExercise(){
+    if (currentExerciseIndex > 0) {
+        currentExerciseIndex--;
+        updateExerciseWithAnimation();
+    }
+}
 
 function updateExerciseWithAnimation(){}
 
