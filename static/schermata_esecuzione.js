@@ -313,3 +313,38 @@ function updateExerciseDisplay(index){const exercise = exercises[index];
         nextExerciseBtn.style.cursor = 'pointer';
     }
 }
+
+// animazioni
+function animateElements() {
+    // Animate info boxes with delay
+    infoBoxes.forEach((box, index) => {
+        setTimeout(() => {
+            box.style.animation = 'pulse 2s infinite';
+        }, index * 200);
+    });
+    
+    // Animate video container on hover
+    const videoWrapper = document.querySelector('.video-wrapper');
+    videoWrapper.addEventListener('mouseenter', () => {
+        videoWrapper.style.transform = 'scale(1.02)';
+        videoWrapper.style.boxShadow = '0 12px 24px rgba(0, 0, 0, 0.15)';
+    });
+    
+    videoWrapper.addEventListener('mouseleave', () => {
+        videoWrapper.style.transform = 'scale(1)';
+        videoWrapper.style.boxShadow = '0 8px 16px rgba(0, 0, 0, 0.1)';
+    });
+    
+    // Add smooth transitions
+    videoWrapper.style.transition = 'all 0.3s ease';
+}
+
+function animateTimerButton(button) {
+    button.style.animation = 'pulse 0.5s';
+    setTimeout(() => {
+        button.style.animation = '';
+    }, 500);
+}
+
+// Initialize on page load
+document.addEventListener('DOMContentLoaded', initializePage);
