@@ -67,3 +67,10 @@ const exercises = [
         ]
     }
 ];
+
+// Initialize page
+function initializePage() {
+    updateExerciseDisplay(currentExerciseIndex);
+    setupEventListeners();
+    animateElements();
+}
