@@ -239,7 +239,36 @@ function prevExercise(){
 }
 
 function updateExerciseWithAnimation(){
-    const exercise = exercises[index];
+    // Add exit animation
+    exerciseContainer.style.animation = 'fadeOut 0.3s ease forwards';
+    
+    // After animation completes, update content and animate in
+    setTimeout(() => {
+        updateExerciseDisplay(currentExerciseIndex);
+        exerciseContainer.style.animation = 'fadeIn 0.5s ease';
+    }, 300);
+    
+    // Add fadeOut animation keyframes
+    const style = document.createElement('style');
+    style.innerHTML = `
+        @keyframes fadeOut {
+            from {
+                opacity: 1;
+                transform: translateY(0);
+            }
+            to {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+        }
+    `;
+    document.head.appendChild(style);
+    
+    // Reset timer
+    resetTimer();
+}
+
+function updateExerciseDisplay(index){const exercise = exercises[index];
     
     // Update exercise name and category
     exerciseName.textContent = exercise.name;
@@ -284,5 +313,3 @@ function updateExerciseWithAnimation(){
         nextExerciseBtn.style.cursor = 'pointer';
     }
 }
-
-function updateExerciseDisplay(index){}
