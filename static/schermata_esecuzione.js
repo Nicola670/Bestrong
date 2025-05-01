@@ -97,17 +97,69 @@ function setupEventListeners(){
 }
 
 // Video functions
-function toggleVideo(){}
+function toggleVideo(){
+    if (exerciseVideo.paused) {
+        exerciseVideo.play();
+    } else {
+        exerciseVideo.pause();
+    }
+}
 
 
 //timer functions
-function startTimer(){}
+function startTimer(){
+    if (!isTimerRunning) {
+        isTimerRunning = true;
+        timerInterval = setInterval(updateTimer, 1000);
+        animateTimerButton(startTimerBtn);
+        
+        // Start progress bar animation
+        timerProgressBar.style.transition = `transform ${currentSeconds}s linear`;
+        timerProgressBar.style.transform = 'scaleX(0)';
+    }
+}
 
-function pauseTimer(){}
+function pauseTimer(){
+    if (isTimerRunning) {
+        isTimerRunning = false;
+        clearInterval(timerInterval);
+        animateTimerButton(pauseTimerBtn);
+        
+        // Pause progress bar animation
+        const computedStyle = window.getComputedStyle(timerProgressBar);
+        const transform = computedStyle.getPropertyValue('transform');
+        timerProgressBar.style.transition = 'none';
+        timerProgressBar.style.transform = transform;
+    }
+}
 
-function resetTimer(){}
+function resetTimer(){
+    isTimerRunning = false;
+    clearInterval(timerInterval);
+    currentSeconds = totalSeconds;
+    updateTimerDisplay();
+    animateTimerButton(resetTimerBtn);
+    
+    // Reset progress bar
+    timerProgressBar.style.transition = 'none';
+    timerProgressBar.style.transform = 'scaleX(1)';
+}
 
-function updateTimer(){}
+function updateTimer(){
+    if (currentSeconds > 0) {
+        currentSeconds--;
+        updateTimerDisplay();
+    } else {
+        pauseTimer();
+        playTimerEndSound();
+        showTimerCompleteNotification();
+        
+        // Reset timer automatically after 2 seconds
+        setTimeout(() => {
+            resetTimer();
+        }, 2000);
+    }
+}
 
 function updateTimerDisplay(){}
 
