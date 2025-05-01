@@ -238,6 +238,51 @@ function prevExercise(){
     }
 }
 
-function updateExerciseWithAnimation(){}
+function updateExerciseWithAnimation(){
+    const exercise = exercises[index];
+    
+    // Update exercise name and category
+    exerciseName.textContent = exercise.name;
+    document.querySelector('.badge').textContent = exercise.category;
+    
+    // Update video source
+    exerciseVideo.src = exercise.videoSrc;
+    
+    // Update exercise info
+    document.querySelector('.sets .value').textContent = exercise.sets;
+    document.querySelector('.reps .value').textContent = exercise.reps;
+    document.querySelector('.rest .value').textContent = exercise.rest + 's';
+    
+    // Update timer
+    totalSeconds = exercise.rest;
+    currentSeconds = totalSeconds;
+    updateTimerDisplay();
+    
+    // Update instructions
+    const instructionsText = exercise.instructions.map((instruction, i) => {
+        return `${i + 1}. ${instruction}`;
+    }).join('<br>');
+    document.querySelector('.instructions p').innerHTML = instructionsText;
+    
+    // Update navigation buttons state
+    prevExerciseBtn.disabled = index === 0;
+    nextExerciseBtn.disabled = index === exercises.length - 1;
+    
+    if (prevExerciseBtn.disabled) {
+        prevExerciseBtn.style.opacity = '0.5';
+        prevExerciseBtn.style.cursor = 'not-allowed';
+    } else {
+        prevExerciseBtn.style.opacity = '1';
+        prevExerciseBtn.style.cursor = 'pointer';
+    }
+    
+    if (nextExerciseBtn.disabled) {
+        nextExerciseBtn.style.opacity = '0.5';
+        nextExerciseBtn.style.cursor = 'not-allowed';
+    } else {
+        nextExerciseBtn.style.opacity = '1';
+        nextExerciseBtn.style.cursor = 'pointer';
+    }
+}
 
 function updateExerciseDisplay(index){}
