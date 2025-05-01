@@ -74,3 +74,27 @@ function initializePage() {
     setupEventListeners();
     animateElements();
 }
+
+// Setup event listeners
+function setupEventListeners(){}
+
+// Video functions
+function toggleVideo(){}
+
+
+//timer functions
+function startTimer(){}
+
+function pauseTimer(){}
+
+function resetTimer(){}
+
+function updateTimer(){}
+
+function updateTimerDisplay(){}
+
+function playTimerEndSound(){}
+
+function showTimerCompleteNotification(){}
+
+
