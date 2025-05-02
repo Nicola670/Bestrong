@@ -161,6 +161,11 @@ function showClientDetails(client) {
     setupTabs();
 }
 
+//funzione per ricevere id del cliente
+function getClientId(client){
+    
+}
+
 // Funzione per impostare le tab
 function setupTabs() {
     const tabsNav = document.querySelectorAll('.tabs-nav li');
