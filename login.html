@@ -6,19 +6,19 @@
     <title>Login Form in HTML & CSS</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@100..900&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="login.css"> 
+    <link rel="stylesheet" href="{{ url_for('static', filename='login.css') }}"> 
 </head>
 <body>
     <div class="form-area">
         <div class="wrapper">
             <h2>Login</h2>       
-            <form>             
+            <form action="{{ url_for("login") }}" method="POST">             
                 <div class="box">
-                    <input type="text" placeholder="Username">
+                    <input type="text" name = "username" placeholder="Username">
                     <i class="fa fa-user"></i>
                 </div>
                 <div class="box">
-                    <input type="password" placeholder="Password">
+                    <input type="password" name = "pswd" placeholder="Password">
                     <i class="fa fa-lock"></i>
                 </div>
                 <div class="options">
