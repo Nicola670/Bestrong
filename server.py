@@ -1,6 +1,6 @@
 from flask import Flask, request, render_template, redirect, url_for, flash
 from flask_login import LoginManager, UserMixin, login_user, login_required, logout_user, current_user
-
+from api import api
 from init_db import initialize_db, populate_database
 import db_operations as database
 
@@ -8,7 +8,7 @@ import bcrypt
 
 app = Flask(__name__)
 app.secret_key = "tacnegativa"
-
+app.register_blueprint(api)
 app.config["DEBUG"] = True
 
 # gesotore degli account di Flask
@@ -20,9 +20,10 @@ login_manager.login_view = 'login'
 
 # Classe User per gestire gli utenti
 class User(UserMixin):
-    def __init__(self, id, username):
+    def __init__(self, id, username, is_trainer=False):
         self.id = id
         self.username = username
+        self.is_trainer = is_trainer
 
 def is_valid_password(password):
     # Almeno 8 caratteri, una maiuscola, una minuscola, un numero
@@ -66,7 +67,7 @@ def login():
     
     try:
         if database.verify_password(password, user['password']) == True:
-            user_obj = User(user['id'], user['username'])
+            user_obj = User(user['id'], user['username'], bool(user['is_trainer']))
             login_user(user_obj)
             
             # Redirect basato sul tipo di utente
