@@ -2,7 +2,7 @@ from flask import Flask, request, render_template, redirect, url_for, flash
 from flask_login import LoginManager, UserMixin, login_user, login_required, logout_user, current_user
 
 from init_db import initialize_db, populate_database
-import database_operations as database
+import db_operations as database
 
 import bcrypt
 
@@ -31,7 +31,7 @@ def is_valid_password(password):
             any(c.islower() for c in password) and 
             any(c.isdigit() for c in password))
 
-
+# Funzione che prende i dati dell'utente della sessione
 @login_manager.user_loader
 def load_user(user_id):
     user = database.get_user_by_id(user_id)
@@ -41,8 +41,11 @@ def load_user(user_id):
 
 @app.route('/')
 def home():
+    """ TEMPORANEA
     if current_user.is_authenticated:
         return redirect(url_for('dashboard'))
+    return render_template("login.html")
+    """
     return render_template("login.html")
 
 @app.route('/login', methods=['POST'])
@@ -62,12 +65,11 @@ def login():
         return redirect(url_for('home'))
     
     try:
-        if bcrypt.checkpw(password.encode('utf-8'), user['password']):
+        if database.verify_password(password, user['password']) == True:
             user_obj = User(user['id'], user['username'])
             login_user(user_obj)
             
             # Redirect basato sul tipo di utente
-            print(user)
             if user['is_trainer']:
                 return redirect(url_for('dashboard'))
             else:

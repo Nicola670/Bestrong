@@ -1,21 +1,20 @@
 import sqlite3
-import os
 from init_db import DB_FILE
 import bcrypt
 
-salt = bcrypt.gensalt()
+# Genera un salt e calcola l'hash della password
+def hash_password(password):
+    salt = bcrypt.gensalt()
+    return bcrypt.hashpw(password.encode('utf-8'), salt)
 
-def hash_password():
-    print("temp")
+# Verifica se la password fornita corrisponde all'hash
+def verify_password(password, hashed):
+    return bcrypt.checkpw(password.encode('utf-8'), hashed)
 
-def get_db_connection():
-    current_dir = os.path.dirname(os.path.abspath(__file__))
-    db_path = os.path.join(current_dir, DB_FILE)
-    return sqlite3.connect(db_path)
-
+# Prende i dati di un user dal database dato il suo username
 def get_user_by_username(username):
     try:
-        conn = get_db_connection()
+        conn = sqlite3.connect(DB_FILE)
         cursor = conn.cursor()
         
         cursor.execute("""
@@ -39,9 +38,10 @@ def get_user_by_username(username):
     finally:
         conn.close()
 
+# Prende i dati di un user dal database dato il suo id
 def get_user_by_id(user_id):
     try:
-        conn = get_db_connection()
+        conn = sqlite3.connect(DB_FILE)
         cursor = conn.cursor()
         
         cursor.execute("""
@@ -64,9 +64,10 @@ def get_user_by_id(user_id):
     finally:
         conn.close()
 
+
 def register_user(username, hashed_password, is_trainer=False):
     try:
-        conn = get_db_connection()
+        conn = sqlite3.connect(DB_FILE)
         cursor = conn.cursor()
         
         cursor.execute("""
