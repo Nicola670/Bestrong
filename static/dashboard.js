@@ -151,6 +151,8 @@ function showClientDetails(client) {
     document.getElementById('clientMembership').textContent = formatDate(client.iscrizione);
     document.getElementById('clientObjectiveDetail').textContent = formatObjective(client.obiettivo);
     
+    document.getElementById('link-neworkout').href = `crea.html?client-id=${client.id}`;
+
     // Note tab
     document.getElementById('clientNotes').value = client.note || '';
     
