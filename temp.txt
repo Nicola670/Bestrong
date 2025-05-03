@@ -93,3 +93,11 @@ FOREIGN KEY (scheda_id) REFERENCES Schede(id),
 FOREIGN KEY (cliente_id) REFERENCES Utenti(id),
 FOREIGN KEY (trainer_id) REFERENCES Utenti(id)
 );    
+
+
+
+
+Moduli necessari per il requirements.txt:
+flask
+flask-login
+bcrypt

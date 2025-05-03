@@ -1,14 +1,13 @@
-from flask import Flask, request, render_template, session, redirect, url_for, flash
+from flask import Flask, request, render_template, redirect, url_for, flash
 from flask_login import LoginManager, UserMixin, login_user, login_required, logout_user, current_user
-from flask_session import Session
 
 from init_db import initialize_db, populate_database
 import database_operations as database
 
-
-#import bcrypt
+import bcrypt
 
 app = Flask(__name__)
+app.secret_key = "tacnegativa"
 
 app.config["DEBUG"] = True
 
@@ -48,10 +47,6 @@ def home():
 
 @app.route('/login', methods=['POST'])
 def login():
-    # Se l'utente è già autenticato, fallo uscire
-    if current_user.is_authenticated:
-        logout_user()
-        session.clear()
     
     username = request.form.get('username')
     password = request.form.get('pswd')
@@ -70,9 +65,9 @@ def login():
         if bcrypt.checkpw(password.encode('utf-8'), user['password']):
             user_obj = User(user['id'], user['username'])
             login_user(user_obj)
-            session.permanent = True
             
             # Redirect basato sul tipo di utente
+            print(user)
             if user['is_trainer']:
                 return redirect(url_for('dashboard'))
             else:
@@ -151,4 +146,4 @@ if __name__ == "__main__":
     # Inizializza e popola il database
     initialize_db()
     populate_database()
-    app.run()
+    app.run(port=5001)

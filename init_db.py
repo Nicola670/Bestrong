@@ -1,10 +1,9 @@
 import sqlite3
-import os
 import bcrypt
 
 DB_FILE = "database.db"
 
-# Se il database non esiste, lo inizializza
+# Se il database non esiste, lo inizializza creando le tabelle basiche
 def initialize_db():
     conn = sqlite3.connect(DB_FILE)
     cursor = conn.cursor()
@@ -126,6 +125,7 @@ def initialize_db():
 
     conn.close()
 
+# funzione che inserisce i dati di default nel database
 def populate_database():
     conn = sqlite3.connect(DB_FILE)
     cursor = conn.cursor()
@@ -153,7 +153,7 @@ def populate_database():
     for i in muscle_groups:
         # Inserisci dentro la tabella Gruppi_Muscolari, nel campo nome, il valore di i
         # ? è il placeholder per i valori da inserire, i con la virgola indica che è una tupla
-        cursor.execute("INSERT INTO Gruppi_Muscolari (nome) VALUES (?)", (i,))
+        cursor.execute("INSERT OR IGNORE INTO Gruppi_Muscolari (nome) VALUES (?)", (i,))
 
     # --- INSERIMENTO OBIETTIVI ---
     objectives = [
@@ -165,7 +165,7 @@ def populate_database():
     ]
     
     for i in objectives:
-        cursor.execute("INSERT INTO Obiettivi (nome) VALUES (?)", (i,))
+        cursor.execute("INSERT OR IGNORE INTO Obiettivi (nome) VALUES (?)", (i,))
 
     # --- INSERIMENTO DIFFICOLTÀ ---
     difficulties = [
@@ -175,8 +175,14 @@ def populate_database():
     ]
     
     for i in difficulties:
-        cursor.execute("INSERT INTO Difficolta (livello) VALUES (?)", (i,))
+        cursor.execute("INSERT OR IGNORE INTO Difficolta (livello) VALUES (?)", (i,))
 
+    # personal trainer per test
+    psw = "test123"
+    bytes = psw.encode('utf-8')
+    salt = bcrypt.gensalt()
+    hashed_password = bcrypt.hashpw(bytes, salt)
+    cursor.execute("INSERT OR IGNORE INTO Utenti (username, password_hash, is_trainer) VALUES (?, ?, ?)", ('admin', hashed_password, True))
     # commit serve per salvare le modifiche nel database quando si fa un INSERT 
     conn.commit()
     conn.close()

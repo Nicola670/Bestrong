@@ -1,6 +1,12 @@
 import sqlite3
 import os
 from init_db import DB_FILE
+import bcrypt
+
+salt = bcrypt.gensalt()
+
+def hash_password():
+    print("temp")
 
 def get_db_connection():
     current_dir = os.path.dirname(os.path.abspath(__file__))
