@@ -107,6 +107,66 @@
                 </div>
             </div>
 
+            <!-- Template per gli esercizi disponibili -->
+    <template id="esercizioTemplate">
+        <div class="col">
+            <div class="card h-100 esercizio-card" draggable="true">
+                <div class="card-body">
+                    <h5 class="card-title esercizio-nome"></h5>
+                    <p class="card-text esercizio-categoria small"></p>
+                    <p class="card-text esercizio-descrizione small text-muted"></p>
+                </div>
+            </div>
+        </div>
+    </template>
+    
+    <!-- Template per gli esercizi nella scheda -->
+    <template id="esercizioSchedaTemplate">
+        <div class="esercizio-scheda mb-3">
+            <div class="card">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <h5 class="card-title esercizio-nome mb-0"></h5>
+                        <button class="btn btn-danger btn-sm remove-esercizio">
+                            <i class="bi bi-trash"></i> Rimuovi
+                        </button>
+                    </div>
+                    <p class="card-text esercizio-categoria small"></p>
+                    <div class="row g-2">
+                        <div class="col-md-3">
+                            <div class="form-floating">
+                                <input type="number" class="form-control" id="serie" placeholder="Serie" min="1">
+                                <label for="serie">Serie</label>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="form-floating">
+                                <input type="number" class="form-control" id="ripetizioni" placeholder="Ripetizioni" min="1">
+                                <label for="ripetizioni">Ripetizioni</label>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="form-floating">
+                                <input type="number" class="form-control" id="peso" placeholder="Peso (kg)" min="0" step="0.5">
+                                <label for="peso">Peso (kg)</label>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="form-floating">
+                                <input type="number" class="form-control" id="recupero" placeholder="Recupero (sec)" min="0">
+                                <label for="recupero">Recupero (sec)</label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-floating mt-2">
+                        <textarea class="form-control" id="noteEsercizio" style="height: 60px" placeholder="Note"></textarea>
+                        <label for="noteEsercizio">Note</label>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </template>
+
 
         <script src="creazione_scheda.js"></script>
     </body>
