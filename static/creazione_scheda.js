@@ -1,55 +1,69 @@
-// Funzione per ottenere i parametri dall'URL
-function getUrlParams() {
-    const params = {};
-    const queryString = window.location.search;
-    const urlParams = new URLSearchParams(queryString);
+document.addEventListener('DOMContentLoaded', function() {
+    // Variabili globali per i filtri
+    window.filtroAttuale = {
+        testo: '',
+        gruppo: 'tutti'
+    };
     
-    for (const [key, value] of urlParams.entries()) {
-        params[key] = value;
+    // Prendi l'ID del cliente dall'URL
+    const urlParams = new URLSearchParams(window.location.search);
+    const clienteId = urlParams.get('id-cliente');
+    
+    // Mostra l'ID del cliente nella pagina
+    document.getElementById('clienteId').textContent = clienteId || 'Non specificato';
+    
+    // Se non c'è un ID cliente, mostra un avviso
+    if (!clienteId) {
+        alert('Attenzione: Nessun ID cliente specificato nell\'URL. Usa ?id-cliente=X nell\'URL.');
+    } else {
+        // Carica i dati del cliente (simulato)
+        caricaDatiCliente(clienteId);
     }
     
-    return params;
-}
-
-// Funzione per impostare i dati del cliente
-function setClientData() {
-    const urlParams = getUrlParams();
-    const clienteId = urlParams.clienteId;
+    // Carica gli esercizi disponibili
+    caricaEserciziDisponibili();
     
-    if (clienteId) {
-        // Trova il cliente in base all'ID
-        const cliente = clients.find(c => c.id == clienteId);
-        
-        if (cliente) {
-            // Imposta i dati del cliente nel form
-            document.getElementById('cliente-id').value = cliente.id;
-            document.getElementById('cliente-nome').textContent = cliente.name;
-            
-            // Preseleziona l'obiettivo del cliente se non è stato già selezionato
-            const obiettivo = document.getElementById('obiettivo');
-            if (obiettivo.value === "" && cliente.objective) {
-                obiettivo.value = cliente.objective;
-            }
-            
-            return true;
+    // Imposta la data di inizio odierna come default
+    const oggi = new Date().toISOString().split('T')[0];
+    document.getElementById('dataInizio').value = oggi;
+    
+    // Imposta la data di fine a +30 giorni come default
+    const dataFine = new Date();
+    dataFine.setDate(dataFine.getDate() + 30);
+    document.getElementById('dataFine').value = dataFine.toISOString().split('T')[0];
+    
+    // Imposta l'evento di ricerca degli esercizi
+    document.getElementById('btnSearch').addEventListener('click', cercaEsercizi);
+    document.getElementById('searchEsercizi').addEventListener('keypress', function(e) {
+        if (e.key === 'Enter') {
+            cercaEsercizi();
         }
-    }
+    });
     
-    // Se non è stato trovato il cliente o non c'è un ID nell'URL,
-    // reindirizza alla pagina di selezione cliente
-    alert('Nessun cliente selezionato. Sarai reindirizzato alla pagina di selezione cliente.');
-    // In una app reale, usare: window.location.href = 'pagina-selezione-cliente.html';
+    // Imposta l'evento di salvataggio della scheda
+    document.getElementById('salvaScheda').addEventListener('click', salvaScheda);
     
-    return false;
-}
+    // Configura il sistema drag and drop
+    setupDragAndDrop();
+});
 
-// Inizializzazione dell'applicazione
-function init() {
-    // Imposta i dati del cliente
-    if (!setClientData()) {
-        // Se non è stato possibile impostare i dati del cliente, 
-        // non continuare con l'inizializzazione
-        return;
-    }
-    init();
+// Funzione per caricare i dati del cliente (simulata)
+function caricaDatiCliente(clienteId) {
+    // futura chiamata API per ottenere i dati reali del cliente
+    // momentanea simulazione dei dati
+    
+    // Simulazione ritardo di rete
+    setTimeout(() => {
+        const clienteData = {
+            id: clienteId,
+            nome: 'Mario Rossi',
+            email: 'mario.rossi@example.com',
+            telefono: '+39 123 456 7890'
+        };
+        
+        // Aggiorna l'interfaccia con i dati del cliente
+        document.getElementById('clienteNome').textContent = clienteData.nome;
+        document.getElementById('clienteEmail').textContent = clienteData.email;
+        document.getElementById('clienteTelefono').textContent = clienteData.telefono;
+    }, 500);
 }
