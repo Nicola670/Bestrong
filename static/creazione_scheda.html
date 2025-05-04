@@ -48,7 +48,7 @@
                                     <i class="bi bi-search"></i> Cerca
                                 </button>
                             </div>
-                            
+
                             <div class="dropdown">
                                 <button class="btn btn-light btn-sm dropdown-toggle" type="button" id="dropdownGruppiMuscolari" data-bs-toggle="dropdown" aria-expanded="false">
                                     Filtra per gruppo
@@ -65,6 +65,45 @@
                             <!-- Gli esercizi saranno inseriti qui dinamicamente -->
                         </div>
                     </div>
+
+                    <div class="col-md-6">
+                        <div class="card mb-4">
+                            <div class="card-header bg-info text-white">
+                                <h3 class="card-title mb-0">Scheda di Allenamento</h3>
+                            </div>
+                            <div class="card-body">
+                                <div class="mb-3">
+                                    <label for="nomeProgramma" class="form-label">Nome Programma</label>
+                                    <input type="text" class="form-control" id="nomeProgramma" placeholder="Es. Programma forza">
+                                </div>
+                                <div class="mb-3">
+                                    <label for="dataInizio" class="form-label">Data Inizio</label>
+                                    <input type="date" class="form-control" id="dataInizio">
+                                </div>
+                                <div class="mb-3">
+                                    <label for="dataFine" class="form-label">Data Fine</label>
+                                    <input type="date" class="form-control" id="dataFine">
+                                </div>
+                                <div class="mb-3">
+                                    <label for="note" class="form-label">Note</label>
+                                    <textarea class="form-control" id="note" rows="2"></textarea>
+                                </div>
+                                
+                                <div class="mt-4">
+                                    <h4>Esercizi Selezionati</h4>
+                                    <p class="text-muted small">Trascina qui gli esercizi che vuoi aggiungere alla scheda</p>
+                                    <div id="schedaEsercizi" class="scheda-drop-area p-3">
+                                        <!-- Gli esercizi aggiunti saranno inseriti qui -->
+                                        <p id="emptyMessage" class="text-center text-muted">Nessun esercizio aggiunto</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="card-footer">
+                                <button id="salvaScheda" class="btn btn-primary float-end">Salva Scheda</button>
+                            </div>
+                        </div>
+                    </div>
+
                 </div>
             </div>
 
