@@ -15,7 +15,8 @@ def initialize_db():
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             is_trainer BOOLEAN NOT NULL,
             username TEXT NOT NULL UNIQUE,
-            password_hash TEXT NOT NULL
+            password_hash TEXT NOT NULL,
+            password_change_required BOOLEAN DEFAULT FALSE
         );
     """)
 

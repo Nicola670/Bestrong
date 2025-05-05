@@ -1,4 +1,4 @@
-from flask import Flask, request, render_template, redirect, url_for, flash
+from flask import Flask, request, render_template, redirect, url_for, flash, jsonify
 from flask_login import LoginManager, UserMixin, login_user, login_required, logout_user, current_user
 from api import api
 from init_db import initialize_db, populate_database
@@ -51,7 +51,6 @@ def home():
 
 @app.route('/login', methods=['POST'])
 def login():
-    
     username = request.form.get('username')
     password = request.form.get('pswd')
     
@@ -66,11 +65,15 @@ def login():
         return redirect(url_for('home'))
     
     try:
-        if database.verify_password(password, user['password']) == True:
+        if database.verify_password(password, user['password']):
             user_obj = User(user['id'], user['username'], bool(user['is_trainer']))
             login_user(user_obj)
             
-            # Redirect basato sul tipo di utente
+            # Se l'utente deve cambiare password, reindirizza alla pagina di cambio password
+            if user['password_change_required']:
+                return redirect(url_for('change_password'))
+            
+            # Altrimenti, redirect normale basato sul tipo di utente
             if user['is_trainer']:
                 return redirect(url_for('dashboard'))
             else:
@@ -84,46 +87,36 @@ def login():
         return redirect(url_for('home'))
 
 @app.route('/register', methods=['POST'])
+@login_required  # Richiede autenticazione
 def register():
+    if not current_user.is_trainer:  # Verifica che sia un trainer
+        return jsonify({'error': 'Unauthorized'}), 403
+        
     username = request.form.get('username')
-    password = request.form.get('pswd')
-    confirm_password = request.form.get('confirm_pswd')
-    
-    # Validazione input
-    if not all([username, password, confirm_password]):
-        flash('Per favore, inserisci tutti i campi')
-        return redirect(url_for('home'))
-    
-    # Controllo password corrispondenti
-    if password != confirm_password:
-        flash('Le password non corrispondono')
-        return redirect(url_for('home'))
+    temp_password = "Password123"  # Password temporanea iniziale
     
     # Controlla se l'username esiste già
     if database.get_user_by_username(username):
         flash('Username già registrato')
-        return redirect(url_for('home'))
+        return redirect(url_for('dashboard'))
     
     try:
-        # Hash della password
+        # Hash della password temporanea
         salt = bcrypt.gensalt()
-        hashed_password = bcrypt.hashpw(password.encode('utf-8'), salt)
+        hashed_password = bcrypt.hashpw(temp_password.encode('utf-8'), salt)
         
-        # Salva nel database
-        success = database.register_user(username, hashed_password)
+        # Salva nel database con flag password_change_required
+        success = database.register_user(username, hashed_password, is_trainer=False, password_change_required=True)
         if success:
-            user = database.get_user_by_username(username)
-            user_obj = User(user['id'], user['username'])
-            login_user(user_obj)
-            flash('Registrazione completata!')
-            return redirect(url_for('client_dashboard'))
+            flash('Cliente registrato con successo!')
+            return redirect(url_for('dashboard'))
         
         flash('Registrazione fallita')
-        return redirect(url_for('home'))
+        return redirect(url_for('dashboard'))
     except Exception as e:
         print(f"Errore durante la registrazione: {e}")
         flash('Si è verificato un errore durante la registrazione')
-        return redirect(url_for('home'))
+        return redirect(url_for('dashboard'))
 
 @app.route('/dashboard')
 @login_required
@@ -144,6 +137,48 @@ def client_dashboard():
 def logout():
     logout_user()
     return redirect(url_for('home'))
+
+@app.route('/change_password', methods=['GET', 'POST'])
+@login_required
+def change_password():
+    if request.method == 'GET':
+        return render_template('change_password.html')
+        
+    new_password = request.form.get('new_password')
+    confirm_password = request.form.get('confirm_password')
+    
+    if not new_password or not confirm_password:
+        flash('Per favore, inserisci tutti i campi')
+        return redirect(url_for('change_password'))
+        
+    if new_password != confirm_password:
+        flash('Le password non corrispondono')
+        return redirect(url_for('change_password'))
+        
+    if not is_valid_password(new_password):
+        flash('La password non rispetta i requisiti di sicurezza')
+        return redirect(url_for('change_password'))
+        
+    try:
+        # Hash e salva la nuova password
+        salt = bcrypt.gensalt()
+        hashed_password = bcrypt.hashpw(new_password.encode('utf-8'), salt)
+        
+        # Aggiorna il database
+        success = database.update_password(current_user.id, hashed_password)
+        if success:
+            flash('Password aggiornata con successo!')
+            if current_user.is_trainer:
+                return redirect(url_for('dashboard'))
+            else:
+                return redirect(url_for('client_dashboard'))
+                
+        flash('Aggiornamento password fallito')
+        return redirect(url_for('change_password'))
+    except Exception as e:
+        print(f"Errore durante il cambio password: {e}")
+        flash('Si è verificato un errore durante il cambio password')
+        return redirect(url_for('change_password'))
 
 if __name__ == "__main__":
     # Inizializza e popola il database
