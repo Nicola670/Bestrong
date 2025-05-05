@@ -143,21 +143,16 @@ def logout():
 def change_password():
     if request.method == 'GET':
         return render_template('change_password.html')
-        
-    new_password = request.form.get('new_password')
-    confirm_password = request.form.get('confirm_password')
+    
+    data = request.get_json()
+    new_password = data.get('new_password')
+    confirm_password = data.get('confirm_password')
     
     if not new_password or not confirm_password:
-        flash('Per favore, inserisci tutti i campi')
-        return redirect(url_for('change_password'))
+        return jsonify({'error': 'Per favore, inserisci tutti i campi'}), 400
         
     if new_password != confirm_password:
-        flash('Le password non corrispondono')
-        return redirect(url_for('change_password'))
-        
-    if not is_valid_password(new_password):
-        flash('La password non rispetta i requisiti di sicurezza')
-        return redirect(url_for('change_password'))
+        return jsonify({'error': 'Le password non corrispondono'}), 400
         
     try:
         # Hash e salva la nuova password
@@ -167,18 +162,13 @@ def change_password():
         # Aggiorna il database
         success = database.update_password(current_user.id, hashed_password)
         if success:
-            flash('Password aggiornata con successo!')
-            if current_user.is_trainer:
-                return redirect(url_for('dashboard'))
-            else:
-                return redirect(url_for('client_dashboard'))
+            redirect_url = url_for('dashboard') if current_user.is_trainer else url_for('client_dashboard')
+            return jsonify({'message': 'Password aggiornata con successo!', 'redirect': redirect_url})
                 
-        flash('Aggiornamento password fallito')
-        return redirect(url_for('change_password'))
+        return jsonify({'error': 'Aggiornamento password fallito'}), 500
     except Exception as e:
         print(f"Errore durante il cambio password: {e}")
-        flash('Si è verificato un errore durante il cambio password')
-        return redirect(url_for('change_password'))
+        return jsonify({'error': 'Si è verificato un errore durante il cambio password'}), 500
 
 if __name__ == "__main__":
     # Inizializza e popola il database

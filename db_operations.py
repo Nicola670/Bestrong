@@ -84,3 +84,33 @@ def register_user(username, hashed_password, is_trainer=False):
         return False
     finally:
         conn.close()
+
+def update_password(user_id, new_password_hash):
+    """
+    Aggiorna la password dell'utente e resetta il flag password_change_required
+    
+    Args:
+        user_id: ID dell'utente
+        new_password_hash: Hash della nuova password
+    
+    Returns:
+        bool: True se l'aggiornamento è avvenuto con successo, False altrimenti
+    """
+    try:
+        conn = sqlite3.connect(DB_FILE)
+        cursor = conn.cursor()
+        
+        cursor.execute("""
+            UPDATE Utenti 
+            SET password_hash = ?, 
+                password_change_required = FALSE
+            WHERE id = ?
+        """, (new_password_hash, user_id))
+        
+        conn.commit()
+        return cursor.rowcount > 0
+    except Exception as e:
+        print(f"Errore durante l'aggiornamento della password: {e}")
+        return False
+    finally:
+        conn.close()
