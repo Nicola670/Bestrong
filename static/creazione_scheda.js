@@ -268,7 +268,7 @@ function handleDragOver(e) {
     // Previeni il comportamento di default che impedirebbe il drop
     e.preventDefault();
     
-    // Aggiungi classe di stile per evidenziare l'area di rilascio
+    // Aggiungi clase di stile per evidenziare l'area di rilascio
     e.target.classList.add('dragover');
 }
 
@@ -276,4 +276,30 @@ function handleDragOver(e) {
 function handleDragLeave(e) {
     // Rimuovi classe di stile
     e.target.classList.remove('dragover');
+}
+
+// Gestore per quando un elemento viene rilasciato nell'area di rilascio
+function handleDrop(e) {
+    // Previeni il comportamento di default
+    e.preventDefault();
+    
+    // Rimuovi classe di stile
+    e.target.classList.remove('dragover');
+    
+    // ottieni l'ID dell'esercizio
+    const esercizioId = e.dataTransfer.getData('text/plain');
+    
+    // Verifica se l'esercizio è già stato aggiunto alla scheda
+    const esercizioGiaAggiunto = document.querySelector(`.esercizio-scheda[data-esercizio-id="${esercizioId}"]`);
+    if (esercizioGiaAggiunto) {
+        alert('Questo esercizio è già stato aggiunto alla scheda.');
+        return;
+    }
+    
+    // rova i dati dell'esercizio
+    const esercizio = window.eserciziDisponibili.find(e => e.id.toString() === esercizioId);
+    if (!esercizio) return;
+    
+    // Aggiungi l'esercizio alla scheda
+    aggiungiEsercizioAllaScheda(esercizio);
 }
