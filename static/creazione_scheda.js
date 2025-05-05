@@ -200,3 +200,39 @@ function visualizzaEserciziDisponibili(esercizi) {
         eserciziList.appendChild(clone);
     });
 }
+
+// Funzione per cercare esercizi
+function cercaEsercizi() {
+    const searchText = document.getElementById('searchEsercizi').value.toLowerCase();
+    
+    // Aggiorna il filtro di testo
+    window.filtroAttuale.testo = searchText;
+    
+    // Applica i filtri
+    filtraEsercizi();
+}
+
+// Funzione per filtrare gli esercizi in base ai criteri attuali
+function filtraEsercizi() {
+    if (!window.eserciziDisponibili) return;
+    
+    // Applica entrambi i filtri: testo e gruppo muscolare
+    var eserciziFiltrati = window.eserciziDisponibili.filter(esercizio => {
+        // Filtro per testo di ricerca
+        const matchTesto = 
+            esercizio.nome.toLowerCase().includes(window.filtroAttuale.testo) || 
+            esercizio.categoria.toLowerCase().includes(window.filtroAttuale.testo) ||
+            esercizio.descrizione.toLowerCase().includes(window.filtroAttuale.testo);
+        
+        // Filtro per gruppo muscolare
+        const matchGruppo = 
+            window.filtroAttuale.gruppo === 'tutti' || 
+            esercizio.gruppoMuscolare === window.filtroAttuale.gruppo;
+        
+        // L'esercizio deve soddisfare entrambi i criteri
+        return matchTesto && matchGruppo;
+    });
+    
+    // Aggiorna la visualizzazione
+    visualizzaEserciziDisponibili(eserciziFiltrati);
+}
