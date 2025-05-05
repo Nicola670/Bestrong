@@ -67,3 +67,92 @@ function caricaDatiCliente(clienteId) {
         document.getElementById('clienteTelefono').textContent = clienteData.telefono;
     }, 500);
 }
+
+
+// Funzione per caricare gli esercizi disponibili (simulata)
+function caricaEserciziDisponibili() {
+      // futura chiamata API per ottenere i dati reali del cliente
+    // momentanea simulazione dei dati
+    
+    const esercizi = [
+        { id: 1, nome: 'Panca Piana', categoria: 'Petto', descrizione: 'Esercizio base per il petto', gruppoMuscolare: 'Petto' },
+        { id: 2, nome: 'Squat', categoria: 'Gambe', descrizione: 'Esercizio composto per le gambe', gruppoMuscolare: 'Gambe' },
+        { id: 3, nome: 'Stacchi da Terra', categoria: 'Schiena/Gambe', descrizione: 'Esercizio per schiena bassa e gambe', gruppoMuscolare: 'Schiena' },
+        { id: 4, nome: 'Pull-up', categoria: 'Schiena/Braccia', descrizione: 'Esercizio per schiena alta e bicipiti', gruppoMuscolare: 'Schiena' },
+        { id: 5, nome: 'Military Press', categoria: 'Spalle', descrizione: 'Esercizio per le spalle', gruppoMuscolare: 'Spalle' },
+        { id: 6, nome: 'Curl con Bilanciere', categoria: 'Braccia', descrizione: 'Esercizio per i bicipiti', gruppoMuscolare: 'Braccia' },
+        { id: 7, nome: 'Push-up', categoria: 'Petto/Braccia', descrizione: 'Esercizio a corpo libero per petto e tricipiti', gruppoMuscolare: 'Petto' },
+        { id: 8, nome: 'Crunch', categoria: 'Addominali', descrizione: 'Esercizio per gli addominali superiori', gruppoMuscolare: 'Addominali' },
+        { id: 9, nome: 'Plank', categoria: 'Core', descrizione: 'Esercizio isometrico per il core', gruppoMuscolare: 'Core' },
+        { id: 10, nome: 'Leg Press', categoria: 'Gambe', descrizione: 'Esercizio per quadricipiti e glutei', gruppoMuscolare: 'Gambe' },
+        { id: 11, nome: 'Lat Machine', categoria: 'Schiena', descrizione: 'Esercizio per dorsali', gruppoMuscolare: 'Schiena' },
+        { id: 12, nome: 'Shoulder Press', categoria: 'Spalle', descrizione: 'Esercizio per deltoidi', gruppoMuscolare: 'Spalle' },
+        { id: 13, nome: 'Piegamenti su Tricipiti', categoria: 'Braccia', descrizione: 'Esercizio per tricipiti', gruppoMuscolare: 'Braccia' },
+        { id: 14, nome: 'Affondi', categoria: 'Gambe', descrizione: 'Esercizio per gambe e glutei', gruppoMuscolare: 'Gambe' },
+        { id: 15, nome: 'Crunch Laterali', categoria: 'Addominali', descrizione: 'Esercizio per addominali obliqui', gruppoMuscolare: 'Addominali' },
+        { id: 16, nome: 'Alzate Laterali', categoria: 'Spalle', descrizione: 'Esercizio per deltoidi laterali', gruppoMuscolare: 'Spalle' },
+        { id: 17, nome: 'Rematore con Manubri', categoria: 'Schiena', descrizione: 'Esercizio per dorsali e parte centrale della schiena', gruppoMuscolare: 'Schiena' },
+        { id: 18, nome: 'Estensioni Lombari', categoria: 'Schiena/Core', descrizione: 'Esercizio per lombi e core', gruppoMuscolare: 'Core' }
+    ];
+    
+    // Memorizza gli esercizi in una variabile globale per uso futuro
+    window.eserciziDisponibili = esercizi;
+    
+    // Estrai i gruppi muscolari unici
+    const gruppiMuscolari = [...new Set(esercizi.map(e => e.gruppoMuscolare))].sort();
+    
+    // Popola il menu a tendina per filtrare per gruppo muscolare
+    const filtroGruppiMuscolari = document.getElementById('filtroGruppiMuscolari');
+    gruppiMuscolari.forEach(gruppo => {
+        const li = document.createElement('li');
+        const a = document.createElement('a');
+        a.className = 'dropdown-item';
+        a.href = '#';
+        a.dataset.gruppo = gruppo;
+        a.textContent = gruppo;
+        a.addEventListener('click', function(e) {
+            e.preventDefault();
+            
+            // Rimuovi la classe active da tutti gli elementi
+            document.querySelectorAll('#filtroGruppiMuscolari .dropdown-item').forEach(el => {
+                el.classList.remove('active');
+            });
+            
+            // Aggiungi la classe active a questo elemento
+            this.classList.add('active');
+            
+            // Aggiorna il testo del pulsante dropdown
+            document.getElementById('dropdownGruppiMuscolari').textContent = 'Gruppo: ' + gruppo;
+            
+            // Aggiorna il filtro e visualizza
+            window.filtroAttuale.gruppo = gruppo;
+            filtraEsercizi();
+        });
+        
+        li.appendChild(a);
+        filtroGruppiMuscolari.appendChild(li);
+    });
+    
+    // Aggiungi event listener al filtro "Tutti"
+    document.querySelector('#filtroGruppiMuscolari .dropdown-item[data-gruppo="tutti"]').addEventListener('click', function(e) {
+        e.preventDefault();
+        
+        // Rimuovi la classe active da tutti gli elementi
+        document.querySelectorAll('#filtroGruppiMuscolari .dropdown-item').forEach(el => {
+            el.classList.remove('active');
+        });
+        
+        // Aggiungi la classe active a questo elemento
+        this.classList.add('active');
+        
+        // Aggiorna il testo del pulsante dropdown
+        document.getElementById('dropdownGruppiMuscolari').textContent = 'Filtra per gruppo';
+        
+        // Aggiorna il filtro e visualizza
+        window.filtroAttuale.gruppo = 'tutti';
+        filtraEsercizi();
+    });
+    
+    // Visualizza gli esercizi nell'interfaccia
+    visualizzaEserciziDisponibili(esercizi);
+}
