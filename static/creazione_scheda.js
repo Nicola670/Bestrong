@@ -349,3 +349,81 @@ function aggiungiEsercizioAllaScheda(esercizio) {
     // Aggiungi l'esercizio alla scheda
     schedaEsercizi.appendChild(clone);
 }
+
+// Funzione per salvare la scheda
+function salvaScheda() {
+    // Ottieni i dati generali della scheda
+    const clienteId = document.getElementById('clienteId').textContent;
+    const nomeProgramma = document.getElementById('nomeProgramma').value;
+    const dataInizio = document.getElementById('dataInizio').value;
+    const dataFine = document.getElementById('dataFine').value;
+    const note = document.getElementById('note').value;
+    
+    // Verifica che i campi obbligatori siano compilati
+    if (!nomeProgramma) {
+        alert('Inserisci un nome per il programma di allenamento.');
+        return;
+    }
+    
+    if (!dataInizio || !dataFine) {
+        alert('Inserisci date di inizio e fine per il programma.');
+        return;
+    }
+    
+    // Ottieni tutti gli esercizi aggiunti alla scheda
+    const eserciziScheda = document.querySelectorAll('.esercizio-scheda');
+    
+    // Verifica che ci sia almeno un esercizio
+    if (eserciziScheda.length === 0) {
+        alert('Aggiungi almeno un esercizio alla scheda.');
+        return;
+    }
+    
+    // Crea un array per contenere i dati degli esercizi
+    const esercizi = [];
+    
+    // Raccogli i dati di ogni esercizio
+    eserciziScheda.forEach(el => {
+        const esercizioId = el.dataset.esercizioId;
+        const serie = el.querySelector('#serie').value;
+        const ripetizioni = el.querySelector('#ripetizioni').value;
+        const peso = el.querySelector('#peso').value;
+        const recupero = el.querySelector('#recupero').value;
+        const noteEsercizio = el.querySelector('#noteEsercizio').value;
+        
+        // Verifica che serie e ripetizioni siano compilate
+        if (!serie || !ripetizioni) {
+            alert('Inserisci serie e ripetizioni per tutti gli esercizi.');
+            return;
+        }
+        
+        // Aggiungi i dati dell'esercizio all'array
+        esercizi.push({
+            id: esercizioId,
+            serie: serie,
+            ripetizioni: ripetizioni,
+            peso: peso || 0,
+            recupero: recupero || 0,
+            note: noteEsercizio
+        });
+    });
+    
+    // Crea l'oggetto scheda
+    const scheda = {
+        clienteId: clienteId,
+        nomeProgramma: nomeProgramma,
+        dataInizio: dataInizio,
+        dataFine: dataFine,
+        note: note,
+        esercizi: esercizi
+    };
+    
+    // qui inviare la scheda al server
+    // Per ora, simulo il salvataggio
+    console.log('Scheda da salvare:', scheda);
+    
+    alert('Scheda salvata con successo!');
+    
+    // reindirizzare l'utente alla lista delle schede o alla scheda appena creata
+    // window.location.href = 'lista_schede.html';
+}
