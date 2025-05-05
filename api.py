@@ -20,9 +20,11 @@ def get_clients():
     
     try:
         cursor.execute("""
-            SELECT id, username FROM Utenti 
-            WHERE is_trainer = FALSE
-        """)
+            SELECT Utenti.id, Utenti.username
+            FROM Utenti
+            INNER JOIN Clienti_Trainer ON Utenti.id = Clienti_Trainer.cliente_id
+            WHERE Clienti_Trainer.trainer_id = ?
+        """, (1,)) # sostituire con current_user.id quando viene implementato le sessioni
         clients = cursor.fetchall()
         return jsonify([{
             'id': client[0], 

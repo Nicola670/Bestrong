@@ -20,6 +20,18 @@ def initialize_db():
         );
     """)
 
+    # --- COLLEGAMENTO CLIENTI-TRAINER ---
+    # Ogni cliente può avere più trainer e ogni trainer può avere più clienti
+    cursor.execute("""
+        CREATE TABLE IF NOT EXISTS Clienti_Trainer (
+            cliente_id INTEGER NOT NULL,
+            trainer_id INTEGER NOT NULL,
+            PRIMARY KEY (cliente_id, trainer_id),
+            FOREIGN KEY (cliente_id) REFERENCES Utenti(id),
+            FOREIGN KEY (trainer_id) REFERENCES Utenti(id)
+        );
+    """)
+
     # --- GRUPPO MUSCOLARE --- 
     cursor.execute("""
         CREATE TABLE IF NOT EXISTS Gruppi_Muscolari (
@@ -178,6 +190,7 @@ def populate_database():
     for i in difficulties:
         cursor.execute("INSERT OR IGNORE INTO Difficolta (livello) VALUES (?)", (i,))
 
+    # DATI INSERITI A MANO DA TOGLIERE PER TEST
     # personal trainer per test
     psw = "test123"
     bytes = psw.encode('utf-8')
@@ -194,7 +207,13 @@ def populate_database():
         INSERT OR IGNORE INTO Utenti 
         (username, password_hash, is_trainer, password_change_required) 
         VALUES (?, ?, ?, ?)
-    """, ('cliente1', hashed_password, False, True))
+    """, ('cliente3', hashed_password, False, True))
+
+    cursor.execute("""
+        INSERT OR IGNORE INTO Clienti_Trainer (cliente_id, trainer_id)
+        VALUES (?, ?)
+    """, (2, 1)) # cliente3, admin
+
     
     # commit serve per salvare le modifiche nel database quando si fa un INSERT 
     conn.commit()
