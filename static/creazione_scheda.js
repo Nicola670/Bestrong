@@ -256,3 +256,24 @@ function handleDragStart(e) {
     // Aggiungi classe per lo stile durante il trascinamento
     e.target.classList.add('esercizio-dragging');
 }
+
+// Gestore per la fine del drag
+function handleDragEnd(e) {
+    // Rimuovi classe di stile
+    e.target.classList.remove('esercizio-dragging');
+}
+
+// Gestore per quando un elemento viene trascinato sopra l'area di rilascio
+function handleDragOver(e) {
+    // Previeni il comportamento di default che impedirebbe il drop
+    e.preventDefault();
+    
+    // Aggiungi classe di stile per evidenziare l'area di rilascio
+    e.target.classList.add('dragover');
+}
+
+// Gestore per quando un elemento esce dall'area di rilascio
+function handleDragLeave(e) {
+    // Rimuovi classe di stile
+    e.target.classList.remove('dragover');
+}
