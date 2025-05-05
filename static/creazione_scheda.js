@@ -156,3 +156,47 @@ function caricaEserciziDisponibili() {
     // Visualizza gli esercizi nell'interfaccia
     visualizzaEserciziDisponibili(esercizi);
 }
+
+
+
+// Funzione per visualizzare gli esercizi nella lista
+function visualizzaEserciziDisponibili(esercizi) {
+    const eserciziList = document.getElementById('eserciziList');
+    eserciziList.innerHTML = ''; // Pulisci la lista
+    
+    if (esercizi.length === 0) {
+        eserciziList.innerHTML = '<p class="text-center w-100">Nessun esercizio trovato</p>';
+        return;
+    }
+    
+    const template = document.getElementById('esercizioTemplate');
+    
+    esercizi.forEach(esercizio => {
+        const clone = template.content.cloneNode(true);
+        
+        // Inserisci i dati dell'esercizio nel template
+        clone.querySelector('.esercizio-nome').textContent = esercizio.nome;
+        
+        // Sostituisci il testo della categoria con un badge per il gruppo muscolare
+        const categoriaElement = clone.querySelector('.esercizio-categoria');
+        categoriaElement.innerHTML = '';
+        
+        const badge = document.createElement('span');
+        badge.className = `gruppo-muscolare-badge gruppo-${esercizio.gruppoMuscolare.toLowerCase()}`;
+        badge.textContent = esercizio.gruppoMuscolare;
+        categoriaElement.appendChild(badge);
+        
+        clone.querySelector('.esercizio-descrizione').textContent = esercizio.descrizione;
+        
+        // Aggiungi l'ID dell'esercizio come attributo data per recuperarlo in seguito
+        const card = clone.querySelector('.esercizio-card');
+        card.dataset.esercizioId = esercizio.id;
+        card.dataset.gruppoMuscolare = esercizio.gruppoMuscolare;
+        
+        // Aggiungi eventi drag
+        card.addEventListener('dragstart', handleDragStart);
+        card.addEventListener('dragend', handleDragEnd);
+        
+        eserciziList.appendChild(clone);
+    });
+}
