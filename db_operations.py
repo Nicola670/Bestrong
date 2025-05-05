@@ -18,7 +18,7 @@ def get_user_by_username(username):
         cursor = conn.cursor()
         
         cursor.execute("""
-            SELECT id, username, password_hash, is_trainer 
+            SELECT id, username, password_hash, is_trainer, password_change_required 
             FROM Utenti 
             WHERE username = ?
         """, (username,))
@@ -29,7 +29,8 @@ def get_user_by_username(username):
                 'id': user[0],
                 'username': user[1],
                 'password': user[2],  # password_hash
-                'is_trainer': bool(user[3])  # Converti in boolean
+                'is_trainer': bool(user[3]),
+                'password_change_required': bool(user[4])  # Aggiungi questo campo
             }
         return None
     except Exception as e:
@@ -65,15 +66,15 @@ def get_user_by_id(user_id):
         conn.close()
 
 
-def register_user(username, hashed_password, is_trainer=False):
+def register_user(username, hashed_password, is_trainer=False, password_change_required=True):
     try:
         conn = sqlite3.connect(DB_FILE)
         cursor = conn.cursor()
         
         cursor.execute("""
-            INSERT INTO Utenti (username, password_hash, is_trainer)
-            VALUES (?, ?, ?)
-        """, (username, hashed_password, is_trainer))
+            INSERT INTO Utenti (username, password_hash, is_trainer, password_change_required)
+            VALUES (?, ?, ?, ?)
+        """, (username, hashed_password, is_trainer, password_change_required))
         
         conn.commit()
         return True

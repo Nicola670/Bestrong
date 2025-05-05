@@ -179,16 +179,22 @@ def populate_database():
         cursor.execute("INSERT OR IGNORE INTO Difficolta (livello) VALUES (?)", (i,))
 
     # personal trainer per test
-    # da cancellare
-    
     psw = "test123"
     bytes = psw.encode('utf-8')
     salt = bcrypt.gensalt()
     hashed_password = bcrypt.hashpw(bytes, salt)
     
-    cursor.execute("INSERT OR IGNORE INTO Utenti (username, password_hash, is_trainer) VALUES (?, ?, ?)", ('admin', hashed_password, True))
-    cursor.execute("INSERT OR IGNORE INTO Utenti (username, password_hash, is_trainer) VALUES (?, ?, ?)", ('cliente1', hashed_password, False))
+    cursor.execute("""
+        INSERT OR IGNORE INTO Utenti 
+        (username, password_hash, is_trainer, password_change_required) 
+        VALUES (?, ?, ?, ?)
+    """, ('admin', hashed_password, True, False))
     
+    cursor.execute("""
+        INSERT OR IGNORE INTO Utenti 
+        (username, password_hash, is_trainer, password_change_required) 
+        VALUES (?, ?, ?, ?)
+    """, ('cliente1', hashed_password, False, True))
     
     # commit serve per salvare le modifiche nel database quando si fa un INSERT 
     conn.commit()
