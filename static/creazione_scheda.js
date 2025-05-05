@@ -236,3 +236,14 @@ function filtraEsercizi() {
     // Aggiorna la visualizzazione
     visualizzaEserciziDisponibili(eserciziFiltrati);
 }
+
+
+// Funzione per configurare il drag and drop
+function setupDragAndDrop() {
+    const dropArea = document.getElementById('schedaEsercizi');
+    
+    // Aggiungi eventi per l'area di rilascio
+    dropArea.addEventListener('dragover', handleDragOver);
+    dropArea.addEventListener('dragleave', handleDragLeave);
+    dropArea.addEventListener('drop', handleDrop);
+}
