@@ -247,3 +247,12 @@ function setupDragAndDrop() {
     dropArea.addEventListener('dragleave', handleDragLeave);
     dropArea.addEventListener('drop', handleDrop);
 }
+
+// Gestore per l'inizio del drag
+function handleDragStart(e) {
+    // Memorizza l'ID dell'esercizio trascinato
+    e.dataTransfer.setData('text/plain', e.target.dataset.esercizioId);
+    
+    // Aggiungi classe per lo stile durante il trascinamento
+    e.target.classList.add('esercizio-dragging');
+}
