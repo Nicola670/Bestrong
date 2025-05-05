@@ -217,7 +217,7 @@ function filtraEsercizi() {
     if (!window.eserciziDisponibili) return;
     
     // Applica entrambi i filtri: testo e gruppo muscolare
-    var eserciziFiltrati = window.eserciziDisponibili.filter(esercizio => {
+    const eserciziFiltrati = window.eserciziDisponibili.filter(esercizio => {
         // Filtro per testo di ricerca
         const matchTesto = 
             esercizio.nome.toLowerCase().includes(window.filtroAttuale.testo) || 
