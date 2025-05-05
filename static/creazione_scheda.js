@@ -303,3 +303,49 @@ function handleDrop(e) {
     // Aggiungi l'esercizio alla scheda
     aggiungiEsercizioAllaScheda(esercizio);
 }
+
+// Funzione per aggiungere un esercizio alla scheda
+function aggiungiEsercizioAllaScheda(esercizio) {
+    const schedaEsercizi = document.getElementById('schedaEsercizi');
+    const emptyMessage = document.getElementById('emptyMessage');
+    
+    // Nascondi il messaggio "Nessun esercizio aggiunto"
+    if (emptyMessage) {
+        emptyMessage.style.display = 'none';
+    }
+    
+    // Usa il template per creare l'elemento esercizio nella scheda
+    const template = document.getElementById('esercizioSchedaTemplate');
+    const clone = template.content.cloneNode(true);
+    
+    // Aggiungi i dati dell'esercizio
+    clone.querySelector('.esercizio-nome').textContent = esercizio.nome;
+    
+    // Sostituisci il testo della categoria con un badge per il gruppo muscolare
+    const categoriaElement = clone.querySelector('.esercizio-categoria');
+    categoriaElement.innerHTML = '';
+    
+    const badge = document.createElement('span');
+    badge.className = `gruppo-muscolare-badge gruppo-${esercizio.gruppoMuscolare.toLowerCase()}`;
+    badge.textContent = esercizio.gruppoMuscolare;
+    categoriaElement.appendChild(badge);
+    
+    // Aggiungi l'ID dell'esercizio come attributo data
+    const esercizioScheda = clone.querySelector('.esercizio-scheda');
+    esercizioScheda.dataset.esercizioId = esercizio.id;
+    esercizioScheda.dataset.gruppoMuscolare = esercizio.gruppoMuscolare;
+    
+    // Aggiungi evento per rimuovere l'esercizio
+    const btnRemove = clone.querySelector('.remove-esercizio');
+    btnRemove.addEventListener('click', function() {
+        esercizioScheda.remove();
+        
+        // Se non ci sono più esercizi, mostra di nuovo il messaggio vuoto
+        if (schedaEsercizi.querySelectorAll('.esercizio-scheda').length === 0) {
+            emptyMessage.style.display = 'block';
+        }
+    });
+    
+    // Aggiungi l'esercizio alla scheda
+    schedaEsercizi.appendChild(clone);
+}
