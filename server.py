@@ -100,13 +100,11 @@ def register():
         return redirect(url_for('dashboard'))
     
     try:
-        # Fix: usare database.hash_password invece di hashed_password
         hashed_password = database.hash_password(temp_password)
         
         success = database.register_user(username, hashed_password, is_trainer=False, password_change_required=True)
         if success:
             new_user = database.get_user_by_username(username)
-            # Fix: usare add_relation invece di add_client_trainer
             database.add_relation(new_user['id'], current_user.id)
 
             flash('Cliente registrato con successo!')
@@ -125,7 +123,7 @@ def dashboard():
     if not current_user.is_authenticated:
         return redirect(url_for('login'))
     clients = database.get_clients_by_trainer(current_user.id)
-    return render_template('dashboard.html', clients = clients)
+    return render_template('dashboard.html', clients = clients) # passa al template la lista dei clienti
 
 @app.route('/client')
 @login_required
@@ -172,6 +170,9 @@ def change_password():
         print(f"Errore durante il cambio password: {e}")
         return jsonify({'error': 'Si è verificato un errore durante il cambio password'}), 500
 
+
+    
+    
 if __name__ == "__main__":
     # Inizializza e popola il database
     initialize_db()

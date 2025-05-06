@@ -190,6 +190,8 @@ def populate_database():
     for i in difficulties:
         cursor.execute("INSERT OR IGNORE INTO Difficolta (livello) VALUES (?)", (i,))
 
+
+
     # DATI INSERITI A MANO DA TOGLIERE PER TEST
     # personal trainer per test
     psw = "test123"
