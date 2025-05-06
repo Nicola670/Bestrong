@@ -224,6 +224,23 @@ def populate_database():
         INSERT OR IGNORE INTO Clienti_Trainer (cliente_id, trainer_id)
         VALUES (?, ?)
     """, (3, 1)) # cliente2, admin
+
+    # Aggiunta esercizio di test per lo streaming video
+    cursor.execute("""
+        INSERT OR IGNORE INTO Esercizi (
+            nome,
+            descrizione,
+            video_url,
+            obiettivo_id,
+            difficolta_id
+        ) VALUES (?, ?, ?, ?, ?)
+    """, (
+        'Esercizio di Prova',
+        'Descrizione di prova per testare lo streaming video',
+        'video.mp4',
+        1,  # ID obiettivo
+        1   # ID difficoltà
+    ))
     
     # commit serve per salvare le modifiche nel database quando si fa un INSERT 
     conn.commit()

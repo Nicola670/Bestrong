@@ -1,10 +1,28 @@
 import sqlite3
-from flask import Blueprint, jsonify, request
+import os
+from flask import Blueprint, jsonify, request, send_file, Response
 from flask_login import login_required, current_user
 from init_db import DB_FILE
 
 # Crea un Blueprint per le API
 api = Blueprint('api', __name__)
+
+# Definisci il percorso della cartella dei video
+VIDEOS_DIRECTORY = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'static', 'videos')
+# Crea la cartella se non esiste
+os.makedirs(VIDEOS_DIRECTORY, exist_ok=True)
+
+def get_chunk_size():
+    return 1024 * 1024  # 1MB per chunk
+
+def generate_video_stream(video_path):
+    chunk_size = get_chunk_size()
+    with open(video_path, 'rb') as video_file:
+        while True:
+            chunk = video_file.read(chunk_size)
+            if not chunk:
+                break
+            yield chunk
 
 # --- ENDPOINTS PER TRAINER ---
 @api.route('/api/clients', methods=['GET'])
@@ -65,6 +83,44 @@ def get_client_by_id(client_id):
         })
     except Exception as e:
         # Gestione degli errori
+        return jsonify({'error': str(e)}), 500
+    finally:
+        conn.close()
+
+@api.route('/api/exercise/video/<int:exercise_id>', methods=['GET'])
+#@login_required
+def stream_exercise_video(exercise_id):
+    try:
+        conn = sqlite3.connect(DB_FILE)
+        cursor = conn.cursor()
+        
+        # Verifica se l'esercizio esiste e ottieni il percorso del video
+        cursor.execute("""
+            SELECT video_url 
+            FROM Esercizi 
+            WHERE id = ?
+        """, (exercise_id,))
+        
+        result = cursor.fetchone()
+        
+        if not result or not result[0]:
+            return jsonify({'error': 'Video not found'}), 404
+            
+        video_filename = result[0]
+        video_path = os.path.join(VIDEOS_DIRECTORY, video_filename)
+        
+        # Verifica se il file esiste
+        if not os.path.exists(video_path):
+            return jsonify({'error': 'Video file not found'}), 404
+
+        # Streaming del video
+        return Response(
+            generate_video_stream(video_path),
+            mimetype='video/mp4',
+            direct_passthrough=True
+        )
+
+    except Exception as e:
         return jsonify({'error': str(e)}), 500
     finally:
         conn.close()
