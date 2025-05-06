@@ -1,0 +1,95 @@
+/* Base Styles & Variables */
+:root {
+    --primary-color: #4361ee;
+    --primary-dark: #3a56d4;
+    --secondary-color: #3f37c9;
+    --accent-color: #4cc9f0;
+    --success-color: #4ade80;
+    --danger-color: #f43f5e;
+    --warning-color: #f59e0b;
+    --light-color: #f8fafc;
+    --dark-color: #1e293b;
+    --gray-100: #f1f5f9;
+    --gray-200: #e2e8f0;
+    --gray-300: #cbd5e1;
+    --gray-400: #94a3b8;
+    --gray-500: #64748b;
+    --gray-600: #475569;
+    --gray-700: #334155;
+    --gray-800: #1e293b;
+    --gray-900: #0f172a;
+    --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+    --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+    --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+    --transition-speed: 0.3s;
+    --border-radius: 8px;
+    --border-radius-lg: 12px;
+    --border-radius-xl: 16px;
+    --border-radius-full: 9999px;
+    --sidebar-width: 260px;
+    --sidebar-collapsed-width: 50px;
+    --sidebar-peek-width: 20px;
+}
+
+/* Reset & Global Styles */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body, html {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #f8fafc;
+    color: var(--dark-color);
+    line-height: 1.6;
+    height: 100%;
+    overflow-x: hidden;
+}
+
+a {
+    text-decoration: none;
+    color: inherit;
+}
+
+ul {
+    list-style: none;
+}
+
+button, input, select, textarea {
+    font-family: inherit;
+    font-size: 100%;
+    border: none;
+    outline: none;
+}
+
+button {
+    cursor: pointer;
+}
+
+/* Layout */
+.app-container {
+    display: flex;
+    min-height: 100vh;
+    position: relative;
+}
+
+/* Sidebar */
+.sidebar {
+    width: var(--sidebar-width);
+    background: linear-gradient(180deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+    color: white;
+    position: fixed;
+    height: 100vh;
+    transition: all var(--transition-speed) ease;
+    z-index: 10;
+    left: 0;
+    display: flex;
+    box-shadow: var(--shadow-lg);
+}
+
+.sidebar.collapsed {
+    width: var(--sidebar-collapsed-width);
+}
+
