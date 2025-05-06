@@ -87,27 +87,27 @@ def login():
         return redirect(url_for('home'))
 
 @app.route('/register', methods=['POST'])
-@login_required  # Richiede autenticazione
+@login_required
 def register():
-    if not current_user.is_trainer:  # Verifica che sia un trainer
+    if not current_user.is_trainer:
         return jsonify({'error': 'Unauthorized'}), 403
         
     username = request.form.get('username')
-    temp_password = "Password123"  # Password temporanea iniziale
+    temp_password = "Password123"
     
-    # Controlla se l'username esiste già
     if database.get_user_by_username(username):
         flash('Username già registrato')
         return redirect(url_for('dashboard'))
     
     try:
-        hashed_password = hashed_password(temp_password)
+        # Fix: usare database.hash_password invece di hashed_password
+        hashed_password = database.hash_password(temp_password)
         
-        # Salva nel database con flag password_change_required
         success = database.register_user(username, hashed_password, is_trainer=False, password_change_required=True)
         if success:
             new_user = database.get_user_by_username(username)
-            database.add_client_trainer(new_user['id'], current_user.id)
+            # Fix: usare add_relation invece di add_client_trainer
+            database.add_relation(new_user['id'], current_user.id)
 
             flash('Cliente registrato con successo!')
             return redirect(url_for('dashboard'))
