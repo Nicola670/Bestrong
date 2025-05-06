@@ -116,6 +116,7 @@ def update_password(user_id, new_password_hash):
     finally:
         conn.close()
 
+# crea un collegamento tra cliente e trainer
 def add_relation(client_id, trainer_id):
     try:
         conn = sqlite3.connect(DB_FILE)
@@ -136,6 +137,7 @@ def add_relation(client_id, trainer_id):
     finally:
         conn.close()
 
+# prende i clienti dato l'id del trainer
 def get_clients_by_trainer(trainer_id):
     try:
         conn = sqlite3.connect(DB_FILE)

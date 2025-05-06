@@ -47,10 +47,11 @@ def get_client_by_id(client_id):
     try:
         # Esegui la query per ottenere i dettagli del cliente
         cursor.execute("""
-            SELECT id, username
+            SELECT Utenti.id, Utenti.username
             FROM Utenti
-            WHERE id = ? AND is_trainer = FALSE
-        """, (client_id,))
+            INNER JOIN Clienti_Trainer ON Utenti.id = Clienti_Trainer.cliente_id
+            WHERE Clienti_Trainer.cliente_id = ? AND Clienti_Trainer.trainer_id = ?
+        """, (client_id, 1)) # sostituire con current_user.id quando viene implementato le sessioni
         client = cursor.fetchone()
         print(client)
         # Controlla se il cliente esiste
