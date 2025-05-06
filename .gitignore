@@ -1,5 +1,0 @@
-# Ignora la cartella static
-flask_session
-
-# Ignora la cartella __pycache__
-__pycache__
