@@ -115,3 +115,43 @@ def update_password(user_id, new_password_hash):
         return False
     finally:
         conn.close()
+
+def add_relation(client_id, trainer_id):
+    try:
+        conn = sqlite3.connect(DB_FILE)
+        cursor = conn.cursor()
+        
+        cursor.execute("""
+            INSERT INTO Clienti_Trainer (cliente_id, trainer_id) 
+            VALUES (?, ?)
+        """, (client_id, trainer_id))
+        
+        conn.commit()
+        return True
+    except sqlite3.IntegrityError:
+        return False
+    except Exception as e:
+        print(f"Errore durante l'aggiunta della relazione: {e}")
+        return False
+    finally:
+        conn.close()
+
+def get_clients_by_trainer(trainer_id):
+    try:
+        conn = sqlite3.connect(DB_FILE)
+        cursor = conn.cursor()
+        
+        cursor.execute("""
+            SELECT Utenti.id, Utenti.username 
+            FROM Utenti 
+            INNER JOIN Clienti_Trainer ON Utenti.id = Clienti_Trainer.cliente_id 
+            WHERE Clienti_Trainer.trainer_id = ?
+        """, (trainer_id,))
+        
+        clients = cursor.fetchall()
+        return [{'id': client[0], 'username': client[1]} for client in clients]
+    except Exception as e:
+        print(f"Errore nel recupero dei clienti: {e}")
+        return []
+    finally:
+        conn.close()

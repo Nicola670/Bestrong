@@ -207,13 +207,23 @@ def populate_database():
         INSERT OR IGNORE INTO Utenti 
         (username, password_hash, is_trainer, password_change_required) 
         VALUES (?, ?, ?, ?)
-    """, ('cliente3', hashed_password, False, True))
+    """, ('cliente1', hashed_password, False, True))
+
+    cursor.execute("""
+        INSERT OR IGNORE INTO Utenti 
+        (username, password_hash, is_trainer, password_change_required) 
+        VALUES (?, ?, ?, ?)
+    """, ('cliente2', hashed_password, False, True))
 
     cursor.execute("""
         INSERT OR IGNORE INTO Clienti_Trainer (cliente_id, trainer_id)
         VALUES (?, ?)
-    """, (2, 1)) # cliente3, admin
+    """, (2, 1)) # cliente1, admin
 
+    cursor.execute("""
+        INSERT OR IGNORE INTO Clienti_Trainer (cliente_id, trainer_id)
+        VALUES (?, ?)
+    """, (3, 1)) # cliente2, admin
     
     # commit serve per salvare le modifiche nel database quando si fa un INSERT 
     conn.commit()

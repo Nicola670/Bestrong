@@ -101,13 +101,14 @@ def register():
         return redirect(url_for('dashboard'))
     
     try:
-        # Hash della password temporanea
-        salt = bcrypt.gensalt()
-        hashed_password = bcrypt.hashpw(temp_password.encode('utf-8'), salt)
+        hashed_password = hashed_password(temp_password)
         
         # Salva nel database con flag password_change_required
         success = database.register_user(username, hashed_password, is_trainer=False, password_change_required=True)
         if success:
+            new_user = database.get_user_by_username(username)
+            database.add_client_trainer(new_user['id'], current_user.id)
+
             flash('Cliente registrato con successo!')
             return redirect(url_for('dashboard'))
         
@@ -123,7 +124,8 @@ def register():
 def dashboard():
     if not current_user.is_authenticated:
         return redirect(url_for('login'))
-    return render_template('dashboard.html')
+    clients = database.get_clients_by_trainer(current_user.id)
+    return render_template('dashboard.html', clients = clients)
 
 @app.route('/client')
 @login_required
