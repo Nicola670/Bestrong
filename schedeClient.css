@@ -340,7 +340,14 @@ button {
 }
 
 .tag-bottone {
-    color:black;
+    background-color: var(--gray-200);
+    color: var(--gray-700);
+    transition: all var(--transition-speed) ease;
+}
+
+.tag-bottone:hover {
+    background-color: var(--primary-color);
+    color: white;
 }
 
 /* Modal Styles */
