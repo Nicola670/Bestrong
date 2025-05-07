@@ -139,6 +139,10 @@ def client_dashboard():
 def about():
     return render_template('About.html')
 
+@app.route('/creazione_scheda')
+def creazione_scheda():
+    return render_template('creazione_scheda.html')
+
 @app.route('/logout')
 @login_required
 def logout():
