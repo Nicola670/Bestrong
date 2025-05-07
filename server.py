@@ -170,7 +170,10 @@ def change_password():
         print(f"Errore durante il cambio password: {e}")
         return jsonify({'error': 'Si è verificato un errore durante il cambio password'}), 500
 
-
+@app.route('/machines')
+@login_required
+def macchinari_dashboard():
+    return render_template('machines.html')
     
     
 if __name__ == "__main__":
