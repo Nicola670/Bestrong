@@ -1,6 +1,7 @@
 from flask import Flask, request, render_template, redirect, url_for, flash, jsonify
 from flask_login import LoginManager, UserMixin, login_user, login_required, logout_user, current_user
 from api import api
+
 from init_db import initialize_db, populate_database
 import db_operations as database
 
@@ -40,14 +41,16 @@ def load_user(user_id):
         return User(user['id'], user['username'])
     return None
 
-@app.route('/')
+@app.route('/', methods=['GET'])
 def home():
-    """ TEMPORANEA
+    """ manca gestioenc liente/trainer"""
     if current_user.is_authenticated:
         return redirect(url_for('dashboard'))
-    return render_template("login.html")
-    """
-    return render_template("login.html")
+    return redirect(url_for('login'))
+
+@app.route('/login', methods=['GET'])
+def login_page():
+    return render_template('login.html')
 
 @app.route('/login', methods=['POST'])
 def login():
@@ -136,7 +139,7 @@ def client_dashboard():
 @login_required
 def logout():
     logout_user()
-    return redirect(url_for('home'))
+    return redirect(url_for('login'))
 
 @app.route('/change_password', methods=['GET', 'POST'])
 @login_required
