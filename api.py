@@ -124,3 +124,71 @@ def stream_exercise_video(exercise_id):
         return jsonify({'error': str(e)}), 500
     finally:
         conn.close()
+
+@api.route('/api/exercises', methods=['GET'])
+#@login_required
+def get_exercises():
+    """
+    if not current_user.is_trainer:
+        return jsonify({'error': 'Unauthorized'}), 403
+    """
+
+    conn = sqlite3.connect(DB_FILE)
+    cursor = conn.cursor()
+    
+    try:
+        cursor.execute("""
+            SELECT 
+            Esercizi.id,
+            Esercizi.nome,
+            Esercizi.descrizione,
+                       video_url,
+                       immagine_url,
+                       Obiettivi.nome,
+                       Difficolta.livello
+                
+            FROM Esercizi
+            INNER JOIN Obiettivi ON obiettivo_id = Obiettivi.id
+            INNER JOIN Difficolta ON difficolta_id = Difficolta.id
+        """) 
+        exercises = cursor.fetchall()
+        return jsonify([{
+            'id': exercise[0], 
+            'nome': exercise[1],
+            'descrizione': exercise[2],
+            'video_url': exercise[3],
+            'immagine_url': exercise[4],
+            'obiettivo':  exercise[5],
+            'livello':  exercise[6]
+        } for exercise in exercises])
+    finally:
+        conn.close()
+
+@api.route('/api/workouts', methods=['GET'])
+#@login_required
+def get_workouts():
+    """
+    if not current_user.is_trainer:
+        return jsonify({'error': 'Unauthorized'}), 403
+    """
+
+    conn = sqlite3.connect(DB_FILE)
+    cursor = conn.cursor()
+    
+    try:
+        cursor.execute("""
+            
+        """) 
+        workouts = cursor.fetchall()
+        print(workouts)
+        '''
+        return jsonify([{
+            'id': exercises[0], 
+            'nome': exercises[1],
+            'descrizione': exercises[2],
+            'video_url': exercises[3],
+            'immagine_url': exercises[4]
+        } for workout in workouts])'''
+    finally:
+        conn.close()
+
