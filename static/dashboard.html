@@ -7,6 +7,7 @@
         <title>Dashboard-bestrong</title>
 
         <link rel="stylesheet" href="dashboard.css">
+        <!-- <link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard.css') }}"> -->
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     </head>
 
@@ -27,7 +28,7 @@
                             <li class="active"><a href="#"><i class="fas fa-users"></i> Clienti</a></li>
                             <li><a href="programmazione.html"><i class="fas fa-calendar-alt"></i> Programmazione</a></li>
                             <li><a href="impostazioni.html"><i class="fas fa-cog"></i> Impostazioni</a></li>
-                            <li><a href="#"><i class="fas fa-sign-out-alt"></i> <span>Logout</span></a></li>
+                            <li><a href="{{ url_for('logout')}}"><i class="fas fa-sign-out-alt"></i> <span>Logout</span></a></li>
                         </ul>
                     </nav>
                     <div class="trainer-profile">
@@ -214,5 +215,6 @@
     </div>
 
     <script src="dashboard.js"></script>
+    <!-- <script src="js/dashboard.js"></script> -->
     </body>
 </html>
