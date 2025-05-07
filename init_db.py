@@ -8,15 +8,30 @@ def initialize_db():
     conn = sqlite3.connect(DB_FILE)
     cursor = conn.cursor()
 
+    # --- OBIETTIVI --- 
+    cursor.execute("""
+        CREATE TABLE IF NOT EXISTS Obiettivi (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            nome TEXT NOT NULL UNIQUE
+        );
+    """)
+
     # --- UTENTI ---
     # is_trainer = TRUE se è un personal trainer
+    # varchar in sqlite è TEXT
     cursor.execute("""
         CREATE TABLE IF NOT EXISTS Utenti (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             is_trainer BOOLEAN NOT NULL,
-            username TEXT NOT NULL UNIQUE,
+            username TEXT NOT NULL,
+            surname TEXT NOT NULL,
+            email TEXT NOT NULL UNIQUE,
+            phone TEXT NOT NULL UNIQUE,
+            date_of_birth DATE NOT NULL, 
             password_hash TEXT NOT NULL,
-            password_change_required BOOLEAN DEFAULT FALSE
+            password_change_required BOOLEAN DEFAULT FALSE,
+            obiettivo_id INTEGER,
+            FOREIGN KEY (obiettivo_id) REFERENCES Obiettivi(id)
         );
     """)
 
@@ -35,14 +50,6 @@ def initialize_db():
     # --- GRUPPO MUSCOLARE --- 
     cursor.execute("""
         CREATE TABLE IF NOT EXISTS Gruppi_Muscolari (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            nome TEXT NOT NULL UNIQUE
-        );
-    """)
-
-    # --- OBIETTIVI --- 
-    cursor.execute("""
-        CREATE TABLE IF NOT EXISTS Obiettivi (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             nome TEXT NOT NULL UNIQUE
         );
@@ -201,21 +208,24 @@ def populate_database():
     
     cursor.execute("""
         INSERT OR IGNORE INTO Utenti 
-        (username, password_hash, is_trainer, password_change_required) 
-        VALUES (?, ?, ?, ?)
-    """, ('admin', hashed_password, True, False))
-    
-    cursor.execute("""
-        INSERT OR IGNORE INTO Utenti 
-        (username, password_hash, is_trainer, password_change_required) 
-        VALUES (?, ?, ?, ?)
-    """, ('cliente1', hashed_password, False, True))
+        (username, surname, email, phone, date_of_birth, password_hash, is_trainer, password_change_required, obiettivo_id) 
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+    """, ('admin', 'Admin', 'admin@example.com', '1234567890', '1980-01-01', hashed_password, True, False, None
+    ))
 
     cursor.execute("""
         INSERT OR IGNORE INTO Utenti 
-        (username, password_hash, is_trainer, password_change_required) 
-        VALUES (?, ?, ?, ?)
-    """, ('cliente2', hashed_password, False, True))
+        (username, surname, email, phone, date_of_birth, password_hash, is_trainer, password_change_required, obiettivo_id) 
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+    """, ('cliente1', 'Cliente', 'cliente1@example.com', '0987654321', '1995-05-15', hashed_password, False, True, 1
+    ))  # Obiettivo ID 1
+
+    cursor.execute("""
+        INSERT OR IGNORE INTO Utenti 
+        (username, surname, email, phone, date_of_birth, password_hash, is_trainer, password_change_required, obiettivo_id) 
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+    """, ('cliente2', 'Cliente', 'cliente2@example.com', '1122334455', '1998-08-20', hashed_password, False, True, 2
+    ))  # Obiettivo ID 2
 
     cursor.execute("""
         INSERT OR IGNORE INTO Clienti_Trainer (cliente_id, trainer_id)
