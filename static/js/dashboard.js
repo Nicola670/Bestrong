@@ -9,6 +9,17 @@ const clientDetailsModal = document.getElementById('clientDetailsModal');
 const closeDetailsModal = document.getElementById('closeDetailsModal');
 const searchInput = document.getElementById('searchInput');
 
+
+let clients = fetch("http://localhost:8080/api/clients", {
+    method: "GET"
+    //headers
+  })
+  .then(response => response.json())
+  .catch(err => {
+    console.error("Errore nel fetch dei clienti:", err);
+  });
+
+/*
 // Dati di esempio (simulazione API) Capitano aiutami tu
 let clients = [
     {
@@ -66,7 +77,7 @@ let clients = [
         iscrizione: '2025-02-10',
         note: 'Prima esperienza in palestra. Necessita di un programma introduttivo.',
     },
-];
+];*/
 
 // Funzione per ottenere le iniziali dal nome e cognome
 function getInitials(nome, cognome) {
