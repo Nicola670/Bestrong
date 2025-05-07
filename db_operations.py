@@ -178,3 +178,24 @@ def macchinari():
         return []
     finally:
         conn.close()
+
+# aggiunta macchinari
+def add_macchinari(nome):
+    try:
+        conn = sqlite3.connect(DB_FILE)
+        cursor = conn.cursor()
+
+        cursor.execute("""
+        INSERT INTO Macchinari
+        (nome)
+        VALUES
+        (?)
+        """, (nome,))
+
+        conn.commit()
+        return cursor.rowcount > 0
+    except Exception as e:
+        print(f"Errore durante l'aggiunta dei macchinari: {e}")
+        return False
+    finally:
+        conn.close()
