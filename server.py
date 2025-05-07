@@ -190,6 +190,14 @@ def del_macchinari_dashboard():
         flash('Accesso non autorizzato')
         return redirect(url_for('dashboard'))
     return render_template('machines.html')
+
+@app.route('/change_machines')
+@login_required
+def change_macchinari_dashboard():
+    if not current_user.is_trainer: # Solo per i trainer
+        flash('Accesso non autorizzato')
+        return redirect(url_for('dashboard'))
+    return render_template('machines.html')
     
     
 if __name__ == "__main__":
