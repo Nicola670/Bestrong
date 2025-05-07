@@ -99,7 +99,171 @@
                 </div>
             </div> <br><br><br>
 
-            
+            <header class="content-header">
+                <h1>Il Tuo Profilo</h1>
+                <button class="edit-btn" id="editProfileBtn">
+                    <i class="fas fa-edit"></i> Modifica Profilo
+                </button>
+            </header>
+
+            <!-- Profile Container -->
+            <section class="profile-container">
+                <div class="profile-card">
+                    <!-- Left Side - Profile Image -->
+                    <div class="profile-image-section">
+                        <div class="profile-image-container">
+                            <div class="profile-image">
+                                <span>GC</span>
+                            </div>
+                            <div class="image-upload-overlay">
+                                <i class="fas fa-camera"></i>
+                            </div>
+                        </div>
+                        <button class="change-photo-btn">Cambia Foto</button>
+                    </div>
+
+                    <!-- Right Side - Profile Info -->
+                    <div class="profile-info-section">
+                        <div class="info-group">
+                            <h2>Informazioni Personali</h2>
+                            <div class="info-row">
+                                <div class="info-label">Nome</div>
+                                <div class="info-value">Giovanni</div>
+                            </div>
+                            <div class="info-row">
+                                <div class="info-label">Cognome</div>
+                                <div class="info-value">Cei</div>
+                            </div>
+                            <div class="info-row">
+                                <div class="info-label">Data di Nascita</div>
+                                <div class="info-value">15/05/1990</div>
+                            </div>
+                            <div class="info-row">
+                                <div class="info-label">Sesso</div>
+                                <div class="info-value">Maschio</div>
+                            </div>
+                        </div>
+
+                        <div class="info-group">
+                            <h2>Contatti</h2>
+                            <div class="info-row">
+                                <div class="info-label">Email</div>
+                                <div class="info-value">giovanni.cei@email.com</div>
+                            </div>
+                            <div class="info-row">
+                                <div class="info-label">Telefono</div>
+                                <div class="info-value">+39 123 456 7890</div>
+                            </div>
+                        </div>
+
+                        <div class="info-group">
+                            <h2>Dati Fitness</h2>
+                            <div class="info-row">
+                                <div class="info-label">Altezza</div>
+                                <div class="info-value">178 cm</div>
+                            </div>
+                            <div class="info-row">
+                                <div class="info-label">Peso</div>
+                                <div class="info-value">75 kg</div>
+                            </div>
+                            <div class="info-row">
+                                <div class="info-label">Obiettivo</div>
+                                <div class="info-value">Aumento massa muscolare</div>
+                            </div>
+                        </div>
+
+                        <div class="info-group">
+                            <h2>Abbonamento</h2>
+                            <div class="info-row">
+                                <div class="info-label">Tipo</div>
+                                <div class="info-value">Premium</div>
+                            </div>
+                            <div class="info-row">
+                                <div class="info-label">Scadenza</div>
+                                <div class="info-value">31/12/2025</div>
+                            </div>
+                            <div class="subscription-status">
+                                <span class="status-badge active">Attivo</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- Modal Edit Profile -->
+    <div class="modal" id="editProfileModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Modifica Profilo</h2>
+                <span class="close-modal" id="closeModal">&times;</span>
+            </div>
+            <div class="modal-body">
+                <form id="profileForm">
+                    <div class="form-group">
+                        <label for="nome">Nome</label>
+                        <input type="text" id="nome" name="nome" value="Giovanni">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="cognome">Cognome</label>
+                        <input type="text" id="cognome" name="cognome" value="Cei">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="dataNascita">Data di Nascita</label>
+                        <input type="date" id="dataNascita" name="dataNascita" value="1990-05-15">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="sesso">Sesso</label>
+                        <select id="sesso" name="sesso">
+                            <option value="maschio" selected>Maschio</option>
+                            <option value="femmina">Femmina</option>
+                            <option value="altro">Altro</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="email">Email</label>
+                        <input type="email" id="email" name="email" value="giovanni.cei@email.com">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="telefono">Telefono</label>
+                        <input type="tel" id="telefono" name="telefono" value="+39 123 456 7890">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="altezza">Altezza (cm)</label>
+                        <input type="number" id="altezza" name="altezza" value="178">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="peso">Peso (kg)</label>
+                        <input type="number" id="peso" name="peso" value="75">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="obiettivo">Obiettivo</label>
+                        <select id="obiettivo" name="obiettivo">
+                            <option value="massa" selected>Aumento massa muscolare</option>
+                            <option value="dimagrimento">Dimagrimento</option>
+                            <option value="definizione">Definizione muscolare</option>
+                            <option value="forza">Aumento della forza</option>
+                            <option value="resistenza">Miglioramento resistenza</option>
+                        </select>
+                    </div>
+
+                    <div class="form-actions">
+                        <button type="button" class="btn-cancel" id="cancelEdit">Annulla</button>
+                        <button type="submit" class="btn-save">Salva Modifiche</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
 
     <script src="profilo.js"></script>
 </body>
