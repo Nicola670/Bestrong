@@ -218,3 +218,23 @@ def del_macchinari(nome):
         return False
     finally:
         conn.close()
+
+# modifica macchinari
+def change_macchinari(nome_vecchio, nome_nuovo):
+    try:
+        conn = sqlite3.connect(DB_FILE)
+        cursor = conn.cursor()
+
+        cursor.execute("""
+        UPDATE Macchinari SET
+        nome = ?
+        WHERE nome = ?
+        """, (nome_nuovo, nome_vecchio))
+
+        conn.commit()
+        return cursor.rowcount > 0
+    except Exception as e:
+        print(f"Errore durante la modifica dei macchinari: {e}")
+        return False
+    finally:
+        conn.close()
