@@ -1,0 +1,88 @@
+* {
+	box-sizing: border-box; 
+}
+body {
+	margin: 0;
+	padding: 0;
+	font-family: "Montserrat", sans-serif;
+	height: 100vh;
+	width: 100%;
+	background-color: #f1f5f9;
+	-webkit-background-size: cover;
+	background-size: cover;
+	background-repeat: no-repeat;
+	background-position: center center;
+}
+.wrapper {
+	width: 400px;
+	height: auto;
+	color: #4361ee;
+	padding: 50px 30px;
+	position: relative;
+	border-radius: 25px;
+}
+.wrapper h2 {
+	text-align: center;
+	margin: 0;
+	margin-bottom: 30px;
+}
+.wrapper p {
+	margin: 0;
+	padding: 0;
+	font-weight: 300;
+	text-align: center;
+}
+.form-area {
+	display: grid;
+	place-items: center;
+	height: 100vh;
+}
+.box {
+	position: relative;
+}
+.box input {
+	padding-right: 30px;
+}
+.box i {
+	position: absolute;
+	top: 34%;
+	transform: translateY(-50%);
+	right: 30px;
+	color: #4361ee;
+}
+.wrapper input, button {
+	border: none;
+	border: 1px solid #2e2c2c63;
+	background: transparent;
+	outline: none;
+	height: 50px;
+	color: #2e2c2c;
+	font-size: 16px;
+	width: 100%;
+	margin-bottom: 20px;
+	padding: 15px;
+	border-radius: 50px;
+}
+.wrapper .options {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	margin-bottom: 20px;
+}
+.wrapper .options label {
+	color: #2e2c2c;
+	font-size: 18px;
+	line-height: 3.5;
+}
+.options input[type="checkbox"] {
+	width: 15px;
+	height: auto;
+}
+.wrapper a {
+	text-decoration: none;
+	color: #2e2c2c;
+}
+.wrapper button {
+	background: #4361ee;
+	color: #fff;
+}
