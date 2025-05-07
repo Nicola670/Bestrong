@@ -157,3 +157,24 @@ def get_clients_by_trainer(trainer_id):
         return []
     finally:
         conn.close()
+
+# visualizzazione macchinari
+def macchinari():
+    try:
+        conn = sqlite3.connect(DB_FILE)
+        cursor = conn.cursor()
+
+        cursor.execute("""
+        SELECT nome
+        FROM Macchinari
+        """)
+
+        # Recupera tutti i risultati della query
+        risultati = cursor.fetchall()
+
+        return risultati
+    except Exception as e:
+        print(f"Errore durante la visualizzazione dei macchinari: {e}")
+        return []
+    finally:
+        conn.close()
