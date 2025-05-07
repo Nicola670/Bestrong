@@ -202,7 +202,14 @@ def change_macchinari_dashboard():
         return redirect(url_for('dashboard'))
     return render_template('machines.html')
     
+@app.route('/profile')
+@login_required
+def profile():
+    if not current_user.is_authenticated:
+        return redirect(url_for('login'))
     
+    return render_template('profilo.html')
+
 if __name__ == "__main__":
     # Inizializza e popola il database
     initialize_db()
