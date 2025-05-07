@@ -174,6 +174,14 @@ def change_password():
 @login_required
 def macchinari_dashboard():
     return render_template('machines.html')
+
+@app.route('/add_machines')
+@login_required
+def add_macchinari_dashboard():
+    if not current_user.is_trainer: # Solo per i trainer
+        flash('Accesso non autorizzato')
+        return redirect(url_for('dashboard'))
+    return render_template('machines.html')
     
     
 if __name__ == "__main__":
