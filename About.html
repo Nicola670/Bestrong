@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>BeStrong - Chi Siamo</title>
-    <link rel="stylesheet" href="About.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/About.css') }}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 
@@ -20,12 +20,11 @@
                 </div>
                 <nav class="nav-menu">
                     <ul>
-                        <li><a href="#"><i class="fas fa-home"></i> <span>Home</span></a></li>
-                        <li><a href="#"><i class="fas fa-user"></i> <span>Profilo</span></a></li>
-                        <li class="active"><a href="#"><i class="fas fa-users"></i> <span>Chi Siamo</span></a></li>
-                        <li><a href="#"><i class="fas fa-calendar-alt"></i> <span>Programmazione</span></a></li>
-                        <li><a href="#"><i class="fas fa-cog"></i> <span>Impostazioni</span></a></li>
-                        <li><a href="#"><i class="fas fa-sign-out-alt"></i> <span>Logout</span></a></li>
+                        <li><a href="{{ url_for('dashboard') }}"><i class="fas fa-home"></i> <span>Clienti</span></a></li>
+                        <li><a href="{{ url_for('creazione_scheda') }}"><i class="fas fa-calendar-alt"></i> <span>Schede</span></a></li>
+                        <li><a href="{{ url_for('about') }}"><i class="fas fa-users"></i> <span>About</span></a></li>
+                        <li><a href="{{ url_for('about') }}"><i class="fas fa-user"></i> <span>Profilo</span></a></li>
+                        <li><a href="{{ url_for('logout') }}"><i class="fas fa-sign-out-alt"></i> <span>Logout</span></a></li>
                     </ul>
                 </nav>
                 <div class="trainer-profile">
@@ -68,7 +67,7 @@
                     <!-- Team Member 1 -->
                     <div class="team-card">
                         <div class="team-avatar">
-                            <img src="alby.png" alt="Trainer profile">
+                            <img src="{{ url_for('static', filename='alby.png') }}" alt="Trainer profile">
                         </div>
                         <div class="team-info">
                             <h3>Alberto Alessi</h3>
@@ -89,7 +88,7 @@
                     <!-- Team Member 2 -->
                     <div class="team-card">
                         <div class="team-avatar">
-                            <img src="perli.png" alt="Trainer profile">
+                            <img src="{{ url_for('static', filename='perli.png') }}" alt="Trainer profile">
                         </div>
                         <div class="team-info">
                             <h3>Nicolò Perli</h3>
@@ -110,7 +109,7 @@
                     <!-- Team Member 3 -->
                     <div class="team-card">
                         <div class="team-avatar">
-                            <img src="cibo.png" alt="Trainer profile">
+                            <img src="{{ url_for('static', filename='cibo.png') }}" alt="Trainer profile">
                         </div>
                         <div class="team-info">
                             <h3>Matteo Cibotto</h3>
@@ -131,7 +130,7 @@
                     <!-- Team Member 4 -->
                     <div class="team-card">
                         <div class="team-avatar">
-                            <img src="grigo.png" alt="Trainer profile">
+                            <img src="{{ url_for('static', filename='grigo.png') }}" alt="Trainer profile">
                         </div>
                         <div class="team-info">
                             <h3>Nicola Grigoletto</h3>
@@ -152,7 +151,7 @@
                     <!-- Team Member 5 -->
                     <div class="team-card">
                         <div class="team-avatar">
-                            <img src="zen.png" alt="Trainer profile">
+                            <img src="{{ url_for('static', filename='zen.png') }}" alt="Trainer profile">
                         </div>
                         <div class="team-info">
                             <h3>Nicola Zen</h3>
@@ -201,6 +200,6 @@
             </section>
         </main>
     </div>
-    <script src="About.js"></script>
+    <script src="{{ url_for('static', filename='js/About.js') }}"></script>
 </body>
 </html>

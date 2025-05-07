@@ -21,3 +21,16 @@
             }
         });
     });
+
+
+// Aggiunge la classe active al link corrispondente alla pagina corrente
+document.addEventListener('DOMContentLoaded', function() {
+    const currentPath = window.location.pathname;
+    const navLinks = document.querySelectorAll('.nav-menu li a');
+    
+    navLinks.forEach(link => {
+        if (link.getAttribute('href') === currentPath) {
+            link.parentElement.classList.add('active');
+        }
+    });
+});
