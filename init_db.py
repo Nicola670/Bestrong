@@ -10,11 +10,16 @@ def initialize_db():
 
     # --- UTENTI ---
     # is_trainer = TRUE se è un personal trainer
+    # varchar in sqlite è TEXT
     cursor.execute("""
         CREATE TABLE IF NOT EXISTS Utenti (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             is_trainer BOOLEAN NOT NULL,
-            username TEXT NOT NULL UNIQUE,
+            username TEXT NOT NULL,
+            surname TEXT NOT NULL,
+            email TEXT NOT NULL UNIQUE,
+            phone TEXT NOT NULL UNIQUE,
+            date_of_birth DATE NOT NULL,
             password_hash TEXT NOT NULL,
             password_change_required BOOLEAN DEFAULT FALSE
         );
