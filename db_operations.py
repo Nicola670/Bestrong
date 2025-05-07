@@ -165,8 +165,8 @@ def macchinari():
         cursor = conn.cursor()
 
         cursor.execute("""
-        SELECT nome
-        FROM Macchinari
+            SELECT nome
+            FROM Macchinari
         """)
 
         # Recupera tutti i risultati della query
@@ -186,10 +186,10 @@ def add_macchinari(nome):
         cursor = conn.cursor()
 
         cursor.execute("""
-        INSERT INTO Macchinari
-        (nome)
-        VALUES
-        (?)
+            INSERT INTO Macchinari
+            (nome)
+            VALUES
+            (?)
         """, (nome,))
 
         conn.commit()
@@ -207,8 +207,8 @@ def del_macchinari(nome):
         cursor = conn.cursor()
 
         cursor.execute("""
-        DELETE FROM Macchinari
-        WHERE nome = ?
+            DELETE FROM Macchinari
+            WHERE nome = ?
         """, (nome))
 
         conn.commit()
@@ -226,9 +226,9 @@ def change_macchinari(nome_vecchio, nome_nuovo):
         cursor = conn.cursor()
 
         cursor.execute("""
-        UPDATE Macchinari SET
-        nome = ?
-        WHERE nome = ?
+            UPDATE Macchinari SET
+            nome = ?
+            WHERE nome = ?
         """, (nome_nuovo, nome_vecchio))
 
         conn.commit()
