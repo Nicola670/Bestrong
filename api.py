@@ -200,3 +200,66 @@ def get_client_schede(client_id):
         return jsonify({'error': str(e)}), 500
     finally:
         conn.close()
+
+@api.route('/api/exercises', methods=['GET'])
+@login_required
+def get_exercises():
+    """Restituisce tutti gli esercizi presenti nel database"""
+    try:
+        conn = sqlite3.connect(DB_FILE)
+        cursor = conn.cursor()
+        
+        cursor.execute("""
+            SELECT 
+                e.id,
+                e.nome,
+                e.descrizione,
+                e.video_url,
+                e.immagine_url,
+                o.nome AS obiettivo,
+                d.livello AS difficolta,
+                GROUP_CONCAT(CASE 
+                    WHEN em.tipo = 'primario' THEN gm.nome 
+                END) AS muscoli_primari,
+                GROUP_CONCAT(CASE 
+                    WHEN em.tipo = 'secondario' THEN gm.nome 
+                END) AS muscoli_secondari
+            FROM Esercizi e
+            LEFT JOIN Obiettivi o ON e.obiettivo_id = o.id
+            LEFT JOIN Difficolta d ON e.difficolta_id = d.id
+            LEFT JOIN Esercizi_Muscoli em ON e.id = em.esercizio_id
+            LEFT JOIN Gruppi_Muscolari gm ON em.muscolo_id = gm.id
+            GROUP BY e.id
+            ORDER BY e.nome
+        """)
+        
+        exercises = cursor.fetchall()
+        
+        if not exercises:
+            return jsonify({'message': 'Nessun esercizio trovato'}), 404
+
+        # Formatta i risultati in JSON
+        exercises_list = []
+        for ex in exercises:
+            muscoli_primari = ex[7].split(',') if ex[7] else []
+            muscoli_secondari = ex[8].split(',') if ex[8] else []
+            
+            exercise = {
+                'id': ex[0],
+                'nome': ex[1],
+                'descrizione': ex[2],
+                'video_url': ex[3],
+                'immagine_url': ex[4],
+                'obiettivo': ex[5],
+                'difficolta': ex[6],
+                'muscoli_primari': [m for m in muscoli_primari if m],
+                'muscoli_secondari': [m for m in muscoli_secondari if m]
+            }
+            exercises_list.append(exercise)
+
+        return jsonify(exercises_list)
+
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+    finally:
+        conn.close()
