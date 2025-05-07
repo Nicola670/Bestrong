@@ -124,3 +124,79 @@ def stream_exercise_video(exercise_id):
         return jsonify({'error': str(e)}), 500
     finally:
         conn.close()
+
+@api.route('/api/client/<int:client_id>/schede', methods=['GET'])
+@login_required
+def get_client_schede(client_id):
+    """Restituisce tutte le schede di allenamento di un cliente specifico"""
+    try:
+        # Verifica autorizzazioni
+        if not current_user.is_trainer and current_user.id != client_id:
+            return jsonify({'error': 'Unauthorized'}), 403
+
+        conn = sqlite3.connect(DB_FILE)
+        cursor = conn.cursor()
+        
+        # Query per ottenere le schede con i relativi esercizi
+        cursor.execute("""
+            SELECT 
+                s.id AS scheda_id,
+                s.creato,
+                s.aggiornato,
+                se.id AS esercizio_scheda_id,
+                e.nome AS nome_esercizio,
+                e.descrizione AS descrizione_esercizio,
+                e.video_url,
+                se.ripetizioni,
+                se.serie,
+                se.durata_secondi,
+                se.recupero_secondi,
+                se.peso_kg,
+                m.nome AS nome_macchinario
+            FROM Schede s
+            LEFT JOIN Schede_Esercizi se ON s.id = se.scheda_id
+            LEFT JOIN Esercizi e ON se.esercizio_id = e.id
+            LEFT JOIN Macchinari m ON se.macchinario_id = m.id
+            WHERE s.cliente_id = ?
+            ORDER BY s.creato DESC, s.id, se.id
+        """, (client_id,))
+        
+        schede_raw = cursor.fetchall()
+        
+        if not schede_raw:
+            return jsonify({'message': 'Nessuna scheda trovata'}), 404
+
+        # Organizzo i dati in una struttura gerarchica
+        schede = {}
+        for row in schede_raw:
+            scheda_id = row[0]
+            if scheda_id not in schede:
+                schede[scheda_id] = {
+                    'id': scheda_id,
+                    'data_creazione': row[1],
+                    'ultimo_aggiornamento': row[2],
+                    'esercizi': []
+                }
+            
+            # Aggiungo l'esercizio solo se esiste (potrebbe essere una scheda vuota)
+            if row[3]:  # se esiste esercizio_scheda_id
+                esercizio = {
+                    'id': row[3],
+                    'nome': row[4],
+                    'descrizione': row[5],
+                    'video_url': row[6],
+                    'ripetizioni': row[7],
+                    'serie': row[8],
+                    'durata_secondi': row[9],
+                    'recupero_secondi': row[10],
+                    'peso_kg': row[11],
+                    'macchinario': row[12]
+                }
+                schede[scheda_id]['esercizi'].append(esercizio)
+
+        return jsonify(list(schede.values()))
+
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+    finally:
+        conn.close()
