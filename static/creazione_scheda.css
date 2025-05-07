@@ -1,0 +1,118 @@
+/* Stili generali */
+body {
+    background-color: #f5f5f5;
+}
+
+/* Stili per le carte degli esercizi */
+.esercizio-card {
+    cursor: grab;
+    transition: all 0.2s ease;
+    border-left: 4px solid #17a2b8;
+}
+
+.esercizio-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.esercizio-card:active {
+    cursor: grabbing;
+}
+
+/* Stili per l'area di rilascio degli esercizi */
+.scheda-drop-area {
+    min-height: 200px;
+    border: 2px dashed #adb5bd;
+    border-radius: 8px;
+    background-color: #f8f9fa;
+    transition: all 0.3s ease;
+}
+
+.scheda-drop-area.dragover {
+    background-color: #e9ecef;
+    border-color: #17a2b8;
+    box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+/* Stili per gli esercizi nella scheda */
+.esercizio-scheda .card {
+    border-left: 4px solid #28a745;
+}
+
+.esercizio-scheda .remove-esercizio {
+    opacity: 0.7;
+    transition: opacity 0.2s ease;
+}
+
+.esercizio-scheda .remove-esercizio:hover {
+    opacity: 1;
+}
+
+/* Stili per gli elementi trascinati */
+.esercizio-dragging {
+    opacity: 0.5;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .esercizio-card {
+        margin-bottom: 10px;
+    }
+    
+    .scheda-drop-area {
+        min-height: 150px;
+    }
+}
+
+/* Stili per filtri dei gruppi muscolari */
+.gruppo-muscolare-badge {
+    font-size: 0.75rem;
+    padding: 0.25rem 0.5rem;
+    margin-right: 0.3rem;
+    margin-bottom: 0.3rem;
+    display: inline-block;
+    border-radius: 1rem;
+    background-color: #e9ecef;
+    color: #495057;
+    font-weight: 600;
+}
+
+/* Colori per i diversi gruppi muscolari */
+.gruppo-petto { background-color: #ffcdd2; color: #b71c1c; }
+.gruppo-gambe { background-color: #c8e6c9; color: #1b5e20; }
+.gruppo-schiena { background-color: #bbdefb; color: #0d47a1; }
+.gruppo-braccia { background-color: #fff9c4; color: #f57f17; }
+.gruppo-spalle { background-color: #e1bee7; color: #4a148c; }
+.gruppo-addominali { background-color: #b2dfdb; color: #004d40; }
+.gruppo-core { background-color: #d7ccc8; color: #3e2723; }
+
+/* Stili per icone di Bootstrap */
+.bi::before {
+    display: inline-block;
+    content: "";
+    vertical-align: -.125em;
+    background-image: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'><path fill='%23fff' d='M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z'/></svg>");
+    background-repeat: no-repeat;
+    background-size: 1rem 1rem;
+}
+
+.bi-search::before {
+    width: 1em;
+    height: 1em;
+}
+
+.bi-trash::before {
+    width: 1em;
+    height: 1em;
+    background-image: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'><path fill='%23fff' d='M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0V6z'/><path fill='%23fff' fill-rule='evenodd' d='M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1v1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4H4.118zM2.5 3V2h11v1h-11z'/></svg>");
+}
+
+/* Animazioni */
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.esercizio-card, .esercizio-scheda {
+    animation: fadeIn 0.3s ease-out;
+}
