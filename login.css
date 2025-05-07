@@ -7,7 +7,7 @@ body {
 	font-family: "Montserrat", sans-serif;
 	height: 100vh;
 	width: 100%;
-	background-color: #262626;
+	background-color: #f1f5f9;
 	-webkit-background-size: cover;
 	background-size: cover;
 	background-repeat: no-repeat;
@@ -16,7 +16,7 @@ body {
 .wrapper {
 	width: 400px;
 	height: auto;
-	color: #fff;
+	color: #4361ee;
 	padding: 50px 30px;
 	position: relative;
 	border-radius: 25px;
@@ -48,15 +48,15 @@ body {
 	top: 34%;
 	transform: translateY(-50%);
 	right: 30px;
-	color: #fff;
+	color: #4361ee;
 }
 .wrapper input, button {
 	border: none;
-	border: 1px solid #ffffff;
+	border: 1px solid #2e2c2c63;
 	background: transparent;
 	outline: none;
 	height: 50px;
-	color: #ffffff;
+	color: #2e2c2c;
 	font-size: 16px;
 	width: 100%;
 	margin-bottom: 20px;
@@ -70,7 +70,7 @@ body {
 	margin-bottom: 20px;
 }
 .wrapper .options label {
-	color: #fff;
+	color: #2e2c2c;
 	font-size: 18px;
 	line-height: 3.5;
 }
@@ -80,9 +80,9 @@ body {
 }
 .wrapper a {
 	text-decoration: none;
-	color: #fff;
+	color: #2e2c2c;
 }
 .wrapper button {
-	background: #fff;
-	color: #262626;
+	background: #4361ee;
+	color: #fff;
 }
