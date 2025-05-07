@@ -199,3 +199,22 @@ def add_macchinari(nome):
         return False
     finally:
         conn.close()
+
+# eliminazione macchinari
+def del_macchinari(nome):
+    try:
+        conn = sqlite3.connect(DB_FILE)
+        cursor = conn.cursor()
+
+        cursor.execute("""
+        DELETE FROM Macchinari
+        WHERE nome = ?
+        """, (nome))
+
+        conn.commit()
+        return cursor.rowcount > 0
+    except Exception as e:
+        print(f"Errore durante l'eliminazione dei macchinari: {e}")
+        return False
+    finally:
+        conn.close()
