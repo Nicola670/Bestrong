@@ -132,6 +132,10 @@ def client_dashboard():
         return redirect(url_for('login'))
     return render_template('schedeClient.html')
 
+@app.route('/about')
+def about():
+    return render_template('About.html')
+
 @app.route('/logout')
 @login_required
 def logout():
