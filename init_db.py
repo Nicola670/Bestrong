@@ -8,6 +8,14 @@ def initialize_db():
     conn = sqlite3.connect(DB_FILE)
     cursor = conn.cursor()
 
+    # --- OBIETTIVI --- 
+    cursor.execute("""
+        CREATE TABLE IF NOT EXISTS Obiettivi (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            nome TEXT NOT NULL UNIQUE
+        );
+    """)
+
     # --- UTENTI ---
     # is_trainer = TRUE se è un personal trainer
     # varchar in sqlite è TEXT
@@ -19,9 +27,11 @@ def initialize_db():
             surname TEXT NOT NULL,
             email TEXT NOT NULL UNIQUE,
             phone TEXT NOT NULL UNIQUE,
-            date_of_birth DATE NOT NULL,
+            date_of_birth DATE NOT NULL, 
             password_hash TEXT NOT NULL,
-            password_change_required BOOLEAN DEFAULT FALSE
+            password_change_required BOOLEAN DEFAULT FALSE,
+            obiettivo_id INTEGER,
+            FOREIGN KEY (obiettivo_id) REFERENCES Obiettivi(id)
         );
     """)
 
@@ -40,14 +50,6 @@ def initialize_db():
     # --- GRUPPO MUSCOLARE --- 
     cursor.execute("""
         CREATE TABLE IF NOT EXISTS Gruppi_Muscolari (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            nome TEXT NOT NULL UNIQUE
-        );
-    """)
-
-    # --- OBIETTIVI --- 
-    cursor.execute("""
-        CREATE TABLE IF NOT EXISTS Obiettivi (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             nome TEXT NOT NULL UNIQUE
         );
