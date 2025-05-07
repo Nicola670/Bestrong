@@ -9,7 +9,7 @@ const clientDetailsModal = document.getElementById('clientDetailsModal');
 const closeDetailsModal = document.getElementById('closeDetailsModal');
 const searchInput = document.getElementById('searchInput');
 
-// Dati di esempio (simulazione API)
+// Dati di esempio (simulazione API) Capitano aiutami tu
 let clients = [
     {
         id: 1,
