@@ -1,21 +1,29 @@
-from flask import Flask, request, render_template, redirect, url_for, flash, jsonify
+from flask import Flask, request, render_template, redirect, url_for, flash, jsonify, session
 from flask_login import LoginManager, UserMixin, login_user, login_required, logout_user, current_user
+from datetime import timedelta, datetime
+import secrets
 from api import api
 from init_db import initialize_db, populate_database
 import db_operations as database
 import bcrypt
+from functools import wraps
 
 app = Flask(__name__)
-app.secret_key = "tacnegativa"
+# Chiave segreta più sicura generata in modo casuale
+app.secret_key = secrets.token_hex(32)
 app.register_blueprint(api)
 app.config["DEBUG"] = True
 
-# gesotore degli account di Flask
+# Se remember me non è selezionato, la sessione scade alla chiusura del browser
+app.config['REMEMBER_COOKIE_DURATION'] = timedelta(hours=1)  # Durata del cookie remember me
+app.config['REMEMBER_COOKIE_SECURE'] = False  # Impostare su True se si usa HTTPS
+app.config['REMEMBER_COOKIE_HTTPONLY'] = True
+
+# Gestore degli account di Flask
 login_manager = LoginManager()
-# collegamento gestore all'app
 login_manager.init_app(app)
-# route che prende l'utente se non è autenticato
 login_manager.login_view = 'login'
+login_manager.session_protection = "strong"  # Protezione avanzata delle sessioni
 
 # Classe User per gestire gli utenti
 class User(UserMixin):
@@ -42,6 +50,46 @@ def load_user(user_id):
         print(f"Errore nel caricamento dell'utente: {e}")
     return None
 
+@app.before_request
+def check_session_activity():
+    if current_user.is_authenticated:
+        # Skip per alcune route
+        if request.endpoint in ['static', 'logout']:
+            return
+            
+        # Verifica ultima attività
+        last_activity = session.get('last_activity')
+        if last_activity:
+            last_activity = datetime.fromisoformat(last_activity)
+            if datetime.now() - last_activity > timedelta(hours=2):
+                session.clear()
+                logout_user()
+                flash('Sessione scaduta. Effettua nuovamente il login.')
+                return redirect(url_for('login'))
+                
+        # Aggiorna timestamp ultima attività
+        session['last_activity'] = datetime.now().isoformat()
+
+# Decoratore personalizzato per verificare se l'utente è un trainer
+def trainer_required(f):
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        if not current_user.is_authenticated or not current_user.is_trainer:
+            flash('Accesso non autorizzato. Questa sezione è riservata ai trainer.')
+            return redirect(url_for('client_dashboard'))
+        return f(*args, **kwargs)
+    return decorated_function
+
+# Decoratore personalizzato per verificare se l'utente è un cliente
+def client_required(f):
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        if not current_user.is_authenticated or current_user.is_trainer:
+            flash('Accesso non autorizzato. Questa sezione è riservata ai clienti.')
+            return redirect(url_for('dashboard'))
+        return f(*args, **kwargs)
+    return decorated_function
+
 @app.route('/', methods=['GET'])
 def home():
     if not current_user.is_authenticated:
@@ -59,6 +107,7 @@ def login_page():
 def login():
     username = request.form.get('username')
     password = request.form.get('pswd')
+    remember = True if request.form.get('remember') else False
     
     if not username or not password:
         flash('Per favore, inserisci tutti i campi')
@@ -73,13 +122,22 @@ def login():
     try:
         if database.verify_password(password, user['password']):
             user_obj = User(user['id'], user['username'], bool(user['is_trainer']))
-            login_user(user_obj)
+            login_user(user_obj, remember=remember)  # Usa il valore del checkbox
             
-            # Se l'utente deve cambiare password, reindirizza alla pagina di cambio password
+            # Imposta la sessione come permanente solo se remember è True
+            session.permanent = remember
+            
+            # Aggiungi informazioni utili alla sessione
+            session['user_id'] = user['id']
+            session['username'] = user['username']
+            session['is_trainer'] = user['is_trainer']
+            session['last_activity'] = datetime.now().isoformat()
+            
+            # Se l'utente deve cambiare password, reindirizza
             if user['password_change_required']:
                 return redirect(url_for('change_password'))
             
-            # Altrimenti, redirect normale basato sul tipo di utente
+            # Redirect normale basato sul tipo di utente
             if user['is_trainer']:
                 return redirect(url_for('dashboard'))
             else:
@@ -94,10 +152,8 @@ def login():
 
 @app.route('/register', methods=['POST'])
 @login_required
+@trainer_required
 def register():
-    if not current_user.is_trainer:
-        return jsonify({'error': 'Unauthorized'}), 403
-        
     username = request.form.get('username')
     temp_password = "Password123"
     
@@ -125,17 +181,15 @@ def register():
 
 @app.route('/dashboard')
 @login_required
+@trainer_required
 def dashboard():
-    if not current_user.is_authenticated:
-        return redirect(url_for('login'))
     clients = database.get_clients_by_trainer(current_user.id)
-    return render_template('dashboard.html', clients = clients) # passa al template la lista dei clienti
+    return render_template('dashboard.html', clients=clients)
 
 @app.route('/client')
 @login_required
+@client_required
 def client_dashboard():
-    if not current_user.is_authenticated:
-        return redirect(url_for('login'))
     return render_template('schedeClient.html')
 
 @app.route('/about')
@@ -143,13 +197,18 @@ def about():
     return render_template('About.html')
 
 @app.route('/creazione_scheda')
+@login_required
+@trainer_required
 def creazione_scheda():
     return render_template('creazione_scheda.html')
 
 @app.route('/logout')
 @login_required
 def logout():
+    # Pulisci la sessione
+    session.clear()
     logout_user()
+    flash('Logout effettuato con successo')
     return redirect(url_for('login'))
 
 @app.route('/change_password', methods=['GET', 'POST'])
@@ -186,31 +245,26 @@ def change_password():
 
 @app.route('/machines')
 @login_required
+@trainer_required
 def macchinari_dashboard():
     return render_template('machines.html')
 
 @app.route('/add_machines')
 @login_required
+@trainer_required
 def add_macchinari_dashboard():
-    if not current_user.is_trainer: # Solo per i trainer
-        flash('Accesso non autorizzato')
-        return redirect(url_for('dashboard'))
     return render_template('machines.html')
 
 @app.route('/del_machines')
 @login_required
+@trainer_required
 def del_macchinari_dashboard():
-    if not current_user.is_trainer: # Solo per i trainer
-        flash('Accesso non autorizzato')
-        return redirect(url_for('dashboard'))
     return render_template('machines.html')
 
 @app.route('/change_machines')
 @login_required
+@trainer_required
 def change_macchinari_dashboard():
-    if not current_user.is_trainer: # Solo per i trainer
-        flash('Accesso non autorizzato')
-        return redirect(url_for('dashboard'))
     return render_template('machines.html')
     
 @app.route('/profile')
@@ -224,6 +278,12 @@ def profile():
 @app.errorhandler(404)
 def page_not_found(error):
     return render_template('404.html'), 404
+
+@app.errorhandler(401)
+def unauthorized(error):
+    session.clear()
+    flash('Sessione non valida. Effettua nuovamente il login.')
+    return redirect(url_for('login'))
 
 if __name__ == "__main__":
     # Inizializza e popola il database
