@@ -151,7 +151,7 @@ function showClientDetails(client) {
     document.getElementById('clientMembership').textContent = formatDate(client.iscrizione);
     document.getElementById('clientObjectiveDetail').textContent = formatObjective(client.obiettivo);
     
-    document.getElementById('link-neworkout').href = `crea.html?client-id=${client.id}`;
+    document.getElementById('link-neworkout').href = `creazione_scheda.html`;
 
     // Note tab
     document.getElementById('clientNotes').value = client.note || '';
@@ -288,6 +288,18 @@ window.addEventListener('click', (e) => {
     if (e.target === clientDetailsModal) {
         clientDetailsModal.classList.remove('open');
     }
+});
+
+// Aggiunge la classe active al link corrispondente alla pagina corrente
+document.addEventListener('DOMContentLoaded', function() {
+    const currentPath = window.location.pathname;
+    const navLinks = document.querySelectorAll('.nav-menu li a');
+    
+    navLinks.forEach(link => {
+        if (link.getAttribute('href') === currentPath) {
+            link.parentElement.classList.add('active');
+        }
+    });
 });
 
 // Inizializza l'applicazione
