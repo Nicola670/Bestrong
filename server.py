@@ -16,6 +16,15 @@ app.config["DEBUG"] = True
 
 # Se remember me non è selezionato, la sessione scade alla chiusura del browser
 app.config['REMEMBER_COOKIE_DURATION'] = timedelta(hours=1)  # Durata del cookie remember me
+
+''' Configurazione dei cookie di sessione con https
+app.config['REMEMBER_COOKIE_SECURE'] = False
+app.config['SESSION_COOKIE_SECURE'] = False
+app.config['REMEMBER_COOKIE_HTTPONLY'] = True
+app.config['SESSION_COOKIE_HTTPONLY'] = True
+app.config['SESSION_COOKIE_SAMESITE'] = 'Lax'
+'''
+
 app.config['REMEMBER_COOKIE_SECURE'] = False  # Impostare su True se si usa HTTPS
 app.config['REMEMBER_COOKIE_HTTPONLY'] = True
 
@@ -290,3 +299,12 @@ if __name__ == "__main__":
     initialize_db()
     populate_database()
     app.run(port=5001)
+    
+    ''' https con certificato autofirmato
+    app.run(
+        host='0.0.0.0',  # Permette connessioni esterne
+        port=5001,
+        ssl_context='adhoc',  # Usa un certificato autofirmato
+        debug=True
+    )
+    '''
