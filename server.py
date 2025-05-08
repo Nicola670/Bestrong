@@ -1,10 +1,8 @@
 from flask import Flask, request, render_template, redirect, url_for, flash, jsonify
 from flask_login import LoginManager, UserMixin, login_user, login_required, logout_user, current_user
 from api import api
-
 from init_db import initialize_db, populate_database
 import db_operations as database
-
 import bcrypt
 
 app = Flask(__name__)
@@ -36,19 +34,22 @@ def is_valid_password(password):
 # Funzione che prende i dati dell'utente della sessione
 @login_manager.user_loader
 def load_user(user_id):
-    user = database.get_user_by_id(user_id)
-    if user:
-        return User(user['id'], user['username'])
+    try:
+        user = database.get_user_by_id(user_id)
+        if user and 'id' in user and 'username' in user and 'is_trainer' in user:
+            return User(user['id'], user['username'], bool(user['is_trainer']))
+    except Exception as e:
+        print(f"Errore nel caricamento dell'utente: {e}")
     return None
 
 @app.route('/', methods=['GET'])
 def home():
-    if current_user.is_authenticated:
-        if current_user.is_trainer:
-            return redirect(url_for('dashboard'))
-        else:
-            return redirect(url_for('client_dashboard'))
-    return redirect(url_for('login'))
+    if not current_user.is_authenticated:
+        return redirect(url_for('login'))
+        
+    if current_user.is_trainer:
+        return redirect(url_for('dashboard'))
+    return redirect(url_for('client_dashboard'))
 
 @app.route('/login', methods=['GET'])
 def login_page():
