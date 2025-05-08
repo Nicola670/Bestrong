@@ -43,9 +43,11 @@ def load_user(user_id):
 
 @app.route('/', methods=['GET'])
 def home():
-    """ manca gestioenc liente/trainer"""
     if current_user.is_authenticated:
-        return redirect(url_for('dashboard'))
+        if current_user.is_trainer:
+            return redirect(url_for('dashboard'))
+        else:
+            return redirect(url_for('client_dashboard'))
     return redirect(url_for('login'))
 
 @app.route('/login', methods=['GET'])
