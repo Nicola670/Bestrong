@@ -21,11 +21,20 @@
                 </div>
                 <nav class="nav-menu">
                     <ul>
+                        {% if current_user.is_trainer %}
+                        <!-- Menu per i trainer -->
                         <li><a href="{{ url_for('dashboard') }}"><i class="fas fa-home"></i> <span>Clienti</span></a></li>
                         <li><a href="{{ url_for('creazione_scheda') }}"><i class="fas fa-calendar-alt"></i> <span>Schede</span></a></li>
                         <li><a href="{{ url_for('about') }}"><i class="fas fa-users"></i> <span>About</span></a></li>
                         <li><a href="{{ url_for('profile') }}"><i class="fas fa-user"></i> <span>Profilo</span></a></li>
                         <li><a href="{{ url_for('logout') }}"><i class="fas fa-sign-out-alt"></i> <span>Logout</span></a></li>
+                    {% else %}
+                        <!-- Menu per i clienti -->
+                        <li><a href="{{ url_for('client_dashboard') }}"><i class="fas fa-home"></i> <span>Home</span></a></li>
+                        <li><a href="{{ url_for('profile') }}"><i class="fas fa-user"></i> <span>Profilo</span></a></li>
+                        <li><a href="{{ url_for('about') }}"><i class="fas fa-users"></i> <span>Chi Siamo</span></a></li>
+                        <li><a href="{{ url_for('logout') }}"><i class="fas fa-sign-out-alt"></i> <span>Logout</span></a></li>
+                    {% endif %}
                     </ul>
                 </nav>
                 <div class="trainer-profile">
