@@ -250,3 +250,17 @@ document.addEventListener('DOMContentLoaded', function() {
         }, 3000);
     }
 });
+
+document.addEventListener('DOMContentLoaded', function() {
+    const currentPath = window.location.pathname;
+    const navLinks = document.querySelectorAll('.nav-menu li a');
+    
+    navLinks.forEach(link => {
+        // Rimuove la classe active da tutti i link
+        link.parentElement.classList.remove('active');
+        // Aggiunge la classe active solo al link corrente
+        if (link.getAttribute('href') === currentPath) {
+            link.parentElement.classList.add('active');
+        }
+    });
+});
