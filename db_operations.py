@@ -157,3 +157,84 @@ def get_clients_by_trainer(trainer_id):
         return []
     finally:
         conn.close()
+
+# visualizzazione macchinari
+def macchinari():
+    try:
+        conn = sqlite3.connect(DB_FILE)
+        cursor = conn.cursor()
+
+        cursor.execute("""
+            SELECT nome
+            FROM Macchinari
+        """)
+
+        # Recupera tutti i risultati della query
+        risultati = cursor.fetchall()
+
+        return risultati
+    except Exception as e:
+        print(f"Errore durante la visualizzazione dei macchinari: {e}")
+        return []
+    finally:
+        conn.close()
+
+# aggiunta macchinari
+def add_macchinari(nome):
+    try:
+        conn = sqlite3.connect(DB_FILE)
+        cursor = conn.cursor()
+
+        cursor.execute("""
+            INSERT INTO Macchinari
+            (nome)
+            VALUES
+            (?)
+        """, (nome,))
+
+        conn.commit()
+        return cursor.rowcount > 0
+    except Exception as e:
+        print(f"Errore durante l'aggiunta dei macchinari: {e}")
+        return False
+    finally:
+        conn.close()
+
+# eliminazione macchinari
+def del_macchinari(nome):
+    try:
+        conn = sqlite3.connect(DB_FILE)
+        cursor = conn.cursor()
+
+        cursor.execute("""
+            DELETE FROM Macchinari
+            WHERE nome = ?
+        """, (nome))
+
+        conn.commit()
+        return cursor.rowcount > 0
+    except Exception as e:
+        print(f"Errore durante l'eliminazione dei macchinari: {e}")
+        return False
+    finally:
+        conn.close()
+
+# modifica macchinari
+def change_macchinari(nome_vecchio, nome_nuovo):
+    try:
+        conn = sqlite3.connect(DB_FILE)
+        cursor = conn.cursor()
+
+        cursor.execute("""
+            UPDATE Macchinari SET
+            nome = ?
+            WHERE nome = ?
+        """, (nome_nuovo, nome_vecchio))
+
+        conn.commit()
+        return cursor.rowcount > 0
+    except Exception as e:
+        print(f"Errore durante la modifica dei macchinari: {e}")
+        return False
+    finally:
+        conn.close()

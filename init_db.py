@@ -8,15 +8,30 @@ def initialize_db():
     conn = sqlite3.connect(DB_FILE)
     cursor = conn.cursor()
 
+    # --- OBIETTIVI --- 
+    cursor.execute("""
+        CREATE TABLE IF NOT EXISTS Obiettivi (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            nome TEXT NOT NULL UNIQUE
+        );
+    """)
+
     # --- UTENTI ---
     # is_trainer = TRUE se è un personal trainer
+    # varchar in sqlite è TEXT
     cursor.execute("""
         CREATE TABLE IF NOT EXISTS Utenti (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             is_trainer BOOLEAN NOT NULL,
-            username TEXT NOT NULL UNIQUE,
+            username TEXT NOT NULL,
+            surname TEXT NOT NULL,
+            email TEXT NOT NULL UNIQUE,
+            phone TEXT NOT NULL UNIQUE,
+            date_of_birth DATE NOT NULL, 
             password_hash TEXT NOT NULL,
-            password_change_required BOOLEAN DEFAULT FALSE
+            password_change_required BOOLEAN DEFAULT FALSE,
+            obiettivo_id INTEGER,
+            FOREIGN KEY (obiettivo_id) REFERENCES Obiettivi(id)
         );
     """)
 
@@ -35,14 +50,6 @@ def initialize_db():
     # --- GRUPPO MUSCOLARE --- 
     cursor.execute("""
         CREATE TABLE IF NOT EXISTS Gruppi_Muscolari (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            nome TEXT NOT NULL UNIQUE
-        );
-    """)
-
-    # --- OBIETTIVI --- 
-    cursor.execute("""
-        CREATE TABLE IF NOT EXISTS Obiettivi (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             nome TEXT NOT NULL UNIQUE
         );
@@ -187,63 +194,70 @@ def populate_database():
         'Difficile',
     ]
     
-    for i in difficulties:
-        cursor.execute("INSERT OR IGNORE INTO Difficolta (livello) VALUES (?)", (i,))
+    for diff in difficulties:
+        cursor.execute("INSERT OR IGNORE INTO Difficolta (livello) VALUES (?)", (diff,))
 
-
-
-    # DATI INSERITI A MANO DA TOGLIERE PER TEST
-    # personal trainer per test
-    psw = "test123"
-    bytes = psw.encode('utf-8')
-    salt = bcrypt.gensalt()
-    hashed_password = bcrypt.hashpw(bytes, salt)
+    # --- INSERIMENTO MACCHINARI ---
+    machines = [
+        'Panca piana',
+        'Lat machine',
+        'Leg press',
+        'Chest press',
+        'Shoulder press',
+        'Cyclette',
+        'Tapis roulant',
+        'Cable machine'
+    ]
     
-    cursor.execute("""
-        INSERT OR IGNORE INTO Utenti 
-        (username, password_hash, is_trainer, password_change_required) 
-        VALUES (?, ?, ?, ?)
-    """, ('admin', hashed_password, True, False))
+    for machine in machines:
+        cursor.execute("INSERT OR IGNORE INTO Macchinari (nome) VALUES (?)", (machine,))
+
+    # --- INSERIMENTO ESERCIZI ---
+    exercises = [
+        ('Panca Piana', 'Distendersi sulla panca e spingere il bilanciere', 1, 2),
+        ('Trazioni', 'Trazione alla sbarra', 1, 3),
+        ('Military Press', 'Press sopra la testa', 1, 2),
+        ('Squat', 'Piegamenti gambe con bilanciere', 3, 2),
+        ('Curl Bicipiti', 'Curl con manubri', 1, 1),
+        ('Crunch', 'Addominali a terra', 2, 1)
+    ]
     
-    cursor.execute("""
-        INSERT OR IGNORE INTO Utenti 
-        (username, password_hash, is_trainer, password_change_required) 
-        VALUES (?, ?, ?, ?)
-    """, ('cliente1', hashed_password, False, True))
+    for nome, descrizione, obiettivo_id, difficolta_id in exercises:
+        cursor.execute("""
+            INSERT OR IGNORE INTO Esercizi (nome, descrizione, obiettivo_id, difficolta_id)
+            VALUES (?, ?, ?, ?)
+        """, (nome, descrizione, obiettivo_id, difficolta_id))
 
-    cursor.execute("""
-        INSERT OR IGNORE INTO Utenti 
-        (username, password_hash, is_trainer, password_change_required) 
-        VALUES (?, ?, ?, ?)
-    """, ('cliente2', hashed_password, False, True))
-
-    cursor.execute("""
-        INSERT OR IGNORE INTO Clienti_Trainer (cliente_id, trainer_id)
-        VALUES (?, ?)
-    """, (2, 1)) # cliente1, admin
-
-    cursor.execute("""
-        INSERT OR IGNORE INTO Clienti_Trainer (cliente_id, trainer_id)
-        VALUES (?, ?)
-    """, (3, 1)) # cliente2, admin
-
-    # Aggiunta esercizio di test per lo streaming video
-    cursor.execute("""
-        INSERT OR IGNORE INTO Esercizi (
-            nome,
-            descrizione,
-            video_url,
-            obiettivo_id,
-            difficolta_id
-        ) VALUES (?, ?, ?, ?, ?)
-    """, (
-        'Esercizio di Prova',
-        'Descrizione di prova per testare lo streaming video',
-        'video.mp4',
-        1,  # ID obiettivo
-        1   # ID difficoltà
-    ))
+    # --- INSERIMENTO SCHEDE ---
+    # Prima otteniamo alcuni ID necessari
+    cursor.execute("SELECT id FROM Utenti WHERE is_trainer = TRUE LIMIT 1")
+    trainer_id = cursor.fetchone()[0]
     
-    # commit serve per salvare le modifiche nel database quando si fa un INSERT 
+    cursor.execute("SELECT id FROM Utenti WHERE is_trainer = FALSE AND username != 'admin' LIMIT 2")
+    client_ids = [row[0] for row in cursor.fetchall()]
+
+    # Creiamo alcune schede
+    for client_id in client_ids:
+        cursor.execute("""
+            INSERT INTO Schede (cliente_id, trainer_id)
+            VALUES (?, ?)
+        """, (client_id, trainer_id))
+        
+        scheda_id = cursor.lastrowid
+        
+        # Aggiungiamo esercizi alle schede
+        esercizi_scheda = [
+            (1, 1, 4, 12, 60, None),  # (esercizio_id, macchinario_id, serie, ripetizioni, recupero, peso)
+            (2, None, 3, 10, 90, None),
+            (4, 3, 4, 15, 60, 60.0)
+        ]
+        
+        for es_id, mac_id, serie, reps, rec, peso in esercizi_scheda:
+            cursor.execute("""
+                INSERT INTO Schede_Esercizi 
+                (scheda_id, esercizio_id, macchinario_id, serie, ripetizioni, recupero_secondi, peso_kg)
+                VALUES (?, ?, ?, ?, ?, ?, ?)
+            """, (scheda_id, es_id, mac_id, serie, reps, rec, peso))
+
     conn.commit()
     conn.close()

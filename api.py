@@ -125,70 +125,141 @@ def stream_exercise_video(exercise_id):
     finally:
         conn.close()
 
-@api.route('/api/exercises', methods=['GET'])
-#@login_required
-def get_exercises():
-    """
-    if not current_user.is_trainer:
-        return jsonify({'error': 'Unauthorized'}), 403
-    """
-
-    conn = sqlite3.connect(DB_FILE)
-    cursor = conn.cursor()
-    
+@api.route('/api/client/<int:client_id>/schede', methods=['GET'])
+@login_required
+def get_client_schede(client_id):
+    """Restituisce tutte le schede di allenamento di un cliente specifico"""
     try:
+        # Verifica autorizzazioni
+        if not current_user.is_trainer and current_user.id != client_id:
+            return jsonify({'error': 'Unauthorized'}), 403
+
+        conn = sqlite3.connect(DB_FILE)
+        cursor = conn.cursor()
+        
+        # Query per ottenere le schede con i relativi esercizi
         cursor.execute("""
             SELECT 
-            Esercizi.id,
-            Esercizi.nome,
-            Esercizi.descrizione,
-                       video_url,
-                       immagine_url,
-                       Obiettivi.nome,
-                       Difficolta.livello
-                
-            FROM Esercizi
-            INNER JOIN Obiettivi ON obiettivo_id = Obiettivi.id
-            INNER JOIN Difficolta ON difficolta_id = Difficolta.id
-        """) 
-        exercises = cursor.fetchall()
-        return jsonify([{
-            'id': exercise[0], 
-            'nome': exercise[1],
-            'descrizione': exercise[2],
-            'video_url': exercise[3],
-            'immagine_url': exercise[4],
-            'obiettivo':  exercise[5],
-            'livello':  exercise[6]
-        } for exercise in exercises])
-    finally:
-        conn.close()
+                s.id AS scheda_id,
+                s.creato,
+                s.aggiornato,
+                se.id AS esercizio_scheda_id,
+                e.nome AS nome_esercizio,
+                e.descrizione AS descrizione_esercizio,
+                e.video_url,
+                se.ripetizioni,
+                se.serie,
+                se.durata_secondi,
+                se.recupero_secondi,
+                se.peso_kg,
+                m.nome AS nome_macchinario
+            FROM Schede s
+            LEFT JOIN Schede_Esercizi se ON s.id = se.scheda_id
+            LEFT JOIN Esercizi e ON se.esercizio_id = e.id
+            LEFT JOIN Macchinari m ON se.macchinario_id = m.id
+            WHERE s.cliente_id = ?
+            ORDER BY s.creato DESC, s.id, se.id
+        """, (client_id,))
+        
+        schede_raw = cursor.fetchall()
+        
+        if not schede_raw:
+            return jsonify({'message': 'Nessuna scheda trovata'}), 404
 
-@api.route('/api/workouts', methods=['GET'])
-#@login_required
-def get_workouts():
-    """
-    if not current_user.is_trainer:
-        return jsonify({'error': 'Unauthorized'}), 403
-    """
-
-    conn = sqlite3.connect(DB_FILE)
-    cursor = conn.cursor()
-    
-    try:
-        cursor.execute("""
+        # Organizzo i dati in una struttura gerarchica
+        schede = {}
+        for row in schede_raw:
+            scheda_id = row[0]
+            if scheda_id not in schede:
+                schede[scheda_id] = {
+                    'id': scheda_id,
+                    'data_creazione': row[1],
+                    'ultimo_aggiornamento': row[2],
+                    'esercizi': []
+                }
             
-        """) 
-        workouts = cursor.fetchall()
-        print(workouts)
-        '''
-        return jsonify([{
-            'id': exercises[0], 
-            'nome': exercises[1],
-            'descrizione': exercises[2],
-            'video_url': exercises[3],
-            'immagine_url': exercises[4]
-        } for workout in workouts])'''
+            # Aggiungo l'esercizio solo se esiste (potrebbe essere una scheda vuota)
+            if row[3]:  # se esiste esercizio_scheda_id
+                esercizio = {
+                    'id': row[3],
+                    'nome': row[4],
+                    'descrizione': row[5],
+                    'video_url': row[6],
+                    'ripetizioni': row[7],
+                    'serie': row[8],
+                    'durata_secondi': row[9],
+                    'recupero_secondi': row[10],
+                    'peso_kg': row[11],
+                    'macchinario': row[12]
+                }
+                schede[scheda_id]['esercizi'].append(esercizio)
+
+        return jsonify(list(schede.values()))
+
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
     finally:
         conn.close()
 
+@api.route('/api/exercises', methods=['GET'])
+@login_required
+def get_exercises():
+    """Restituisce tutti gli esercizi presenti nel database"""
+    try:
+        conn = sqlite3.connect(DB_FILE)
+        cursor = conn.cursor()
+        
+        cursor.execute("""
+            SELECT 
+                e.id,
+                e.nome,
+                e.descrizione,
+                e.video_url,
+                e.immagine_url,
+                o.nome AS obiettivo,
+                d.livello AS difficolta,
+                GROUP_CONCAT(CASE 
+                    WHEN em.tipo = 'primario' THEN gm.nome 
+                END) AS muscoli_primari,
+                GROUP_CONCAT(CASE 
+                    WHEN em.tipo = 'secondario' THEN gm.nome 
+                END) AS muscoli_secondari
+            FROM Esercizi e
+            LEFT JOIN Obiettivi o ON e.obiettivo_id = o.id
+            LEFT JOIN Difficolta d ON e.difficolta_id = d.id
+            LEFT JOIN Esercizi_Muscoli em ON e.id = em.esercizio_id
+            LEFT JOIN Gruppi_Muscolari gm ON em.muscolo_id = gm.id
+            GROUP BY e.id
+            ORDER BY e.nome
+        """)
+        
+        exercises = cursor.fetchall()
+        
+        if not exercises:
+            return jsonify({'message': 'Nessun esercizio trovato'}), 404
+
+        # Formatta i risultati in JSON
+        exercises_list = []
+        for ex in exercises:
+            muscoli_primari = ex[7].split(',') if ex[7] else []
+            muscoli_secondari = ex[8].split(',') if ex[8] else []
+            
+            exercise = {
+                'id': ex[0],
+                'nome': ex[1],
+                'descrizione': ex[2],
+                'video_url': ex[3],
+                'immagine_url': ex[4],
+                'obiettivo': ex[5],
+                'difficolta': ex[6],
+                'muscoli_primari': [m for m in muscoli_primari if m],
+                'muscoli_secondari': [m for m in muscoli_secondari if m]
+            }
+            exercises_list.append(exercise)
+
+        return jsonify(exercises_list)
+
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+    finally:
+        conn.close()
