@@ -1,11 +1,16 @@
 <!DOCTYPE html>
-<!-- Capitano -->
+
 <html>
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>Dashboard-bestrong</title>
 
+<<<<<<< HEAD
+=======
+        <link rel="stylesheet" href="css/dashboard.css">
+        <!-- <link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard.css') }}"> -->
+>>>>>>> frontend
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
         <link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard.css') }}"> 
 
@@ -14,26 +19,37 @@
     <body>
         <div class="app-container">
             <!-- Sidebar -->
-            <aside class="sidebar">
-                <div class="logo">
-                    <i class="fas fa-dumbbell"></i>
-                    <span>bestrong a.s.d</span>
+            <aside class="sidebar" id="sidebar">
+                <!-- Contenuto principale della sidebar -->
+                <div class="sidebar-content">
+                    <div class="logo">
+                        <i class="fas fa-dumbbell"></i>
+                        <span>BeStrong</span>
+                    </div>
+                    <nav class="nav-menu">
+                        <ul>
+                            <li><a href="{{ url_for('dashboard') }}"><i class="fas fa-home"></i> <span>Clienti</span></a></li>
+                            <li><a href="{{ url_for('creazione_scheda') }}"><i class="fas fa-calendar-alt"></i> <span>Schede</span></a></li>
+                            <li><a href="{{ url_for('about') }}"><i class="fas fa-users"></i> <span>About</span></a></li>
+                            <li><a href="{{ url_for('about') }}"><i class="fas fa-user"></i> <span>Profilo</span></a></li>
+                            <li><a href="{{ url_for('logout') }}"><i class="fas fa-sign-out-alt"></i> <span>Logout</span></a></li>
+                        </ul>
+                    </nav>
+                    <div class="trainer-profile">
+                        <div class="avatar">
+                            <span>GC</span>
+                        </div>
+                        <div class="trainer-info">
+                            <h4>Giovanni Cei</h4>
+                            <p>Cliente</p>
+                        </div>
+                    </div>
                 </div>
-                <nav class="nav-menu">
-                    <ul>
-                        <li class="active"><a href="#"><i class="fas fa-users"></i> Clienti</a></li>
-                        <li><a href="programmazione.html"><i class="fas fa-calendar-alt"></i> Programmazione</a></li>
-                        <li><a href="impostazioni.html"><i class="fas fa-cog"></i> Impostazioni</a></li>
-                    </ul>
-                </nav>
-                <div class="trainer-profile">
-                    <div class="avatar">
-                        <img src="/api/placeholder/40/40" alt="Trainer">
-                    </div>
-                    <div class="trainer-info">
-                        <h4>Mario Rossi</h4>
-                        <p>Personal Trainer</p>
-                    </div>
+                <!-- Parte visibile con pulsante menu -->
+                <div class="sidebar-peek">
+                    <button class="menu-toggle" id="menuToggle">
+                        <i class="fas fa-bars"></i>
+                    </button>
                 </div>
             </aside>
     
@@ -202,6 +218,12 @@
         </div>
     </div>
 
+<<<<<<< HEAD
     <script src="static/js/dashboard.js"></script>
+=======
+    <!-- <script src="{{ url_for('static', filename='js/dashboard.js') }}"></script> -->
+    <script src="js/dashboard.js"></script>
+
+>>>>>>> frontend
     </body>
 </html>

@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BeStrong - Dashboard Cliente</title>
+    <link rel="stylesheet" href="css/schedeClient.css">
+    <!-- <link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard.css') }}">  -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+
+<body>
+    <div class="app-container">
+        <!-- Sidebar -->
+        <aside class="sidebar" id="sidebar">
+            <!-- Contenuto principale della sidebar -->
+            <div class="sidebar-content">
+                <div class="logo">
+                    <i class="fas fa-dumbbell"></i>
+                    <span>BeStrong</span>
+                </div>
+                <nav class="nav-menu">
+                    <ul>
+                        <li class="active"><a href="#"><i class="fas fa-home"></i> <span>Home</span></a></li>
+                        <li><a href="#"><i class="fas fa-user"></i> <span>Profilo</span></a></li>
+                        <li><a href="#"><i class="fas fa-users"></i> <span>Chi Siamo</span></a></li>
+                        <li><a href="#"><i class="fas fa-cog"></i> <span>Impostazioni</span></a></li>
+                        <li><a href="#"><i class="fas fa-sign-out-alt"></i> <span>Logout</span></a></li>
+                    </ul>
+                </nav>
+                <div class="trainer-profile">
+                    <div class="avatar">
+                        <span>GC</span>
+                    </div>
+                    <div class="trainer-info">
+                        <h4>Giovanni Cei</h4>
+                        <p>Cliente</p>
+                    </div>
+                </div>
+            </div>
+            <!-- Parte visibile con pulsante menu -->
+            <div class="sidebar-peek">
+                <button class="menu-toggle" id="menuToggle">
+                    <i class="fas fa-bars"></i>
+                </button>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content" id="mainContent">
+            <header class="content-header">
+                <h1>Le Tue Schede</h1>
+                <div class="search-container">
+                    <input type="text" id="searchInput" placeholder="Cerca scheda...">
+                    <i class="fas fa-search"></i>
+                </div>
+            </header>
+
+            <!-- Schede Grid -->
+            <section class="clients-grid" id="schedeGrid">
+                <div class="client-card">
+                    <div class="client-avatar" style="background: linear-gradient(135deg, #e74c3c, #c0392b);">
+                        <i class="fas fa-dumbbell"></i>
+                    </div>
+                    <div class="client-info">
+                        <h3>Petto</h3>
+                        <p>Esercizi per pettorali</p>
+                        <div class="creation-date">
+                            <i class="far fa-calendar-alt"></i>
+                            <span>Creata il 15/04/2025</span>
+                        </div>
+                        <span class="client-tag tag-bottone">Vai alla scheda</span>
+                    </div>
+                </div>
+
+                <div class="client-card">
+                    <div class="client-avatar" style="background: linear-gradient(135deg, #3498db, #2980b9);">
+                        <i class="fas fa-running"></i>
+                    </div>
+                    <div class="client-info">
+                        <h3>Gambe</h3>
+                        <p>Esercizi per quadricipiti e femorali</p>
+                        <div class="creation-date">
+                            <i class="far fa-calendar-alt"></i>
+                            <span>Creata il 22/04/2025</span>
+                        </div>
+                        <span class="client-tag tag-bottone">Vai alla scheda</span>
+                    </div>
+                </div>
+
+                <div class="client-card">
+                    <div class="client-avatar" style="background: linear-gradient(135deg, #9b59b6, #8e44ad);">
+                        <i class="fas fa-fist-raised"></i>
+                    </div>
+                    <div class="client-info">
+                        <h3>Braccia</h3>
+                        <p>Esercizi per bicipiti e tricipiti</p>
+                        <div class="creation-date">
+                            <i class="far fa-calendar-alt"></i>
+                            <span>Creata il 01/05/2025</span>
+                        </div>
+                        <span class="client-tag tag-bottone">Vai alla scheda</span>
+                    </div>
+                </div>
+
+                <div class="client-card">
+                    <div class="client-avatar" style="background: linear-gradient(135deg, #f1c40f, #f39c12);">
+                        <i class="fas fa-child"></i>
+                    </div>
+                    <div class="client-info">
+                        <h3>Spalle</h3>
+                        <p>Esercizi per deltoidi</p>
+                        <div class="creation-date">
+                            <i class="far fa-calendar-alt"></i>
+                            <span>Creata il 28/04/2025</span>
+                        </div>
+                        <span class="client-tag tag-bottone">Vai alla scheda</span>
+                    </div>
+                </div>
+
+                <div class="client-card">
+                    <div class="client-avatar" style="background: linear-gradient(135deg, #2ecc71, #27ae60);">
+                        <i class="fas fa-bone"></i>
+                    </div>
+                    <div class="client-info">
+                        <h3>Schiena</h3>
+                        <p>Esercizi per dorsali e trapezi</p>
+                        <div class="creation-date">
+                            <i class="far fa-calendar-alt"></i>
+                            <span>Creata il 05/05/2025</span>
+                        </div>
+                        <span class="client-tag tag-bottone">Vai alla scheda</span>
+                    </div>
+                </div>
+
+                <div class="client-card">
+                    <div class="client-avatar" style="background: linear-gradient(135deg, #e67e22, #d35400);">
+                        <i class="fas fa-fire-alt"></i>
+                    </div>
+                    <div class="client-info">
+                        <h3>Glutei</h3>
+                        <p>Esercizi per glutei</p>
+                        <div class="creation-date">
+                            <i class="far fa-calendar-alt"></i>
+                            <span>Creata il 03/05/2025</span>
+                        </div>
+                        <span class="client-tag tag-bottone">Vai alla scheda</span>
+                    </div>
+                </div>
+
+                <div class="client-card">
+                    <div class="client-avatar" style="background: linear-gradient(135deg, #1abc9c, #16a085);">
+                        <i class="fas fa-heartbeat"></i>
+                    </div>
+                    <div class="client-info">
+                        <h3>Cardio</h3>
+                        <p>Esercizi cardiovascolari</p>
+                        <div class="creation-date">
+                            <i class="far fa-calendar-alt"></i>
+                            <span>Creata il 30/04/2025</span>
+                        </div>
+                        <span class="client-tag tag-bottone">Vai alla scheda</span>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- Modal per Visualizzare Dettagli Scheda -->
+    <div class="modal" id="schedaDetailsModal">
+        <div class="modal-content modal-large">
+            <div class="modal-header">
+                <h2>Dettagli Scheda</h2>
+                <span class="close-modal" id="closeModal">&times;</span>
+            </div>
+            <div class="modal-body">
+                <!-- contenuto generato dinamicamente -->
+            </div>
+        </div>
+    </div>
+    <script src="js/schedeClient.js"></script>
+    <!-- <script src="static/js/dashboard.js"></script> -->
+
+</body>
+</html>
