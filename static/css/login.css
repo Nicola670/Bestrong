@@ -66,21 +66,39 @@ body {
 .wrapper .options {
 	display: flex;
 	justify-content: space-between;
-	align-items: center;
+	align-items: flex-start;
 	margin-bottom: 20px;
 }
+
+.wrapper .options .checkboxes {
+	display: flex;
+	flex-direction: column;
+	gap: 5px;
+}
+
+.wrapper .options .checkbox-item {
+	display: flex;
+	align-items: center;
+}
+
 .wrapper .options label {
 	color: #2e2c2c;
-	font-size: 18px;
-	line-height: 3.5;
+	font-size: 14px;
+	display: flex;
+	align-items: center;
+	gap: 5px;
 }
+
 .options input[type="checkbox"] {
 	width: 15px;
-	height: auto;
+	height: 15px;
+	margin: 0;
 }
+
 .wrapper a {
 	text-decoration: none;
 	color: #2e2c2c;
+	font-size: 14px;
 }
 .wrapper button {
 	background: #4361ee;
