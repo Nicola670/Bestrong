@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>BeStrong - Profilo</title>
     
-    <link rel="stylesheet" href="profilo.css">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/profilo.css') }}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
@@ -22,12 +21,11 @@
                 </div>
                 <nav class="nav-menu">
                     <ul>
-                        <li><a href="#"><i class="fas fa-home"></i> <span>Home</span></a></li>
-                        <li class="active"><a href="#"><i class="fas fa-user"></i> <span>Profilo</span></a></li>
-                        <li><a href="#"><i class="fas fa-users"></i> <span>Chi Siamo</span></a></li>
-                        <li><a href="#"><i class="fas fa-calendar-alt"></i> <span>Programmazione</span></a></li>
-                        <li><a href="#"><i class="fas fa-cog"></i> <span>Impostazioni</span></a></li>
-                        <li><a href="#"><i class="fas fa-sign-out-alt"></i> <span>Logout</span></a></li>
+                        <li><a href="{{ url_for('dashboard') }}"><i class="fas fa-home"></i> <span>Clienti</span></a></li>
+                        <li><a href="{{ url_for('creazione_scheda') }}"><i class="fas fa-calendar-alt"></i> <span>Schede</span></a></li>
+                        <li><a href="{{ url_for('about') }}"><i class="fas fa-users"></i> <span>About</span></a></li>
+                        <li><a href="{{ url_for('profile') }}"><i class="fas fa-user"></i> <span>Profilo</span></a></li>
+                        <li><a href="{{ url_for('logout') }}"><i class="fas fa-sign-out-alt"></i> <span>Logout</span></a></li>
                     </ul>
                 </nav>
                 <div class="trainer-profile">
@@ -267,7 +265,6 @@
         </div>
     </div>
 
-    <script src="profilo.js"></script>
-    <!-- <script src="{{ url_for('static', filename='js/profilo.js') }}"></script> -->
+    <script src="{{ url_for('static', filename='js/profilo.js') }}"></script>
 </body>
 </html>
