@@ -42,8 +42,8 @@
                         <span>GC</span>
                     </div>
                     <div class="trainer-info">
-                        <h4>Giovanni Cei</h4>
-                        <p>Cliente</p>
+                        <h4>{{ current_user.username }}</h4>
+                        <p>{% if current_user.is_trainer %}Personal Trainer{% else %}Cliente{% endif %}</p>
                     </div>
                 </div>
             </div>
@@ -277,3 +277,4 @@
     <script src="{{ url_for('static', filename='js/profilo.js') }}"></script>
 </body>
 </html>
+``` 
