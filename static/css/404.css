@@ -75,16 +75,19 @@ p {
 .button {
     display: inline-block;
     padding: 12px 25px;
-    background-color: #4dabf7;
-    color: white;
+    background-color: #007bff;    /* Blu più acceso */
+    color: white;                 /* Testo bianco */
     text-decoration: none;
     font-size: 1.2rem;
-    border-radius: 8px;
-    transition: background-color 0.3s;
+    border-radius: 8px;           /* Bordi arrotondati */
+    transition: background-color 0.3s, transform 0.2s;
+    border: none;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
 }
 
 .button:hover {
-    background-color: #339af0;
+    background-color: #0056b3;    /* Blu più scuro all'hover */
+    transform: translateY(-2px);   /* Leggero effetto di sollevamento */
 }
 
 @keyframes fadeInDown {
