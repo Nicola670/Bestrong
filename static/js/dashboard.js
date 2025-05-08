@@ -10,15 +10,18 @@ const closeDetailsModal = document.getElementById('closeDetailsModal');
 const searchInput = document.getElementById('searchInput');
 
 
-let clients = fetch("http://localhost:8080/api/clients", {
-    method: "GET"
-    //headers
+let clients = fetch("http://localhost:5001/api/clients", {
+    method: "GET",
+    headers: {
+        "Content-Type": "application/json"
+    }
   })
   .then(response => response.json())
   .catch(err => {
     console.error("Errore nel fetch dei clienti:", err);
   });
 
+  alert(clients)
 /*
 // Dati di esempio (simulazione API) Capitano aiutami tu
 let clients = [

@@ -38,7 +38,7 @@ def get_clients():
     
     try:
         cursor.execute("""
-            SELECT Utenti.id, Utenti.username
+            SELECT Utenti.id, Utenti.username, Utenti.surname, Utenti.email, Utenti.phone, Utenti.date_of_birth
             FROM Utenti
             INNER JOIN Clienti_Trainer ON Utenti.id = Clienti_Trainer.cliente_id
             WHERE Clienti_Trainer.trainer_id = ?
@@ -46,7 +46,11 @@ def get_clients():
         clients = cursor.fetchall()
         return jsonify([{
             'id': client[0], 
-            'username': client[1]
+            'username': client[1],
+            'surname': client[2],
+            'email': client[3],
+            'phone': client[4],
+            'date_of_birth': client[5]
         } for client in clients])
     finally:
         conn.close()
@@ -65,7 +69,7 @@ def get_client_by_id(client_id):
     try:
         # Esegui la query per ottenere i dettagli del cliente
         cursor.execute("""
-            SELECT Utenti.id, Utenti.username
+            SELECT Utenti.id, Utenti.username, Utenti.surname, Utenti.email. Utenti.phone, Utenti.date_of_birth
             FROM Utenti
             INNER JOIN Clienti_Trainer ON Utenti.id = Clienti_Trainer.cliente_id
             WHERE Clienti_Trainer.cliente_id = ? AND Clienti_Trainer.trainer_id = ?
@@ -80,6 +84,10 @@ def get_client_by_id(client_id):
         return jsonify({
             'id': client[0],
             'username': client[1],
+            'surname': client[2],
+            'email': client[3],
+            'phone': client[4],
+            'date_of_birth': client[5]
         })
     except Exception as e:
         # Gestione degli errori
