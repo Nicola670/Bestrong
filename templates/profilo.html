@@ -5,8 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>BeStrong - Profilo</title>
     
-    <link rel="stylesheet" href="profilo.css">
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/profilo.css') }}">
+    <link rel="stylesheet" href="../static/css/profilo.css">
+    <!--<link rel="stylesheet" href="{{ url_for('static', filename='css/profilo.css') }}">-->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 
@@ -25,8 +25,6 @@
                         <li><a href="#"><i class="fas fa-home"></i> <span>Home</span></a></li>
                         <li class="active"><a href="#"><i class="fas fa-user"></i> <span>Profilo</span></a></li>
                         <li><a href="#"><i class="fas fa-users"></i> <span>Chi Siamo</span></a></li>
-                        <li><a href="#"><i class="fas fa-calendar-alt"></i> <span>Programmazione</span></a></li>
-                        <li><a href="#"><i class="fas fa-cog"></i> <span>Impostazioni</span></a></li>
                         <li><a href="#"><i class="fas fa-sign-out-alt"></i> <span>Logout</span></a></li>
                     </ul>
                 </nav>
@@ -50,57 +48,6 @@
 
         <!-- Main Content -->
         <main class="main-content" id="mainContent">
-
-            <!-- Stats Cards -->
-            <div class="stats-container">
-                <h2>Le tue statistiche</h2>
-                <div class="stats-grid">
-                    <div class="stat-card">
-                        <div class="stat-icon">
-                            <i class="fas fa-calendar-check"></i>
-                        </div>
-                        <div class="stat-info">
-                            <h3>Allenamenti</h3>
-                            <p class="stat-value">45</p>
-                            <p class="stat-label">Questo mese</p>
-                        </div>
-                    </div>
-
-                    <div class="stat-card">
-                        <div class="stat-icon">
-                            <i class="fas fa-fire-alt"></i>
-                        </div>
-                        <div class="stat-info">
-                            <h3>Calorie</h3>
-                            <p class="stat-value">15.250</p>
-                            <p class="stat-label">Bruciate</p>
-                        </div>
-                    </div>
-
-                    <div class="stat-card">
-                        <div class="stat-icon">
-                            <i class="fas fa-stopwatch"></i>
-                        </div>
-                        <div class="stat-info">
-                            <h3>Tempo</h3>
-                            <p class="stat-value">28h</p>
-                            <p class="stat-label">Di allenamento</p>
-                        </div>
-                    </div>
-
-                    <div class="stat-card">
-                        <div class="stat-icon">
-                            <i class="fas fa-chart-line"></i>
-                        </div>
-                        <div class="stat-info">
-                            <h3>Progressi</h3>
-                            <p class="stat-value">85%</p>
-                            <p class="stat-label">Obiettivi raggiunti</p>
-                        </div>
-                    </div>
-                </div>
-            </div> <br><br><br>
-
             <header class="content-header">
                 <h1>Il Tuo Profilo</h1>
                 <button class="edit-btn" id="editProfileBtn">
@@ -140,10 +87,6 @@
                                 <div class="info-label">Data di Nascita</div>
                                 <div class="info-value">15/05/1990</div>
                             </div>
-                            <div class="info-row">
-                                <div class="info-label">Sesso</div>
-                                <div class="info-value">Maschio</div>
-                            </div>
                         </div>
 
                         <div class="info-group">
@@ -161,31 +104,8 @@
                         <div class="info-group">
                             <h2>Dati Fitness</h2>
                             <div class="info-row">
-                                <div class="info-label">Altezza</div>
-                                <div class="info-value">178 cm</div>
-                            </div>
-                            <div class="info-row">
-                                <div class="info-label">Peso</div>
-                                <div class="info-value">75 kg</div>
-                            </div>
-                            <div class="info-row">
                                 <div class="info-label">Obiettivo</div>
                                 <div class="info-value">Aumento massa muscolare</div>
-                            </div>
-                        </div>
-
-                        <div class="info-group">
-                            <h2>Abbonamento</h2>
-                            <div class="info-row">
-                                <div class="info-label">Tipo</div>
-                                <div class="info-value">Premium</div>
-                            </div>
-                            <div class="info-row">
-                                <div class="info-label">Scadenza</div>
-                                <div class="info-value">31/12/2025</div>
-                            </div>
-                            <div class="subscription-status">
-                                <span class="status-badge active">Attivo</span>
                             </div>
                         </div>
                     </div>
@@ -219,15 +139,6 @@
                     </div>
 
                     <div class="form-group">
-                        <label for="sesso">Sesso</label>
-                        <select id="sesso" name="sesso">
-                            <option value="maschio" selected>Maschio</option>
-                            <option value="femmina">Femmina</option>
-                            <option value="altro">Altro</option>
-                        </select>
-                    </div>
-
-                    <div class="form-group">
                         <label for="email">Email</label>
                         <input type="email" id="email" name="email" value="giovanni.cei@email.com">
                     </div>
@@ -235,16 +146,6 @@
                     <div class="form-group">
                         <label for="telefono">Telefono</label>
                         <input type="tel" id="telefono" name="telefono" value="+39 123 456 7890">
-                    </div>
-
-                    <div class="form-group">
-                        <label for="altezza">Altezza (cm)</label>
-                        <input type="number" id="altezza" name="altezza" value="178">
-                    </div>
-
-                    <div class="form-group">
-                        <label for="peso">Peso (kg)</label>
-                        <input type="number" id="peso" name="peso" value="75">
                     </div>
 
                     <div class="form-group">
@@ -267,7 +168,7 @@
         </div>
     </div>
 
-    <script src="profilo.js"></script>
+    <script src="../static/js/profilo.js"></script>
     <!-- <script src="{{ url_for('static', filename='js/profilo.js') }}"></script> -->
 </body>
 </html>
