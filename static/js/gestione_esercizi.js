@@ -1,5 +1,6 @@
 // Array per memorizzare gli esercizi
 let exercises = [];
+const ip_server = 'http://localhost';  // Aggiunto http:// che mancava
 
 // Verificare se ci sono esercizi salvati nel localStorage
 document.addEventListener('DOMContentLoaded', () => {
@@ -9,11 +10,13 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 // Caricare gli esercizi da localStorage
-function loadExercises() {
+async function loadExercises() {
     const savedExercises = localStorage.getItem('gym-exercises');
     if (savedExercises) {
         exercises = JSON.parse(savedExercises);
     } else {
+
+        /*
         // Esempi di esercizi predefiniti per demo
         exercises = [
             {
@@ -49,8 +52,34 @@ function loadExercises() {
                 mediaType: 'image',
                 mediaUrl: '/api/placeholder/400/300'
             }
-        ];
+        ];*/
+        try {
+        const response = await fetch(`${ip_server}/api/exercises`);
+            if (!response.ok) {
+                throw new Error('Errore durante il recupero degli esercizi');
+            }   
+                 const data = await response.json();
+            exercises = data.map(ex => ({
+            id: ex.id,
+            name: ex.nome,
+            description: ex.descrizione,
+            mediaType: ex.video_url ? 'video' : (ex.immagine_url ? 'image' : null),
+            mediaUrl: ex.video_url || ex.immagine_url || null,
+            goal: ex.obiettivo,
+            difficulty: ex.difficolta,
+            primaryMuscles: ex.muscoli_primari || [],
+            secondaryMuscles: ex.muscoli_secondari || []
+        }));
+
         saveExercises();
+         } catch (error) {
+        console.error('Errore nel caricamento degli esercizi:', error);
+        document.getElementById('no-exercises').textContent = 'Errore nel caricamento degli esercizi. Riprova più tardi.';
+        document.getElementById('no-exercises').classList.remove('d-none');
+    }
+    
+        
+
     }
 }
 
@@ -263,16 +292,18 @@ function viewExercise(exerciseId) {
     document.getElementById('view-name').dataset.id = exercise.id;
     document.getElementById('view-description').textContent = exercise.description;
     
-    // Difficoltà
-    const difficultyClass = exercise.difficulty.toLowerCase().replace(/\s+/g, '-');
+    // Difficoltà - Controlla che difficulty sia definito prima di usare toLowerCase()
+    const difficultyClass = exercise.difficulty && typeof exercise.difficulty === 'string' ? 
+        exercise.difficulty.toLowerCase().replace(/\s+/g, '-') : 'medio';
     document.getElementById('view-difficulty').innerHTML = `
-        <span class="badge badge-${difficultyClass}">${exercise.difficulty}</span>
+        <span class="badge badge-${difficultyClass}">${exercise.difficulty || 'Medio'}</span>
     `;
     
-    // Obiettivo
-    const goalClass = exercise.goal.toLowerCase().replace(/\s+/g, '-');
+    // Obiettivo - Controlla che goal sia definito prima di usare toLowerCase()
+    const goalClass = exercise.goal && typeof exercise.goal === 'string' ? 
+        exercise.goal.toLowerCase().replace(/\s+/g, '-') : 'general';
     document.getElementById('view-goal').innerHTML = `
-        <span class="badge badge-${goalClass}">${exercise.goal}</span>
+        <span class="badge badge-${goalClass}">${exercise.goal || 'General'}</span>
     `;
     
     // Gruppi muscolari primari
@@ -331,14 +362,20 @@ function openEditModal(exerciseId) {
     
     // Seleziona gruppi muscolari primari
     exercise.primaryMuscles.forEach(muscle => {
-        const input = document.getElementById(`pm-${muscle.toLowerCase().replace(/\s+/g, '')}`);
-        if (input) input.checked = true;
+        if (muscle && typeof muscle === 'string') {  // Controlla che muscle sia definito
+            const inputId = `pm-${muscle.toLowerCase().replace(/\s+/g, '')}`;
+            const input = document.getElementById(inputId);
+            if (input) input.checked = true;
+        }
     });
     
     // Seleziona gruppi muscolari secondari
     exercise.secondaryMuscles.forEach(muscle => {
-        const input = document.getElementById(`sm-${muscle.toLowerCase().replace(/\s+/g, '')}`);
-        if (input) input.checked = true;
+        if (muscle && typeof muscle === 'string') {  // Controlla che muscle sia definito
+            const inputId = `sm-${muscle.toLowerCase().replace(/\s+/g, '')}`;
+            const input = document.getElementById(inputId);
+            if (input) input.checked = true;
+        }
     });
     
     // Anteprima media
@@ -375,11 +412,18 @@ function renderExercises() {
     const container = document.getElementById('exercises-container');
     const noExercises = document.getElementById('no-exercises');
     
+    // Controllo se gli elementi esistono nel DOM
+    if (!container || !noExercises) {
+        console.error('Elementi mancanti nel DOM: exercises-container o no-exercises');
+        return;
+    }
+    
     // Ottenere i filtri selezionati
     const selectedMuscles = Array.from(document.querySelectorAll('.filter-muscle:checked')).map(input => input.value);
     const selectedGoals = Array.from(document.querySelectorAll('.filter-goal:checked')).map(input => input.value);
     const selectedDifficulties = Array.from(document.querySelectorAll('.filter-difficulty:checked')).map(input => input.value);
-    const searchTerm = document.getElementById('search-input').value.toLowerCase().trim();
+    const searchInput = document.getElementById('search-input');
+    const searchTerm = searchInput ? searchInput.value.toLowerCase().trim() : '';
     
     // Applicare i filtri
     let filteredExercises = exercises;
@@ -387,15 +431,15 @@ function renderExercises() {
     // Filtro per termine di ricerca
     if (searchTerm) {
         filteredExercises = filteredExercises.filter(exercise => 
-            exercise.name.toLowerCase().includes(searchTerm) ||
-            exercise.description.toLowerCase().includes(searchTerm)
+            (exercise.name && exercise.name.toLowerCase().includes(searchTerm)) ||
+            (exercise.description && exercise.description.toLowerCase().includes(searchTerm))
         );
     }
     
     // Filtro per gruppo muscolare
     if (selectedMuscles.length > 0) {
         filteredExercises = filteredExercises.filter(exercise => {
-            const allMuscles = [...exercise.primaryMuscles, ...exercise.secondaryMuscles];
+            const allMuscles = [...(exercise.primaryMuscles || []), ...(exercise.secondaryMuscles || [])];
             return selectedMuscles.some(muscle => allMuscles.includes(muscle));
         });
     }
@@ -403,14 +447,14 @@ function renderExercises() {
     // Filtro per obiettivo
     if (selectedGoals.length > 0) {
         filteredExercises = filteredExercises.filter(exercise => 
-            selectedGoals.includes(exercise.goal)
+            exercise.goal && selectedGoals.includes(exercise.goal)
         );
     }
     
     // Filtro per difficoltà
     if (selectedDifficulties.length > 0) {
         filteredExercises = filteredExercises.filter(exercise => 
-            selectedDifficulties.includes(exercise.difficulty)
+            exercise.difficulty && selectedDifficulties.includes(exercise.difficulty)
         );
     }
     
@@ -423,17 +467,20 @@ function renderExercises() {
         noExercises.classList.add('d-none');
         
         filteredExercises.forEach(exercise => {
-            const difficultyClass = exercise.difficulty.toLowerCase().replace(/\s+/g, '-');
-            const goalClass = exercise.goal.toLowerCase().replace(/\s+/g, '-');
+            // Controlliamo che difficulty e goal siano definiti prima di usare toLowerCase()
+            const difficultyClass = exercise.difficulty && typeof exercise.difficulty === 'string' ? 
+                exercise.difficulty.toLowerCase().replace(/\s+/g, '-') : 'medio';
+            const goalClass = exercise.goal && typeof exercise.goal === 'string' ? 
+                exercise.goal.toLowerCase().replace(/\s+/g, '-') : 'general';
             
             const card = document.createElement('div');
             card.className = 'col-md-6 col-lg-4 fade-in';
             card.innerHTML = `
                 <div class="card exercise-card shadow-sm h-100">
                     <div class="exercise-image-container">
-                        ${exercise.mediaType === 'image' ? 
-                            `<img src="${exercise.mediaUrl}" alt="${exercise.name}" class="card-img-top">` : 
-                            exercise.mediaType === 'video' ? 
+                        ${exercise.mediaType === 'image' && exercise.mediaUrl ? 
+                            `<img src="${exercise.mediaUrl}" alt="${exercise.name || 'Esercizio'}" class="card-img-top">` : 
+                            exercise.mediaType === 'video' && exercise.mediaUrl ? 
                             `<video src="${exercise.mediaUrl}" class="card-img-top"></video>` :
                             `<div class="no-media">
                                 <i class="fas fa-dumbbell fa-3x mb-2"></i>
@@ -442,16 +489,16 @@ function renderExercises() {
                         }
                     </div>
                     <div class="card-body d-flex flex-column">
-                        <h5 class="card-title">${exercise.name}</h5>
-                        <p class="card-text text-truncate">${exercise.description}</p>
+                        <h5 class="card-title">${exercise.name || 'Esercizio senza nome'}</h5>
+                        <p class="card-text text-truncate">${exercise.description || 'Nessuna descrizione'}</p>
                         
                         <div class="mb-2">
-                            <span class="badge badge-${difficultyClass}">${exercise.difficulty}</span>
-                            <span class="badge badge-${goalClass}">${exercise.goal}</span>
+                           <span class="badge badge-${difficultyClass}">${exercise.difficulty || 'Medio'}</span>
+                            <span class="badge badge-${goalClass}">${exercise.goal || 'General'}</span>
                         </div>
                         
                         <div class="mb-2">
-                            ${exercise.primaryMuscles.map(muscle => 
+                            ${(exercise.primaryMuscles || []).map(muscle => 
                                 `<span class="badge badge-primary-muscle">${muscle}</span>`
                             ).join('')}
                         </div>

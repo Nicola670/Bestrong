@@ -210,7 +210,7 @@ def get_client_schede(client_id):
         conn.close()
 
 @api.route('/api/exercises', methods=['GET'])
-@login_required
+#@login_required
 def get_exercises():
     """Restituisce tutti gli esercizi presenti nel database"""
     try:

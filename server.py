@@ -9,6 +9,7 @@ import bcrypt
 from functools import wraps
 
 app = Flask(__name__)
+
 # Chiave segreta più sicura generata in modo casuale
 app.secret_key = secrets.token_hex(32)
 app.register_blueprint(api)
@@ -78,6 +79,20 @@ def check_session_activity():
                 
         # Aggiorna timestamp ultima attività
         session['last_activity'] = datetime.now().isoformat()
+
+@app.before_request
+def disable_cors():
+    if request.method == 'OPTIONS':
+        response = app.make_default_options_response()
+        headers = {
+            'Access-Control-Allow-Origin': '*',
+            'Access-Control-Allow-Methods': '*',
+            'Access-Control-Allow-Headers': '*'
+        }
+        for k, v in headers.items():
+            response.headers[k] = v
+        return response
+
 
 # Decoratore personalizzato per verificare se l'utente è un trainer
 def trainer_required(f):
@@ -204,6 +219,13 @@ def client_dashboard():
 @app.route('/about')
 def about():
     return render_template('About.html')
+
+@app.route('/esercizi')
+@login_required
+@trainer_required
+def esercizi():
+    clients = database.get_clients_by_trainer(current_user.id)
+    return render_template('gestione_esercizi.html', clients=clients)
 
 @app.route('/creazione_scheda')
 @login_required
