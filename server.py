@@ -255,6 +255,7 @@ def client_dashboard():
     return render_template('schedeClient.html')
 
 @app.route('/about')
+@login_required
 def about():
     return render_template('About.html')
 
