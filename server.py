@@ -135,13 +135,13 @@ def login():
     
     if not username or not password:
         flash('Per favore, inserisci tutti i campi')
-        return redirect(url_for('home'))
+        return redirect(url_for('login_page'))
 
     user = database.get_user_by_username(username)
     
     if user is None:
         flash('Username o password non validi')
-        return redirect(url_for('home'))
+        return redirect(url_for('login_page'))
     
     try:
         if database.verify_password(password, user['password']):
@@ -168,11 +168,11 @@ def login():
                 return redirect(url_for('client_dashboard'))
         else:
             flash('Username o password non validi')
-            return redirect(url_for('home'))
+            return redirect(url_for('login_page'))
     except Exception as e:
         print(f"Errore durante il login: {e}")
         flash('Si è verificato un errore durante il login')
-        return redirect(url_for('home'))
+        return redirect(url_for('login_page'))
 
 @app.route('/register', methods=['POST'])
 @login_required
