@@ -259,15 +259,16 @@ def dashboard():
 @login_required
 @client_required
 def client_dashboard():
-    user_details = database.get_user_by_id(current_user.id)
-
     user_data = database.get_user_template_data(current_user.id)
 
     return render_template('schedeClient.html', **user_data)
 
 @app.route('/about')
+@login_required
 def about():
-    return render_template('About.html')
+    user_data = database.get_user_template_data(current_user.id)
+
+    return render_template('About.html', **user_data)
 
 @app.route('/esercizi')
 @login_required
@@ -353,7 +354,9 @@ def profile():
     if not current_user.is_authenticated:
         return redirect(url_for('login'))
     
-    return render_template('profilo.html')
+    user_data = database.get_user_template_data(current_user.id)
+
+    return render_template('profilo.html', **user_data)
 
 @app.errorhandler(404)
 def page_not_found(error):
