@@ -322,3 +322,17 @@ def change_macchinari(nome_vecchio, nome_nuovo):
         return False
     finally:
         conn.close()
+
+def get_user_template_data(user_id):
+    user_details = get_user_by_id(user_id)
+
+    user_name = user_details.get('username', '')
+    user_surname = user_details.get('surname', '')
+    user_initials = user_name[0] + user_surname[0] if user_name and user_surname else ''
+
+    return {
+        'user_name': user_name,
+        'user_surname': user_surname,
+        'user_initials': user_initials,
+        'user_is_trainer': user_details.get('is_trainer', False)
+    }
