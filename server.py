@@ -247,18 +247,13 @@ def register():
 def dashboard():
     clients = database.get_clients_by_trainer(current_user.id)
     
-    user_details = database.get_user_by_id(current_user.id)
+    user_data = database.get_user_template_data(current_user.id)
 
-    user_name = user_details.get('username', '')
-    user_surname = user_details.get('surname', '')
-    user_initials = user_name[0] + user_surname[0] if user_name and user_surname else ''
-
-    return render_template('dashboard.html', 
-                           clients=clients,
-                           user_name=user_name,
-                           user_surname=user_surname,
-                           user_initials=user_initials,
-                           user_is_trainer = user_details.get('is_trainer', False))
+    # Il doppio asterisco (**) spacchetta il dizionario 'user_data' e passa 
+    # ogni chiave come argomento al template. per esempio, se 'user_data' ha
+    # {'username': 'Mario', 'surname': 'Rossi'}, il template riceverà
+    # username='Mario' e surname='Rossi'.
+    return render_template('dashboard.html', clients = clients, **user_data)
 
 @app.route('/client')
 @login_required
@@ -266,15 +261,9 @@ def dashboard():
 def client_dashboard():
     user_details = database.get_user_by_id(current_user.id)
 
-    user_name = user_details.get('username', '')
-    user_surname = user_details.get('surname', '')
-    user_initials = user_name[0] + user_surname[0] if user_name and user_surname else ''
+    user_data = database.get_user_template_data(current_user.id)
 
-    return render_template('schedeClient.html', 
-                           user_name=user_name,
-                           user_surname=user_surname,
-                           user_initials=user_initials,
-                           user_is_trainer = user_details.get('is_trainer', False))
+    return render_template('schedeClient.html', **user_data)
 
 @app.route('/about')
 def about():
