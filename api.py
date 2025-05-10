@@ -105,6 +105,39 @@ def get_client_by_id(client_id):
     finally:
         conn.close()
 
+@api.route('/api/client/<int:client_id>', methods=['DELETE'])
+@login_required
+def delete_client(client_id):
+    """Elimina un cliente specifico"""
+    try:
+        conn = sqlite3.connect(DB_FILE)
+        cursor = conn.cursor()
+
+        # Verifica che l'utente corrente sia un trainer
+        if not current_user.is_trainer:
+            return jsonify({'error': 'Non autorizzato - Solo i trainer possono eliminare i clienti'}), 403
+
+        # Verifica che il cliente esista
+        cursor.execute("SELECT id FROM Utenti WHERE id = ? AND is_trainer = 0", (client_id,))
+        if not cursor.fetchone():
+            return jsonify({'error': 'Cliente non trovato'}), 404
+            
+        # Elimina tutte le relazioni associate al cliente
+        cursor.execute("DELETE FROM Clienti_Trainer WHERE cliente_id = ?", (client_id,))
+        
+        # Elimina il cliente
+        cursor.execute("DELETE FROM Utenti WHERE id = ?", (client_id,))
+        
+        conn.commit()
+        return jsonify({'message': 'Cliente eliminato con successo'})
+        
+    except Exception as e:
+        print(f"Errore durante l'eliminazione del cliente: {e}")
+        conn.rollback()
+        return jsonify({'error': str(e)}), 500
+    finally:
+        conn.close()
+
 @api.route('/api/exercise/video/<int:exercise_id>', methods=['GET'])
 #@login_required
 def stream_exercise_video(exercise_id):

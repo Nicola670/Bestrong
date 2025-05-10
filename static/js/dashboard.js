@@ -116,6 +116,12 @@ function showClientDetails(client) {
     
     clientDetailsModal.classList.add('open');
     setupTabs();
+
+    // Aggiungi l'evento al pulsante elimina
+    const deleteBtn = document.querySelector('.btn-delete');
+    if (deleteBtn) {
+        deleteBtn.onclick = () => deleteClient(client.id);
+    }
 }
 
 // Funzione per impostare le tab
@@ -264,6 +270,56 @@ function init() {
     
     // Carica i clienti dall'API
     loadClientsFromAPI();
+}
+
+// Aggiungi questa funzione per gestire l'eliminazione
+async function deleteClient(clientId) {
+    if (!confirm('Sei sicuro di voler eliminare questo cliente? Questa azione non può essere annullata.')) {
+        return;
+    }
+    
+    try {
+        const response = await fetch(`/api/client/${clientId}`, {
+            method: 'DELETE',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            credentials: 'include' // Importante per includere i cookie di sessione
+        });
+        
+        const data = await response.json();
+        
+        if (!response.ok) {
+            throw new Error(data.error || 'Errore durante l\'eliminazione');
+        }
+        
+        // Chiudi il modal dei dettagli
+        clientDetailsModal.classList.remove('open');
+        
+        // Ricarica la lista dei clienti
+        await loadClientsFromAPI();
+        
+        // Mostra notifica di successo
+        showNotification(data.message, 'success');
+        
+    } catch (error) {
+        console.error('Errore:', error);
+        showNotification(error.message, 'error');
+    }
+}
+
+// Aggiungi la funzione per mostrare notifiche
+function showNotification(message, type = 'success') {
+    const notification = document.createElement('div');
+    notification.className = `notification ${type}`;
+    notification.textContent = message;
+    
+    document.body.appendChild(notification);
+    
+    // Rimuovi la notifica dopo 3 secondi
+    setTimeout(() => {
+        notification.remove();
+    }, 3000);
 }
 
 // Avvia l'applicazione quando il DOM è caricato
