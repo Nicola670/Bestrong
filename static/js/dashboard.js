@@ -53,7 +53,7 @@ function createClientCard(client) {
         <div class="client-info">
             <h3>${client.nome} ${client.cognome}</h3>
             <p>${client.email}</p>
-            <span class="client-tag tag-${client.obiettivo?.toLowerCase()}">${client.obiettivo}</span>
+            <span class="client-tag tag-${client.obiettivo}">${client.obiettivo}</span>
         </div>
     `;
     

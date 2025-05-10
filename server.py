@@ -185,11 +185,11 @@ def register():
         email = request.form.get('email')
         telefono = request.form.get('telefono')
         data_nascita = request.form.get('dataNascita')
-        obiettivo = request.form.get('obiettivo')
+        obiettivo_id = request.form.get('obiettivo')
         temp_password = "Password123"  # Password temporanea
         
         # Verifica che i campi obbligatori siano presenti
-        if not all([nome, cognome, email, telefono, data_nascita, obiettivo]):
+        if not all([nome, cognome, email, telefono, data_nascita, obiettivo_id]):
             return jsonify({'error': 'Tutti i campi sono obbligatori'}), 400
 
         # Verifica se l'email è già registrata
@@ -205,17 +205,17 @@ def register():
         
         # Registra il nuovo utente con tutti i dati
         success = database.register_user(
-            username=nome,  # Usa il nome come username
-            surname=cognome,
-            email=email,
-            phone=telefono,
-            date_of_birth=data_nascita,
-            password_hash=hashed_password,
-            is_trainer=False,
-            password_change_required=True,
-            obiettivo=obiettivo
+            username = nome,  # Usa il nome come username
+            surname = cognome,
+            email = email,
+            phone = telefono,
+            date_of_birth = data_nascita,
+            password_hash = hashed_password,
+            is_trainer = False,
+            password_change_required = True,
+            obiettivo_id = obiettivo_id
         )
-
+        print(obiettivo_id)
         if success:
             # Ottieni l'utente appena creato
             new_user = database.get_user_by_email(email)
@@ -231,7 +231,7 @@ def register():
                         'email': new_user['email'],
                         'telefono': new_user['phone'],
                         'dataNascita': new_user['date_of_birth'],
-                        'obiettivo': new_user['obiettivo']
+                        'obiettivo': new_user['obiettivo_id']
                     }
                 })
 
