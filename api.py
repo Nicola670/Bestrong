@@ -482,3 +482,54 @@ def delete_exercise(exercise_id):
         return jsonify({'error': 'Errore durante la cancellazione dell\'esercizio'}), 500
     finally:
         conn.close()
+
+@api.route('/api/schede', methods=['POST'])
+@login_required
+def create_scheda():
+    try:
+        data = request.json
+        conn = sqlite3.connect(DB_FILE)
+        cursor = conn.cursor()
+        
+        # Inserisci la scheda
+        cursor.execute("""
+            INSERT INTO Schede (
+                cliente_id, nome, data_inizio, data_fine, 
+                note, creato, aggiornato
+            ) VALUES (?, ?, ?, ?, ?, datetime('now'), datetime('now'))
+        """, (
+            data['cliente_id'],
+            data['nome'],
+            data['data_inizio'],
+            data['data_fine'],
+            data['note']
+        ))
+        
+        scheda_id = cursor.lastrowid
+        
+        # Inserisci gli esercizi della scheda
+        for esercizio in data['esercizi']:
+            cursor.execute("""
+                INSERT INTO Schede_Esercizi (
+                    scheda_id, esercizio_id, serie, ripetizioni,
+                    peso_kg, recupero_secondi, note
+                ) VALUES (?, ?, ?, ?, ?, ?, ?)
+            """, (
+                scheda_id,
+                esercizio['esercizio_id'],
+                esercizio['serie'],
+                esercizio['ripetizioni'],
+                esercizio['peso_kg'],
+                esercizio['recupero_secondi'],
+                esercizio['note']
+            ))
+        
+        conn.commit()
+        return jsonify({'success': True, 'id': scheda_id}), 201
+        
+    except Exception as e:
+        conn.rollback()
+        print(f"Errore nel salvataggio della scheda: {e}")
+        return jsonify({'error': str(e)}), 500
+    finally:
+        conn.close()

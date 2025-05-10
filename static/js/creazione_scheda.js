@@ -11,7 +11,9 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Mostra l'ID del cliente nella pagina
     document.getElementById('clienteId').textContent = clienteId || 'Non specificato';
-    
+    alert('ID cliente: ' + clienteId);
+
+
     // Se non c'è un ID cliente, mostra un avviso
     if (!clienteId) {
         alert('Attenzione: Nessun ID cliente specificato nell\'URL. Usa ?id-cliente=X nell\'URL.');
@@ -47,117 +49,76 @@ document.addEventListener('DOMContentLoaded', function() {
     setupDragAndDrop();
 });
 
-// Funzione per caricare i dati del cliente (simulata)
-function caricaDatiCliente(clienteId) {
-    // futura chiamata API per ottenere i dati reali del cliente
-    // momentanea simulazione dei dati
-    
-    // Simulazione ritardo di rete
-    setTimeout(() => {
-        const clienteData = {
-            id: clienteId,
-            nome: 'Mario Rossi',
-            email: 'mario.rossi@example.com',
-            telefono: '+39 123 456 7890'
-        };
+// Aggiungi la costante per l'indirizzo del server
+const ip_server = 'http://localhost:5001';
+
+// Modifica la funzione per caricare i dati del cliente
+async function caricaDatiCliente(clienteId) {
+    try {
+        const response = await fetch(`${ip_server}/api/client/${clienteId}`);
+        if (!response.ok) {
+            throw new Error('Cliente non trovato');
+        }
+        
+        const clienteData = await response.json();
         
         // Aggiorna l'interfaccia con i dati del cliente
-        document.getElementById('clienteNome').textContent = clienteData.nome;
+        document.getElementById('clienteNome').textContent = `${clienteData.username} ${clienteData.surname}`;
         document.getElementById('clienteEmail').textContent = clienteData.email;
-        document.getElementById('clienteTelefono').textContent = clienteData.telefono;
-    }, 500);
+        document.getElementById('clienteTelefono').textContent = clienteData.phone;
+        
+    } catch (error) {
+        console.error('Errore nel caricamento dei dati del cliente:', error);
+        alert('Errore nel caricamento dei dati del cliente');
+    }
 }
 
+// Modifica la funzione per caricare gli esercizi disponibili
+async function caricaEserciziDisponibili() {
+    try {
+        const response = await fetch(`${ip_server}/api/exercises`);
+        if (!response.ok) {
+            throw new Error('Errore nel caricamento degli esercizi');
+        }
 
-// Funzione per caricare gli esercizi disponibili (simulata)
-function caricaEserciziDisponibili() {
-      // futura chiamata API per ottenere i dati reali del cliente
-    // momentanea simulazione dei dati
-    
-    const esercizi = [
-        { id: 1, nome: 'Panca Piana', categoria: 'Petto', descrizione: 'Esercizio base per il petto', gruppoMuscolare: 'Petto' },
-        { id: 2, nome: 'Squat', categoria: 'Gambe', descrizione: 'Esercizio composto per le gambe', gruppoMuscolare: 'Gambe' },
-        { id: 3, nome: 'Stacchi da Terra', categoria: 'Schiena/Gambe', descrizione: 'Esercizio per schiena bassa e gambe', gruppoMuscolare: 'Schiena' },
-        { id: 4, nome: 'Pull-up', categoria: 'Schiena/Braccia', descrizione: 'Esercizio per schiena alta e bicipiti', gruppoMuscolare: 'Schiena' },
-        { id: 5, nome: 'Military Press', categoria: 'Spalle', descrizione: 'Esercizio per le spalle', gruppoMuscolare: 'Spalle' },
-        { id: 6, nome: 'Curl con Bilanciere', categoria: 'Braccia', descrizione: 'Esercizio per i bicipiti', gruppoMuscolare: 'Braccia' },
-        { id: 7, nome: 'Push-up', categoria: 'Petto/Braccia', descrizione: 'Esercizio a corpo libero per petto e tricipiti', gruppoMuscolare: 'Petto' },
-        { id: 8, nome: 'Crunch', categoria: 'Addominali', descrizione: 'Esercizio per gli addominali superiori', gruppoMuscolare: 'Addominali' },
-        { id: 9, nome: 'Plank', categoria: 'Core', descrizione: 'Esercizio isometrico per il core', gruppoMuscolare: 'Core' },
-        { id: 10, nome: 'Leg Press', categoria: 'Gambe', descrizione: 'Esercizio per quadricipiti e glutei', gruppoMuscolare: 'Gambe' },
-        { id: 11, nome: 'Lat Machine', categoria: 'Schiena', descrizione: 'Esercizio per dorsali', gruppoMuscolare: 'Schiena' },
-        { id: 12, nome: 'Shoulder Press', categoria: 'Spalle', descrizione: 'Esercizio per deltoidi', gruppoMuscolare: 'Spalle' },
-        { id: 13, nome: 'Piegamenti su Tricipiti', categoria: 'Braccia', descrizione: 'Esercizio per tricipiti', gruppoMuscolare: 'Braccia' },
-        { id: 14, nome: 'Affondi', categoria: 'Gambe', descrizione: 'Esercizio per gambe e glutei', gruppoMuscolare: 'Gambe' },
-        { id: 15, nome: 'Crunch Laterali', categoria: 'Addominali', descrizione: 'Esercizio per addominali obliqui', gruppoMuscolare: 'Addominali' },
-        { id: 16, nome: 'Alzate Laterali', categoria: 'Spalle', descrizione: 'Esercizio per deltoidi laterali', gruppoMuscolare: 'Spalle' },
-        { id: 17, nome: 'Rematore con Manubri', categoria: 'Schiena', descrizione: 'Esercizio per dorsali e parte centrale della schiena', gruppoMuscolare: 'Schiena' },
-        { id: 18, nome: 'Estensioni Lombari', categoria: 'Schiena/Core', descrizione: 'Esercizio per lombi e core', gruppoMuscolare: 'Core' }
-    ];
-    
-    // Memorizza gli esercizi in una variabile globale per uso futuro
-    window.eserciziDisponibili = esercizi;
-    
-    // Estrai i gruppi muscolari unici
-    const gruppiMuscolari = [...new Set(esercizi.map(e => e.gruppoMuscolare))].sort();
-    
-    // Popola il menu a tendina per filtrare per gruppo muscolare
-    const filtroGruppiMuscolari = document.getElementById('filtroGruppiMuscolari');
-    gruppiMuscolari.forEach(gruppo => {
-        const li = document.createElement('li');
-        const a = document.createElement('a');
-        a.className = 'dropdown-item';
-        a.href = '#';
-        a.dataset.gruppo = gruppo;
-        a.textContent = gruppo;
-        a.addEventListener('click', function(e) {
-            e.preventDefault();
-            
-            // Rimuovi la classe active da tutti gli elementi
-            document.querySelectorAll('#filtroGruppiMuscolari .dropdown-item').forEach(el => {
-                el.classList.remove('active');
+        const esercizi = await response.json();
+        
+        // Memorizza gli esercizi in una variabile globale per uso futuro
+        window.eserciziDisponibili = esercizi;
+        
+        // Estrai i gruppi muscolari unici dalle risposte
+        const gruppiMuscolari = [...new Set(esercizi.flatMap(e => e.muscoli_primari))].sort();
+        
+        // Popola il menu a tendina dei gruppi muscolari
+        const filtroGruppiMuscolari = document.getElementById('filtroGruppiMuscolari');
+        gruppiMuscolari.forEach(gruppo => {
+            const li = document.createElement('li');
+            const a = document.createElement('a');
+            a.className = 'dropdown-item';
+            a.href = '#';
+            a.dataset.gruppo = gruppo;
+            a.textContent = gruppo;
+            a.addEventListener('click', function(e) {
+                e.preventDefault();
+                document.querySelectorAll('#filtroGruppiMuscolari .dropdown-item')
+                    .forEach(el => el.classList.remove('active'));
+                this.classList.add('active');
+                document.getElementById('dropdownGruppiMuscolari').textContent = 'Gruppo: ' + gruppo;
+                window.filtroAttuale.gruppo = gruppo;
+                filtraEsercizi();
             });
-            
-            // Aggiungi la classe active a questo elemento
-            this.classList.add('active');
-            
-            // Aggiorna il testo del pulsante dropdown
-            document.getElementById('dropdownGruppiMuscolari').textContent = 'Gruppo: ' + gruppo;
-            
-            // Aggiorna il filtro e visualizza
-            window.filtroAttuale.gruppo = gruppo;
-            filtraEsercizi();
+            li.appendChild(a);
+            filtroGruppiMuscolari.appendChild(li);
         });
+
+        // Visualizza gli esercizi
+        visualizzaEserciziDisponibili(esercizi);
         
-        li.appendChild(a);
-        filtroGruppiMuscolari.appendChild(li);
-    });
-    
-    // Aggiungi event listener al filtro "Tutti"
-    document.querySelector('#filtroGruppiMuscolari .dropdown-item[data-gruppo="tutti"]').addEventListener('click', function(e) {
-        e.preventDefault();
-        
-        // Rimuovi la classe active da tutti gli elementi
-        document.querySelectorAll('#filtroGruppiMuscolari .dropdown-item').forEach(el => {
-            el.classList.remove('active');
-        });
-        
-        // Aggiungi la classe active a questo elemento
-        this.classList.add('active');
-        
-        // Aggiorna il testo del pulsante dropdown
-        document.getElementById('dropdownGruppiMuscolari').textContent = 'Filtra per gruppo';
-        
-        // Aggiorna il filtro e visualizza
-        window.filtroAttuale.gruppo = 'tutti';
-        filtraEsercizi();
-    });
-    
-    // Visualizza gli esercizi nell'interfaccia
-    visualizzaEserciziDisponibili(esercizi);
+    } catch (error) {
+        console.error('Errore nel caricamento degli esercizi:', error);
+        alert('Errore nel caricamento degli esercizi');
+    }
 }
-
-
 
 // Funzione per visualizzare gli esercizi nella lista
 function visualizzaEserciziDisponibili(esercizi) {
@@ -174,26 +135,23 @@ function visualizzaEserciziDisponibili(esercizi) {
     esercizi.forEach(esercizio => {
         const clone = template.content.cloneNode(true);
         
-        // Inserisci i dati dell'esercizio nel template
         clone.querySelector('.esercizio-nome').textContent = esercizio.nome;
         
-        // Sostituisci il testo della categoria con un badge per il gruppo muscolare
+        // Badge per il gruppo muscolare primario
         const categoriaElement = clone.querySelector('.esercizio-categoria');
         categoriaElement.innerHTML = '';
         
         const badge = document.createElement('span');
-        badge.className = `gruppo-muscolare-badge gruppo-${esercizio.gruppoMuscolare.toLowerCase()}`;
-        badge.textContent = esercizio.gruppoMuscolare;
+        badge.className = `gruppo-muscolare-badge`;
+        badge.textContent = esercizio.muscoli_primari[0]; // Prendi il primo muscolo primario
         categoriaElement.appendChild(badge);
         
         clone.querySelector('.esercizio-descrizione').textContent = esercizio.descrizione;
         
-        // Aggiungi l'ID dell'esercizio come attributo data per recuperarlo in seguito
         const card = clone.querySelector('.esercizio-card');
         card.dataset.esercizioId = esercizio.id;
-        card.dataset.gruppoMuscolare = esercizio.gruppoMuscolare;
+        card.dataset.gruppoMuscolare = esercizio.muscoli_primari[0];
         
-        // Aggiungi eventi drag
         card.addEventListener('dragstart', handleDragStart);
         card.addEventListener('dragend', handleDragEnd);
         
@@ -268,7 +226,7 @@ function handleDragOver(e) {
     // Previeni il comportamento di default che impedirebbe il drop
     e.preventDefault();
     
-    // Aggiungi clase di stile per evidenziare l'area di rilascio
+    // Aggiungi classe di stile per evidenziare l'area di rilascio
     e.target.classList.add('dragover');
 }
 
@@ -286,7 +244,7 @@ function handleDrop(e) {
     // Rimuovi classe di stile
     e.target.classList.remove('dragover');
     
-    // ottieni l'ID dell'esercizio
+    // Ottieni l'ID dell'esercizio
     const esercizioId = e.dataTransfer.getData('text/plain');
     
     // Verifica se l'esercizio è già stato aggiunto alla scheda
@@ -296,7 +254,7 @@ function handleDrop(e) {
         return;
     }
     
-    // rova i dati dell'esercizio
+    // Trova i dati dell'esercizio
     const esercizio = window.eserciziDisponibili.find(e => e.id.toString() === esercizioId);
     if (!esercizio) return;
     
@@ -325,15 +283,31 @@ function aggiungiEsercizioAllaScheda(esercizio) {
     const categoriaElement = clone.querySelector('.esercizio-categoria');
     categoriaElement.innerHTML = '';
     
-    const badge = document.createElement('span');
-    badge.className = `gruppo-muscolare-badge gruppo-${esercizio.gruppoMuscolare.toLowerCase()}`;
-    badge.textContent = esercizio.gruppoMuscolare;
-    categoriaElement.appendChild(badge);
+    // Crea badge per ogni muscolo primario
+    if (esercizio.muscoli_primari && esercizio.muscoli_primari.length > 0) {
+        esercizio.muscoli_primari.forEach(muscolo => {
+            const badge = document.createElement('span');
+            badge.className = 'badge bg-primary me-1';
+            badge.textContent = muscolo;
+            categoriaElement.appendChild(badge);
+        });
+    }
     
     // Aggiungi l'ID dell'esercizio come attributo data
     const esercizioScheda = clone.querySelector('.esercizio-scheda');
     esercizioScheda.dataset.esercizioId = esercizio.id;
-    esercizioScheda.dataset.gruppoMuscolare = esercizio.gruppoMuscolare;
+    
+    // Assicurati che gli input abbiano ID unici
+    const uniqueId = `esercizio-${esercizio.id}`;
+    const inputs = esercizioScheda.querySelectorAll('input, textarea');
+    inputs.forEach(input => {
+        const baseId = input.id;
+        input.id = `${baseId}-${uniqueId}`;
+        const label = esercizioScheda.querySelector(`label[for="${baseId}"]`);
+        if (label) {
+            label.setAttribute('for', input.id);
+        }
+    });
     
     // Aggiungi evento per rimuovere l'esercizio
     const btnRemove = clone.querySelector('.remove-esercizio');
@@ -350,80 +324,78 @@ function aggiungiEsercizioAllaScheda(esercizio) {
     schedaEsercizi.appendChild(clone);
 }
 
-// Funzione per salvare la scheda
-function salvaScheda() {
-    // Ottieni i dati generali della scheda
+// Modifica la funzione per salvare la scheda
+async function salvaScheda() {
+    // Validazione dei campi come prima...
     const clienteId = document.getElementById('clienteId').textContent;
     const nomeProgramma = document.getElementById('nomeProgramma').value;
     const dataInizio = document.getElementById('dataInizio').value;
     const dataFine = document.getElementById('dataFine').value;
     const note = document.getElementById('note').value;
-    
-    // Verifica che i campi obbligatori siano compilati
-    if (!nomeProgramma) {
-        alert('Inserisci un nome per il programma di allenamento.');
+
+    if (!nomeProgramma || !dataInizio || !dataFine) {
+        alert('Compila tutti i campi obbligatori');
         return;
     }
-    
-    if (!dataInizio || !dataFine) {
-        alert('Inserisci date di inizio e fine per il programma.');
-        return;
-    }
-    
-    // Ottieni tutti gli esercizi aggiunti alla scheda
+
     const eserciziScheda = document.querySelectorAll('.esercizio-scheda');
-    
-    // Verifica che ci sia almeno un esercizio
     if (eserciziScheda.length === 0) {
-        alert('Aggiungi almeno un esercizio alla scheda.');
+        alert('Aggiungi almeno un esercizio alla scheda');
         return;
     }
-    
-    // Crea un array per contenere i dati degli esercizi
+
     const esercizi = [];
-    
-    // Raccogli i dati di ogni esercizio
-    eserciziScheda.forEach(el => {
+    for (const el of eserciziScheda) {
         const esercizioId = el.dataset.esercizioId;
         const serie = el.querySelector('#serie').value;
         const ripetizioni = el.querySelector('#ripetizioni').value;
         const peso = el.querySelector('#peso').value;
         const recupero = el.querySelector('#recupero').value;
         const noteEsercizio = el.querySelector('#noteEsercizio').value;
-        
-        // Verifica che serie e ripetizioni siano compilate
+
         if (!serie || !ripetizioni) {
-            alert('Inserisci serie e ripetizioni per tutti gli esercizi.');
+            alert('Inserisci serie e ripetizioni per tutti gli esercizi');
             return;
         }
-        
-        // Aggiungi i dati dell'esercizio all'array
+
         esercizi.push({
-            id: esercizioId,
-            serie: serie,
-            ripetizioni: ripetizioni,
-            peso: peso || 0,
-            recupero: recupero || 0,
+            esercizio_id: parseInt(esercizioId),
+            serie: parseInt(serie),
+            ripetizioni: parseInt(ripetizioni),
+            peso_kg: peso ? parseFloat(peso) : 0,
+            recupero_secondi: recupero ? parseInt(recupero) : 0,
             note: noteEsercizio
         });
-    });
-    
-    // Crea l'oggetto scheda
-    const scheda = {
-        clienteId: clienteId,
-        nomeProgramma: nomeProgramma,
-        dataInizio: dataInizio,
-        dataFine: dataFine,
+    }
+
+    const schedaData = {
+        cliente_id: parseInt(clienteId),
+        nome: nomeProgramma,
+        data_inizio: dataInizio,
+        data_fine: dataFine,
         note: note,
         esercizi: esercizi
     };
-    
-    // qui inviare la scheda al server
-    // Per ora, simulo il salvataggio
-    console.log('Scheda da salvare:', scheda);
-    
-    alert('Scheda salvata con successo!');
-    
-    // reindirizzare l'utente alla lista delle schede o alla scheda appena creata
-    // window.location.href = 'lista_schede.html';
+
+    try {
+        const response = await fetch(`${ip_server}/api/schede`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(schedaData)
+        });
+
+        if (!response.ok) {
+            throw new Error('Errore nel salvataggio della scheda');
+        }
+
+        const result = await response.json();
+        alert('Scheda salvata con successo!');
+        window.location.href = `/schede_cliente?id=${clienteId}`; // Redirect alla lista schede del cliente
+
+    } catch (error) {
+        console.error('Errore nel salvataggio della scheda:', error);
+        alert('Errore nel salvataggio della scheda');
+    }
 }
