@@ -314,3 +314,21 @@ def get_exercises():
         return jsonify({'error': str(e)}), 500
     finally:
         conn.close()
+
+
+@api.route('/api/obiettivi', methods=['GET'])
+@login_required
+def get_obiettivi():
+    conn = sqlite3.connect(DB_FILE)
+    cursor = conn.cursor()
+
+    try:
+        cursor.execute("SELECT id, nome FROM Obiettivi")
+        obiettivi = cursor.fetchall()
+
+        return jsonify([{'id': obiettivo[0], 'nome': obiettivo[1]} for obiettivo in obiettivi])
+    except Exception as e:
+        print(f"Errore nel recupero degli obiettivi: {e}")
+        return jsonify({'error': str(e)}), 500
+    finally:
+        conn.close()
