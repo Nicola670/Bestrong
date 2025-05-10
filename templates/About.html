@@ -39,11 +39,11 @@
                 </nav>
                 <div class="trainer-profile">
                     <div class="avatar">
-                        <span>GC</span>
+                        <span id="userInitials">{{ current_user.username[0] if current_user.username else '--' }}</span>
                     </div>
                     <div class="trainer-info">
-                        <h4>Giovanni Cei</h4>
-                        <p>Cliente</p>
+                        <h4 id="userName">{{ current_user.username if current_user.username else 'Caricamento...' }}</h4>
+                        <p id="userRole">{{ 'Trainer' if current_user.is_trainer else 'Cliente' }}</p>
                     </div>
                 </div>
             </div>
@@ -214,3 +214,4 @@
     <!-- <script src="js/About.js"></script> -->
 </body>
 </html>
+``` 

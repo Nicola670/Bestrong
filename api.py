@@ -533,3 +533,45 @@ def create_scheda():
         return jsonify({'error': str(e)}), 500
     finally:
         conn.close()
+
+@api.route('/api/current-user', methods=['GET'])
+@login_required
+def get_current_user():
+    """Restituisce i dati dell'utente corrente"""
+    try:
+        if not current_user.is_authenticated:
+            return jsonify({'error': 'Utente non autenticato'}), 401
+
+        conn = sqlite3.connect(DB_FILE)
+        cursor = conn.cursor()
+        
+        # Modifica la query per ottenere più informazioni
+        cursor.execute("""
+            SELECT 
+                u.id,
+                u.username,
+                u.surname,
+                u.email,
+                u.is_trainer
+            FROM Utenti u
+            WHERE u.id = ?
+        """, (current_user.id,))
+        
+        user = cursor.fetchone()
+        
+        if not user:
+            return jsonify({'error': 'Utente non trovato'}), 404
+            
+        return jsonify({
+            'id': user[0],
+            'nome': user[1],
+            'cognome': user[2],
+            'email': user[3],
+            'is_trainer': bool(user[4])
+        })
+        
+    except Exception as e:
+        print(f"Errore nel recupero dei dati utente: {e}")
+        return jsonify({'error': str(e)}), 500
+    finally:
+        conn.close()
