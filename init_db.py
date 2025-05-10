@@ -18,7 +18,7 @@ def initialize_db():
 
     # --- UTENTI ---
     # is_trainer = TRUE se è un personal trainer
-    # varchar in sqlite è TEXT
+    # varchar in sqlite è TEXTclau
     cursor.execute("""
         CREATE TABLE IF NOT EXISTS Utenti (
             id INTEGER PRIMARY KEY AUTOINCREMENT,

@@ -246,7 +246,19 @@ def register():
 @trainer_required
 def dashboard():
     clients = database.get_clients_by_trainer(current_user.id)
-    return render_template('dashboard.html', clients=clients)
+    
+    user_details = database.get_user_by_id(current_user.id)
+
+    user_name = user_details.get('username', '')
+    user_surname = user_details.get('surname', '')
+    user_initials = user_name[0] + user_surname[0] if user_name and user_surname else ''
+
+    return render_template('dashboard.html', 
+                           clients=clients,
+                           user_name=user_name,
+                           user_surname=user_surname,
+                           user_initials=user_initials,
+                           user_is_trainer = user_details.get('is_trainer', False))
 
 @app.route('/client')
 @login_required
