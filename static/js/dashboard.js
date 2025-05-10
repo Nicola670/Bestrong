@@ -207,32 +207,48 @@ closeDetailsModal.addEventListener('click', () => {
 });
 
 // Evento per aggiungere un nuovo cliente
-addClientForm.addEventListener('submit', (e) => {
+addClientForm.addEventListener('submit', async (e) => {
     e.preventDefault();
     
-    // Ottieni i dati dal form
-    const newClient = {
-        id: clients.length + 1,
-        nome: document.getElementById('nome').value,
-        cognome: document.getElementById('cognome').value,
-        email: document.getElementById('email').value,
-        telefono: document.getElementById('telefono').value,
-        dataNascita: document.getElementById('dataNascita').value,
-        obiettivo: document.getElementById('obiettivo').value,
-        iscrizione: new Date().toISOString().split('T')[0],
-    };
-    
-    // Aggiungi il nuovo cliente all'array
-    clients.push(newClient);
-    
-    // Aggiorna la griglia
-    loadClients(clients);
-    
-    // Chiudi il modal
-    addClientModal.classList.remove('open');
-    
-    // Mostra un messaggio di successo
-    showNotification('Cliente aggiunto con successo!');
+    // Creiamo un FormData object con tutti i campi
+    const formData = new FormData();
+    formData.append('nome', document.getElementById('nome').value);
+    formData.append('cognome', document.getElementById('cognome').value);
+    formData.append('email', document.getElementById('email').value);
+    formData.append('telefono', document.getElementById('telefono').value);
+    formData.append('dataNascita', document.getElementById('dataNascita').value);
+    formData.append('obiettivo', document.getElementById('obiettivo').value);
+
+    try {
+        const response = await fetch('/register', {
+            method: 'POST',
+            body: formData,
+            credentials: 'include'
+        });
+
+        const data = await response.json();
+
+        if (!response.ok) {
+            throw new Error(data.error || 'Errore durante la registrazione del cliente');
+        }
+
+        // Chiudi il modal
+        addClientModal.classList.remove('open');
+        
+        // Pulisci il form
+        addClientForm.reset();
+        
+        // Aggiungi il nuovo cliente alla lista e aggiorna la visualizzazione
+        clients.push(data.client);
+        loadClients(clients);
+        
+        // Mostra notifica di successo
+        showNotification(data.message, 'success');
+        
+    } catch (error) {
+        console.error('Error:', error);
+        showNotification(error.message, 'error');
+    }
 });
 
 // Chiudi i modal quando si clicca al di fuori

@@ -178,30 +178,68 @@ def login():
 @login_required
 @trainer_required
 def register():
-    username = request.form.get('username')
-    temp_password = "Password123"
-    
-    if database.get_user_by_username(username):
-        flash('Username già registrato')
-        return redirect(url_for('dashboard'))
-    
     try:
+        # Ottieni tutti i dati dal form
+        nome = request.form.get('nome')
+        cognome = request.form.get('cognome')
+        email = request.form.get('email')
+        telefono = request.form.get('telefono')
+        data_nascita = request.form.get('dataNascita')
+        obiettivo = request.form.get('obiettivo')
+        temp_password = "Password123"  # Password temporanea
+        
+        # Verifica che i campi obbligatori siano presenti
+        if not all([nome, cognome, email, telefono, data_nascita, obiettivo]):
+            return jsonify({'error': 'Tutti i campi sono obbligatori'}), 400
+
+        # Verifica se l'email è già registrata
+        existing_user = database.get_user_by_email(email)
+        if existing_user:
+            return jsonify({'error': 'Email già registrata'}), 400
+            
+        # Verifica se il telefono è già registrato
+        if database.get_user_by_phone(telefono):
+            return jsonify({'error': 'Numero di telefono già registrato'}), 400
+
         hashed_password = database.hash_password(temp_password)
         
-        success = database.register_user(username, hashed_password, is_trainer=False, password_change_required=True)
-        if success:
-            new_user = database.get_user_by_username(username)
-            database.add_relation(new_user['id'], current_user.id)
+        # Registra il nuovo utente con tutti i dati
+        success = database.register_user(
+            username=nome,  # Usa il nome come username
+            surname=cognome,
+            email=email,
+            phone=telefono,
+            date_of_birth=data_nascita,
+            password_hash=hashed_password,
+            is_trainer=False,
+            password_change_required=True,
+            obiettivo=obiettivo
+        )
 
-            flash('Cliente registrato con successo!')
-            return redirect(url_for('dashboard'))
-        
-        flash('Registrazione fallita')
-        return redirect(url_for('dashboard'))
+        if success:
+            # Ottieni l'utente appena creato
+            new_user = database.get_user_by_email(email)
+            if new_user:
+                # Crea la relazione trainer-cliente
+                database.add_relation(new_user['id'], current_user.id)
+                return jsonify({
+                    'message': 'Cliente registrato con successo!',
+                    'client': {
+                        'id': new_user['id'],
+                        'nome': new_user['username'],
+                        'cognome': new_user['surname'],
+                        'email': new_user['email'],
+                        'telefono': new_user['phone'],
+                        'dataNascita': new_user['date_of_birth'],
+                        'obiettivo': new_user['obiettivo']
+                    }
+                })
+
+        return jsonify({'error': 'Errore durante la registrazione'}), 500
+
     except Exception as e:
         print(f"Errore durante la registrazione: {e}")
-        flash('Si è verificato un errore durante la registrazione')
-        return redirect(url_for('dashboard'))
+        return jsonify({'error': 'Si è verificato un errore durante la registrazione'}), 500
 
 @app.route('/dashboard')
 @login_required
