@@ -26,32 +26,42 @@ def generate_video_stream(video_path):
 
 # --- ENDPOINTS PER TRAINER ---
 @api.route('/api/clients', methods=['GET'])
-#@login_required
+#@login_required  # Riabilitare quando il login sarà implementato
 def get_clients():
-    """
-    if not current_user.is_trainer:
-        return jsonify({'error': 'Unauthorized'}), 403
-    """
-
     conn = sqlite3.connect(DB_FILE)
     cursor = conn.cursor()
     
     try:
         cursor.execute("""
-            SELECT Utenti.id, Utenti.username, Utenti.surname, Utenti.email, Utenti.phone, Utenti.date_of_birth
-            FROM Utenti
-            INNER JOIN Clienti_Trainer ON Utenti.id = Clienti_Trainer.cliente_id
-            WHERE Clienti_Trainer.trainer_id = ?
-        """, (1,)) # sostituire con current_user.id quando viene implementato le sessioni
+            SELECT 
+                u.id,
+                u.username as nome,
+                u.surname as cognome,
+                u.email,
+                u.phone,
+                u.date_of_birth,
+                o.nome as obiettivo
+            FROM Utenti u
+            LEFT JOIN Obiettivi o ON u.obiettivo_id = o.id
+            WHERE u.is_trainer = 0
+        """)
+        
         clients = cursor.fetchall()
+        
         return jsonify([{
-            'id': client[0], 
-            'username': client[1],
-            'surname': client[2],
+            'id': client[0],
+            'nome': client[1], 
+            'cognome': client[2],
             'email': client[3],
-            'phone': client[4],
-            'date_of_birth': client[5]
+            'telefono': client[4],
+            'dataNascita': client[5],
+            'obiettivo': client[6] or 'Non specificato',
+            'iscrizione': '2024-01-01'  # Per ora hardcoded, da aggiungere al DB
         } for client in clients])
+        
+    except Exception as e:
+        print(f"Errore nel recupero dei clienti: {e}")
+        return jsonify({'error': str(e)}), 500
     finally:
         conn.close()
 

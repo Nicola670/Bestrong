@@ -9,78 +9,29 @@ const clientDetailsModal = document.getElementById('clientDetailsModal');
 const closeDetailsModal = document.getElementById('closeDetailsModal');
 const searchInput = document.getElementById('searchInput');
 
+// Variabile per i clienti
+let clients = [];
 
-let clients = fetch("http://localhost:5001/api/clients", {
-    method: "GET",
-    headers: {
-        "Content-Type": "application/json"
+// Funzione per caricare i clienti dall'API
+async function loadClientsFromAPI() {
+    try {
+        const response = await fetch('/api/clients');
+        if (!response.ok) {
+            throw new Error('Network response was not ok');
+        }
+        const data = await response.json();
+        clients = data;
+        loadClients(clients);
+    } catch (error) {
+        console.error('Error loading clients:', error);
+        clientsGrid.innerHTML = `
+            <div class="error-message">
+                <i class="fas fa-exclamation-circle"></i>
+                <p>Errore nel caricamento dei clienti</p>
+            </div>
+        `;
     }
-  })
-  .then(response => response.json())
-  .catch(err => {
-    console.error("Errore nel fetch dei clienti:", err);
-  });
-
-  alert(clients)
-/*
-// Dati di esempio (simulazione API) Capitano aiutami tu
-let clients = [
-    {
-        id: 1,
-        nome: 'Marco',
-        cognome: 'Bianchi',
-        email: 'marco.bianchi@email.com',
-        telefono: '333-1234567',
-        dataNascita: '1990-05-15',
-        obiettivo: 'dimagrimento',
-        iscrizione: '2024-11-10',
-        note: 'Cliente molto motivato. Preferisce allenamenti mattutini.',
-    },
-    {
-        id: 2,
-        nome: 'Laura',
-        cognome: 'Rossi',
-        email: 'laura.rossi@email.com',
-        telefono: '333-7654321',
-        dataNascita: '1988-09-22',
-        obiettivo: 'tonificazione',
-        iscrizione: '2024-12-05',
-        note: 'Ha problemi alla schiena. Evitare esercizi con carico eccessivo sulla colonna.',
-    },
-    {
-        id: 3,
-        nome: 'Giovanni',
-        cognome: 'Verdi',
-        email: 'giovanni.verdi@email.com',
-        telefono: '333-9876543',
-        dataNascita: '1995-03-10',
-        obiettivo: 'massa',
-        iscrizione: '2025-01-15',
-        note: 'Ex nuotatore agonistico. Ottima resistenza cardiovascolare.',
-    },
-    {
-        id: 4,
-        nome: 'Alessia',
-        cognome: 'Ferrari',
-        email: 'alessia.ferrari@email.com',
-        telefono: '333-2468135',
-        dataNascita: '1992-11-30',
-        obiettivo: 'forza',
-        iscrizione: '2024-10-20',
-        note: 'Interessata ai corsi di kettlebell e allenamento funzionale.',
-    },
-    {
-        id: 5,
-        nome: 'Simone',
-        cognome: 'Marino',
-        email: 'simone.marino@email.com',
-        telefono: '333-1357924',
-        dataNascita: '1980-07-18',
-        obiettivo: 'benessere',
-        iscrizione: '2025-02-10',
-        note: 'Prima esperienza in palestra. Necessita di un programma introduttivo.',
-    },
-];*/
+}
 
 // Funzione per ottenere le iniziali dal nome e cognome
 function getInitials(nome, cognome) {
@@ -102,7 +53,7 @@ function createClientCard(client) {
         <div class="client-info">
             <h3>${client.nome} ${client.cognome}</h3>
             <p>${client.email}</p>
-            <span class="client-tag tag-${client.obiettivo}">${formatObjective(client.obiettivo)}</span>
+            <span class="client-tag tag-${client.obiettivo?.toLowerCase()}">${client.obiettivo}</span>
         </div>
     `;
     
@@ -150,36 +101,21 @@ function formatDate(dateString) {
 
 // Funzione per mostrare i dettagli del cliente
 function showClientDetails(client) {
-    // Aggiorna i dati nel modal
     document.getElementById('clientDetailsName').textContent = `Dettagli Cliente`;
     document.getElementById('clientInitials').textContent = getInitials(client.nome, client.cognome);
     document.getElementById('clientFullName').textContent = `${client.nome} ${client.cognome}`;
     document.getElementById('clientEmail').textContent = client.email;
     document.getElementById('clientPhone').textContent = client.telefono;
-    document.getElementById('clientObjective').textContent = formatObjective(client.obiettivo);
-    document.getElementById('clientObjective').className = `client-objective tag-${client.obiettivo}`;
+    document.getElementById('clientObjective').textContent = client.obiettivo;
+    document.getElementById('clientObjective').className = `client-objective tag-${client.obiettivo?.toLowerCase()}`;
     
-    // Info tab
     document.getElementById('clientAge').textContent = calculateAge(client.dataNascita);
     document.getElementById('clientBirthday').textContent = formatDate(client.dataNascita);
     document.getElementById('clientMembership').textContent = formatDate(client.iscrizione);
-    document.getElementById('clientObjectiveDetail').textContent = formatObjective(client.obiettivo);
+    document.getElementById('clientObjectiveDetail').textContent = client.obiettivo;
     
-    document.getElementById('link-neworkout').href = `creazione_scheda.html`;
-
-    // Note tab
-    document.getElementById('clientNotes').value = client.note || '';
-    
-    // Mostra il modal
     clientDetailsModal.classList.add('open');
-    
-    // Gestione delle tab
     setupTabs();
-}
-
-//funzione per ricevere id del cliente
-function getClientId(client){
-    
 }
 
 // Funzione per impostare le tab
@@ -318,11 +254,17 @@ document.addEventListener('DOMContentLoaded', function() {
 
 // Inizializza l'applicazione
 function init() {
-    // Simula il caricamento dei dati dall'API
-    setTimeout(() => {
-        loadClients(clients);
-    }, 1000);
+    // Mostra il loading state
+    clientsGrid.innerHTML = `
+        <div class="loading">
+            <i class="fas fa-spinner fa-spin"></i>
+            <span>Caricamento clienti...</span>
+        </div>
+    `;
+    
+    // Carica i clienti dall'API
+    loadClientsFromAPI();
 }
 
-// Avvia l'applicazione
-init();
+// Avvia l'applicazione quando il DOM è caricato
+document.addEventListener('DOMContentLoaded', init);
