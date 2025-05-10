@@ -1,6 +1,6 @@
 // Array per memorizzare gli esercizi
 let exercises = [];
-const ip_server = 'http://localhost';  // Aggiunto http:// che mancava
+const ip_server = 'http://localhost:5001';  // Aggiunto http:// che mancava
 
 // Verificare se ci sono esercizi salvati nel localStorage
 document.addEventListener('DOMContentLoaded', () => {
@@ -29,54 +29,32 @@ async function loadExercises() {
                 description: 'Sdraiati sulla panca con i piedi ben piantati a terra. Afferra il bilanciere con una presa leggermente più ampia delle spalle. Abbassa il bilanciere al petto controllando il movimento, quindi spingi verso l\'alto fino a distendere completamente le braccia.',
                 mediaType: 'image',
                 mediaUrl: '/api/placeholder/400/300'
-            },
-            {
-                id: 'ex2',
-                name: 'Squat',
-                primaryMuscles: ['Quadricipiti', 'Glutei'],
-                secondaryMuscles: ['Femorali', 'Adduttori'],
-                goal: 'Massa muscolare',
-                difficulty: 'Difficile',
-                description: 'Posiziona il bilanciere sulle spalle, piedi alla larghezza delle spalle. Piega le ginocchia mantenendo la schiena dritta fino a quando le cosce sono parallele al pavimento, quindi torna alla posizione di partenza.',
-                mediaType: 'image',
-                mediaUrl: '/api/placeholder/400/300'
-            },
-            {
-                id: 'ex3',
-                name: 'Plank',
-                primaryMuscles: ['Addominali'],
-                secondaryMuscles: ['Spalle', 'Glutei'],
-                goal: 'Tonificazione',
-                difficulty: 'Facile',
-                description: 'Posizionati a terra con gli avambracci appoggiati sul pavimento, gomiti sotto le spalle e piedi uniti. Solleva il corpo mantenendo una linea retta dalla testa ai piedi. Mantieni la posizione contraendo gli addominali.',
-                mediaType: 'image',
-                mediaUrl: '/api/placeholder/400/300'
             }
         ];*/
         try {
-        const response = await fetch(`${ip_server}/api/exercises`);
+            const response = await fetch(`${ip_server}/api/exercises`);
             if (!response.ok) {
                 throw new Error('Errore durante il recupero degli esercizi');
             }   
-                 const data = await response.json();
+            const data = await response.json();
             exercises = data.map(ex => ({
-            id: ex.id,
-            name: ex.nome,
-            description: ex.descrizione,
-            mediaType: ex.video_url ? 'video' : (ex.immagine_url ? 'image' : null),
-            mediaUrl: ex.video_url || ex.immagine_url || null,
-            goal: ex.obiettivo,
-            difficulty: ex.difficolta,
-            primaryMuscles: ex.muscoli_primari || [],
-            secondaryMuscles: ex.muscoli_secondari || []
-        }));
+                id: ex.id,
+                name: ex.nome,
+                description: ex.descrizione,
+                mediaType: ex.video_url ? 'video' : (ex.immagine_url ? 'image' : null),
+                mediaUrl: ex.video_url || ex.immagine_url || null,
+                goal: ex.obiettivo,
+                difficulty: ex.difficolta,
+                primaryMuscles: ex.muscoli_primari || [],
+                secondaryMuscles: ex.muscoli_secondari || []
+            }));
 
-        saveExercises();
-         } catch (error) {
-        console.error('Errore nel caricamento degli esercizi:', error);
-        document.getElementById('no-exercises').textContent = 'Errore nel caricamento degli esercizi. Riprova più tardi.';
-        document.getElementById('no-exercises').classList.remove('d-none');
-    }
+            saveExercises();
+        } catch (error) {
+            console.error('Errore nel caricamento degli esercizi:', error);
+            document.getElementById('no-exercises').textContent = 'Errore nel caricamento degli esercizi. Riprova più tardi.';
+            document.getElementById('no-exercises').classList.remove('d-none');
+        }
     
         
 
@@ -181,7 +159,7 @@ function resetFilters() {
 }
 
 // Funzione per salvare/modificare un esercizio
-function saveExercise() {
+async function saveExercise() {
     // Validazione
     const form = document.getElementById('exercise-form');
     if (!form.checkValidity()) {
@@ -229,97 +207,162 @@ function saveExercise() {
             mediaType = 'video';
         }
         
-        
-        //qui andrebbe gestito il caricamento effettivo del file
+        // TODO: Implementare caricamento file
         mediaUrl = '/api/placeholder/400/300';
     }
-    
-    // Creazione oggetto esercizio
-    const exercise = {
-        id: exerciseId || 'ex' + Date.now(),
-        name,
-        primaryMuscles,
-        secondaryMuscles,
-        goal,
-        difficulty,
-        description,
-        mediaType,
-        mediaUrl
-    };
-    
-    // Aggiungi o aggiorna esercizio nell'array
-    if (exerciseId) {
-        const index = exercises.findIndex(ex => ex.id === exerciseId);
-        if (index !== -1) {
-            exercises[index] = exercise;
+
+    try {
+        const exerciseData = {
+            name,
+            description,
+            goal,
+            difficulty,
+            primaryMuscles,
+            secondaryMuscles,
+            mediaType,
+            mediaUrl
+        };
+
+        // Determina se è un nuovo esercizio o una modifica
+        const url = exerciseId ? 
+            `${ip_server}/api/exercises/${exerciseId}` : 
+            `${ip_server}/api/exercises`;
+        
+        const method = exerciseId ? 'PUT' : 'POST';
+
+        const response = await fetch(url, {
+            method: method,
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(exerciseData)
+        });
+
+        if (!response.ok) {
+            throw new Error('Errore durante il salvataggio dell\'esercizio');
         }
-    } else {
-        exercises.push(exercise);
+
+        const savedExercise = await response.json();
+
+        // Aggiorna l'array locale degli esercizi
+        if (exerciseId) {
+            const idToUpdate = parseInt(exerciseId, 10);
+            const index = exercises.findIndex(ex => ex.id === idToUpdate);
+            if (index !== -1) {
+                exercises[index] = {
+                    ...exercises[index],
+                    ...exerciseData,
+                    id: idToUpdate
+                };
+            }
+        } else {
+            exercises.push({
+                ...exerciseData,
+                id: parseInt(savedExercise.id, 10)  // Converti anche l'ID del nuovo esercizio
+            });
+        }
+        
+        // Salva n
+        // el localStorage e aggiorna UI
+        saveExercises();
+        renderExercises();
+        
+        // Chiudi modal
+        const modal = bootstrap.Modal.getInstance(document.getElementById('exerciseModal'));
+        modal.hide();
+
+        // Mostra messaggio di successo
+        alert('Esercizio salvato con successo!');
+
+    } catch (error) {
+        console.error('Errore durante il salvataggio:', error);
+        alert('Errore durante il salvataggio dell\'esercizio');
     }
-    
-    // Salva nel localStorage e aggiorna UI
-    saveExercises();
-    renderExercises();
-    
-    // Chiudi modal
-    const modal = bootstrap.Modal.getInstance(document.getElementById('exerciseModal'));
-    modal.hide();
 }
 
 // Funzione per eliminare un esercizio
-function deleteExercise() {
+async function deleteExercise() {
     const exerciseId = document.getElementById('exercise-id').value;
-    exercises = exercises.filter(ex => ex.id !== exerciseId);
     
-    saveExercises();
-    renderExercises();
-    
-    // Chiudi entrambi i modal
-    const deleteModal = bootstrap.Modal.getInstance(document.getElementById('deleteConfirmModal'));
-    deleteModal.hide();
-    
-    const exerciseModal = bootstrap.Modal.getInstance(document.getElementById('exerciseModal'));
-    exerciseModal.hide();
+    if (!exerciseId) {
+        console.error('ID esercizio non trovato');
+        return;
+    }
+
+    try {
+        // procedi con l'eliminazione
+        const deleteResponse = await fetch(`${ip_server}/api/exercises/${exerciseId}`, {
+            method: 'DELETE',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        });
+
+        if (!deleteResponse.ok) {
+            throw new Error(`Errore HTTP: ${deleteResponse.status}`);
+        }
+
+        // Rimuovi l'esercizio dall'array locale
+        const idToDelete = parseInt(exerciseId, 10);
+        exercises = exercises.filter(ex => ex.id !== idToDelete);
+        
+        // Aggiorna localStorage e UI
+        saveExercises();
+        renderExercises();
+        
+        // Chiudi entrambi i modal
+        const deleteModal = bootstrap.Modal.getInstance(document.getElementById('deleteConfirmModal'));
+        const exerciseModal = bootstrap.Modal.getInstance(document.getElementById('exerciseModal'));
+        
+        if (deleteModal) deleteModal.hide();
+        if (exerciseModal) exerciseModal.hide();
+
+        // Feedback all'utente
+        alert('Esercizio eliminato con successo');
+
+    } catch (error) {
+        console.error('Errore durante l\'eliminazione:', error);
+        alert('Errore durante l\'eliminazione dell\'esercizio: ' + error.message);
+    }
 }
 
 // Funzione per visualizzare un esercizio
 function viewExercise(exerciseId) {
-    const exercise = exercises.find(ex => ex.id === exerciseId);
-    if (!exercise) return;
+    const exercise = exercises.find(ex => ex.id == exerciseId);
     
-    // Popolare il modal di visualizzazione
+    //if (!exercise) return;
+    if (!exercise) {
+        console.error('Esercizio non trovato:', exerciseId);
+        return;
+    }
+ 
+    // Popolare il modal con i dati dell'esercizio
     document.getElementById('view-name').textContent = exercise.name;
     document.getElementById('view-name').dataset.id = exercise.id;
     document.getElementById('view-description').textContent = exercise.description;
     
-    // Difficoltà - Controlla che difficulty sia definito prima di usare toLowerCase()
-    const difficultyClass = exercise.difficulty && typeof exercise.difficulty === 'string' ? 
-        exercise.difficulty.toLowerCase().replace(/\s+/g, '-') : 'medio';
+    // Difficoltà
+    const difficultyClass = exercise.difficulty.toLowerCase().replace(/\s+/g, '-');
     document.getElementById('view-difficulty').innerHTML = `
-        <span class="badge badge-${difficultyClass}">${exercise.difficulty || 'Medio'}</span>
+        <span class="badge badge-${difficultyClass}">${exercise.difficulty}</span>
     `;
     
-    // Obiettivo - Controlla che goal sia definito prima di usare toLowerCase()
-    const goalClass = exercise.goal && typeof exercise.goal === 'string' ? 
-        exercise.goal.toLowerCase().replace(/\s+/g, '-') : 'general';
+    // Obiettivo
+    const goalClass = exercise.goal.toLowerCase().replace(/\s+/g, '-');
     document.getElementById('view-goal').innerHTML = `
-        <span class="badge badge-${goalClass}">${exercise.goal || 'General'}</span>
+        <span class="badge badge-${goalClass}">${exercise.goal}</span>
     `;
     
-    // Gruppi muscolari primari
-    document.getElementById('view-primary-muscles').innerHTML = exercise.primaryMuscles.map(muscle => 
-        `<span class="muscle-tag badge-primary-muscle">${muscle}</span>`
-    ).join('');
+    // Gestione gruppi muscolari
+    document.getElementById('view-primary-muscles').innerHTML = exercise.primaryMuscles?.map(muscle => 
+        `<span class="badge bg-primary me-1">${muscle}</span>`
+    ).join('') || 'Nessuno';
     
-    // Gruppi muscolari secondari
-    document.getElementById('view-secondary-muscles').innerHTML = 
-        exercise.secondaryMuscles.length > 0 
-            ? exercise.secondaryMuscles.map(muscle => 
-                `<span class="muscle-tag badge-secondary-muscle">${muscle}</span>`
-              ).join('')
-            : '<span class="text-muted">Nessuno</span>';
-    
-    // Media
+    document.getElementById('view-secondary-muscles').innerHTML = exercise.secondaryMuscles?.map(muscle => 
+        `<span class="badge bg-secondary me-1">${muscle}</span>`
+    ).join('') || 'Nessuno';
+
+    // Gestione media
     const viewImage = document.getElementById('view-image');
     const viewVideo = document.getElementById('view-video');
     const noMedia = document.getElementById('no-media');
@@ -338,15 +381,20 @@ function viewExercise(exerciseId) {
         noMedia.classList.remove('d-none');
     }
     
-    // Mostra il modal
+    // Mostrare il modal
     const viewModal = new bootstrap.Modal(document.getElementById('viewExerciseModal'));
     viewModal.show();
 }
 
+
 // Funzione per aprire il modal di modifica
 function openEditModal(exerciseId) {
-    const exercise = exercises.find(ex => ex.id === exerciseId);
-    if (!exercise) return;
+    const exercise = exercises.find(ex => ex.id == exerciseId);
+    //if (!exercise) return;
+    if (!exercise) {
+        console.error('Esercizio non trovato:', exerciseId);
+        return;
+    }
     
     document.getElementById('exerciseModalLabel').textContent = 'Modifica Esercizio';
     document.getElementById('exercise-id').value = exercise.id;
@@ -504,22 +552,25 @@ function renderExercises() {
                         </div>
                         
                         <div class="mt-auto">
-                            <div class="btn-group w-100">
-                                <button class="btn btn-outline-primary btn-sm view-exercise" data-id="${exercise.id}">
-                                    <i class="fas fa-eye me-1"></i>Visualizza
-                                </button>
-                                <button class="btn btn-outline-secondary btn-sm edit-exercise" data-id="${exercise.id}">
-                                    <i class="fas fa-edit me-1"></i>Modifica
-                                </button>
-                            </div>
+                        <div class="btn-group w-100">
+                            <button class="btn btn-outline-primary btn-sm" onclick="viewExercise('${exercise.id}')">
+                                <i class="fas fa-eye me-1"></i>Visualizza
+                            </button>
+                            <button class="btn btn-outline-secondary btn-sm" onclick="openEditModal('${exercise.id}')">
+                                <i class="fas fa-edit me-1"></i>Modifica
+                            </button>
                         </div>
+                    </div>
                     </div>
                 </div>
             `;
             
+            
             container.appendChild(card);
         });
         
+        
+
         // Aggiungere listener per i bottoni
         document.querySelectorAll('.view-exercise').forEach(button => {
             button.addEventListener('click', () => viewExercise(button.dataset.id));

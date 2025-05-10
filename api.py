@@ -314,3 +314,171 @@ def get_exercises():
         return jsonify({'error': str(e)}), 500
     finally:
         conn.close()
+
+@api.route('/api/exercises', methods=['POST'])
+@login_required
+def add_exercise():
+    try:
+        data = request.json
+        conn = sqlite3.connect(DB_FILE)
+        cursor = conn.cursor()
+
+        # Ottieni gli ID di obiettivo e difficoltà
+        cursor.execute("SELECT id FROM Obiettivi WHERE nome = ?", (data['goal'],))
+        obiettivo_id = cursor.fetchone()
+        if not obiettivo_id:
+            return jsonify({'error': 'Obiettivo non valido'}), 400
+
+        cursor.execute("SELECT id FROM Difficolta WHERE livello = ?", (data['difficulty'],))
+        difficolta_id = cursor.fetchone()
+        if not difficolta_id:
+            return jsonify({'error': 'Difficoltà non valida'}), 400
+        
+        # Inserisci l'esercizio
+        cursor.execute("""
+            INSERT INTO Esercizi (
+                nome, descrizione, video_url, immagine_url,
+                obiettivo_id, difficolta_id
+            ) VALUES (?, ?, ?, ?, ?, ?)
+        """, (
+            data['name'],
+            data['description'],
+            data['mediaUrl'] if data['mediaType'] == 'video' else None,
+            data['mediaUrl'] if data['mediaType'] == 'image' else None,
+            obiettivo_id[0],
+            difficolta_id[0]
+        ))
+        
+        exercise_id = cursor.lastrowid
+        
+        # Inserisci i muscoli primari
+        for muscle in data['primaryMuscles']:
+            cursor.execute("SELECT id FROM Gruppi_Muscolari WHERE nome = ?", (muscle,))
+            muscle_id = cursor.fetchone()
+            if muscle_id:
+                cursor.execute("""
+                    INSERT INTO Esercizi_Muscoli (
+                        esercizio_id, muscolo_id, tipo
+                    ) VALUES (?, ?, ?)
+                """, (exercise_id, muscle_id[0], 'primario'))
+            
+        # Inserisci i muscoli secondari
+        for muscle in data['secondaryMuscles']:
+            cursor.execute("SELECT id FROM Gruppi_Muscolari WHERE nome = ?", (muscle,))
+            muscle_id = cursor.fetchone()
+            if muscle_id:
+                cursor.execute("""
+                    INSERT INTO Esercizi_Muscoli (
+                        esercizio_id, muscolo_id, tipo
+                    ) VALUES (?, ?, ?)
+                """, (exercise_id, muscle_id[0], 'secondario'))
+        
+        conn.commit()
+        return jsonify({'success': True, 'id': exercise_id}), 201
+        
+    except Exception as e:
+        conn.rollback()
+        print(f"Errore nell'aggiunta dell'esercizio: {e}")
+        return jsonify({'error': 'Errore durante il salvataggio dell\'esercizio'}), 500
+    finally:
+        conn.close()
+
+@api.route('/api/exercises/<int:exercise_id>', methods=['PUT'])
+@login_required
+def update_exercise(exercise_id):
+    try:
+        data = request.json
+        conn = sqlite3.connect(DB_FILE)
+        cursor = conn.cursor()
+
+        # Ottieni gli ID di obiettivo e difficoltà
+        cursor.execute("SELECT id FROM Obiettivi WHERE nome = ?", (data['goal'],))
+        obiettivo_id = cursor.fetchone()
+        if not obiettivo_id:
+            return jsonify({'error': 'Obiettivo non valido'}), 400
+
+        cursor.execute("SELECT id FROM Difficolta WHERE livello = ?", (data['difficulty'],))
+        difficolta_id = cursor.fetchone()
+        if not difficolta_id:
+            return jsonify({'error': 'Difficoltà non valida'}), 400
+        
+        # Aggiorna i dati dell'esercizio
+        cursor.execute("""
+            UPDATE Esercizi SET 
+                nome = ?, 
+                descrizione = ?,
+                video_url = ?,
+                immagine_url = ?,
+                obiettivo_id = ?,
+                difficolta_id = ?
+            WHERE id = ?
+        """, (
+            data['name'],
+            data['description'],
+            data['mediaUrl'] if data['mediaType'] == 'video' else None,
+            data['mediaUrl'] if data['mediaType'] == 'image' else None,
+            obiettivo_id[0],
+            difficolta_id[0],
+            exercise_id
+        ))
+        
+        # Rimuovi tutti i muscoli esistenti per questo esercizio
+        cursor.execute("DELETE FROM Esercizi_Muscoli WHERE esercizio_id = ?", (exercise_id,))
+        
+        # Inserisci i nuovi muscoli primari
+        for muscle in data['primaryMuscles']:
+            cursor.execute("SELECT id FROM Gruppi_Muscolari WHERE nome = ?", (muscle,))
+            muscle_id = cursor.fetchone()
+            if muscle_id:
+                cursor.execute("""
+                    INSERT INTO Esercizi_Muscoli (
+                        esercizio_id, muscolo_id, tipo
+                    ) VALUES (?, ?, ?)
+                """, (exercise_id, muscle_id[0], 'primario'))
+            
+        # Inserisci i nuovi muscoli secondari
+        for muscle in data['secondaryMuscles']:
+            cursor.execute("SELECT id FROM Gruppi_Muscolari WHERE nome = ?", (muscle,))
+            muscle_id = cursor.fetchone()
+            if muscle_id:
+                cursor.execute("""
+                    INSERT INTO Esercizi_Muscoli (
+                        esercizio_id, muscolo_id, tipo
+                    ) VALUES (?, ?, ?)
+                """, (exercise_id, muscle_id[0], 'secondario'))
+        
+        conn.commit()
+        return jsonify({'success': True}), 200
+        
+    except Exception as e:
+        conn.rollback()
+        print(f"Errore nell'aggiornamento dell'esercizio: {e}")
+        return jsonify({'error': 'Errore durante l\'aggiornamento dell\'esercizio'}), 500
+    finally:
+        conn.close()
+
+@api.route('/api/exercises/<int:exercise_id>', methods=['DELETE'])
+@login_required
+def delete_exercise(exercise_id):
+    try:
+        conn = sqlite3.connect(DB_FILE)
+        cursor = conn.cursor()
+        
+        # Rimuovi prima i riferimenti nelle schede
+        cursor.execute("DELETE FROM Schede_Esercizi WHERE esercizio_id = ?", (exercise_id,))
+        
+        # Rimuovi le associazioni con i muscoli
+        cursor.execute("DELETE FROM Esercizi_Muscoli WHERE esercizio_id = ?", (exercise_id,))
+        
+        # Infine rimuovi l'esercizio
+        cursor.execute("DELETE FROM Esercizi WHERE id = ?", (exercise_id,))
+        
+        conn.commit()
+        return jsonify({'success': True}), 200
+        
+    except Exception as e:
+        conn.rollback()
+        print(f"Errore nella cancellazione dell'esercizio: {e}")
+        return jsonify({'error': 'Errore durante la cancellazione dell\'esercizio'}), 500
+    finally:
+        conn.close()

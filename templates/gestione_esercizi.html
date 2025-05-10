@@ -7,7 +7,7 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
 
-    <link rel="stylesheet" href="gestione_esercizi.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/gestione_esercizi.css') }}">
     <!-- <link rel="stylesheet" href="{{ url_for('static', filename='js/gestione_esercizi.js') }}"> -->
 </head>
 <body>
@@ -174,7 +174,7 @@
         </div>
     </div>
 
-    <!-- Modal per Aggiungere/Modificare Esercizio -->
+   <!-- Modal per Aggiungere/Modificare Esercizio -->
     <div class="modal fade" id="exerciseModal" tabindex="-1" aria-labelledby="exerciseModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-lg">
             <div class="modal-content">
@@ -397,7 +397,8 @@
             </div>
         </div>
     </div>
- <!-- Modal visualizzazione dettagli esercizio -->
+
+    <!-- Modal visualizzazione dettagli esercizio -->
     <div class="modal fade" id="viewExerciseModal" tabindex="-1" aria-labelledby="viewExerciseModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-lg">
             <div class="modal-content">
