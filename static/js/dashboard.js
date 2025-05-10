@@ -340,3 +340,29 @@ function showNotification(message, type = 'success') {
 
 // Avvia l'applicazione quando il DOM è caricato
 document.addEventListener('DOMContentLoaded', init);
+
+async function loadObiettivi() {
+    try {
+        const response = await fetch('/api/obiettivi');
+        if (!response.ok) {
+            throw new Error('Errore nel caricamento degli obiettivi');
+        }
+        const obiettivi = await response.json();
+        const obiettivoSelect = document.getElementById('obiettivo');
+
+        // Svuota il select e aggiungi le opzioni
+        obiettivoSelect.innerHTML = '<option value="">Seleziona un obiettivo</option>';
+        obiettivi.forEach(obiettivo => {
+            const option = document.createElement('option');
+            option.value = obiettivo.id;
+            option.textContent = obiettivo.nome;
+            obiettivoSelect.appendChild(option);
+        });
+    } catch (error) {
+        console.error('Errore:', error);
+        alert('Impossibile caricare gli obiettivi. Riprova più tardi.');
+    }
+}
+
+// Carica gli obiettivi quando la pagina è pronta
+document.addEventListener('DOMContentLoaded', loadObiettivi);
