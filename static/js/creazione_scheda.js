@@ -91,6 +91,27 @@ async function caricaEserciziDisponibili() {
         
         // Popola il menu a tendina dei gruppi muscolari
         const filtroGruppiMuscolari = document.getElementById('filtroGruppiMuscolari');
+        
+        // Aggiungi prima l'opzione "tutti"
+        const liTutti = document.createElement('li');
+        const aTutti = document.createElement('a');
+        aTutti.className = 'dropdown-item active';
+        aTutti.href = '#';
+        aTutti.dataset.gruppo = 'tutti';
+        aTutti.textContent = 'Tutti';
+        aTutti.addEventListener('click', function(e) {
+            e.preventDefault();
+            document.querySelectorAll('#filtroGruppiMuscolari .dropdown-item')
+                .forEach(el => el.classList.remove('active'));
+            this.classList.add('active');
+            document.getElementById('dropdownGruppiMuscolari').textContent = 'Filtra per gruppo';
+            window.filtroAttuale.gruppo = 'tutti';
+            filtraEsercizi();
+        });
+        liTutti.appendChild(aTutti);
+        filtroGruppiMuscolari.appendChild(liTutti);
+        
+        // Aggiungi gli altri gruppi muscolari
         gruppiMuscolari.forEach(gruppo => {
             const li = document.createElement('li');
             const a = document.createElement('a');
@@ -161,7 +182,7 @@ function visualizzaEserciziDisponibili(esercizi) {
 
 // Funzione per cercare esercizi
 function cercaEsercizi() {
-    const searchText = document.getElementById('searchEsercizi').value.toLowerCase();
+    const searchText = document.getElementById('searchEsercizi').value.toLowerCase().trim();
     
     // Aggiorna il filtro di testo
     window.filtroAttuale.testo = searchText;
@@ -179,15 +200,16 @@ function filtraEsercizi() {
         // Filtro per testo di ricerca
         const matchTesto = 
             esercizio.nome.toLowerCase().includes(window.filtroAttuale.testo) || 
-            esercizio.categoria.toLowerCase().includes(window.filtroAttuale.testo) ||
-            esercizio.descrizione.toLowerCase().includes(window.filtroAttuale.testo);
+            esercizio.descrizione.toLowerCase().includes(window.filtroAttuale.testo) ||
+            (esercizio.muscoli_primari && esercizio.muscoli_primari.some(muscolo => 
+                muscolo.toLowerCase().includes(window.filtroAttuale.testo)
+            ));
         
         // Filtro per gruppo muscolare
         const matchGruppo = 
             window.filtroAttuale.gruppo === 'tutti' || 
-            esercizio.gruppoMuscolare === window.filtroAttuale.gruppo;
+            (esercizio.muscoli_primari && esercizio.muscoli_primari.includes(window.filtroAttuale.gruppo));
         
-        // L'esercizio deve soddisfare entrambi i criteri
         return matchTesto && matchGruppo;
     });
     
