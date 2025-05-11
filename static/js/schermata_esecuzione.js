@@ -13,6 +13,10 @@ const exerciseName = document.getElementById('exercise-name');
 const exerciseContainer = document.querySelector('.exercise-container');
 const infoBoxes = document.querySelectorAll('.info-box');
 
+// Variabili globali
+let currentExerciseIndex = 0;
+let exercises = [];
+let currentScheda = null;
 
 // Timer variables
 let timerInterval;
@@ -20,59 +24,102 @@ let totalSeconds = 60; // Default 60 seconds
 let currentSeconds = totalSeconds;
 let isTimerRunning = false;
 
-const exercises = [
-    {
-        id: 1,
-        name: 'Squat',
-        category: 'Gambe',
-        videoSrc: '/api/placeholder/640/360',
-        sets: 4,
-        reps: 12,
-        rest: 60,
-        instructions: [
-            'Posizionati con i piedi alla larghezza delle spalle',
-            'Mantieni la schiena dritta e il petto in fuori',
-            'Abbassati come se dovessi sederti, fino a quando le cosce sono parallele al pavimento',
-            'Risali spingendo sui talloni e contraendo i glutei'
-        ]
-    },
-    {
-        id: 2,
-        name: 'Push-up',
-        category: 'Petto',
-        videoSrc: '/api/placeholder/640/360',
-        sets: 3,
-        reps: 15,
-        rest: 45,
-        instructions: [
-            'Posizionati con le mani leggermente più larghe delle spalle',
-            'Mantieni il corpo allineato dalla testa ai piedi',
-            'Abbassati flettendo i gomiti fino a sfiorare il pavimento',
-            'Risali estendendo le braccia senza bloccare i gomiti'
-        ]
-    },
-    {
-        id: 3,
-        name: 'Plank',
-        category: 'Addominali',
-        videoSrc: '/api/placeholder/640/360',
-        sets: 3,
-        reps: '30 secondi',
-        rest: 30,
-        instructions: [
-            'Posizionati sui gomiti e sulle punte dei piedi',
-            'Mantieni il corpo allineato dalla testa ai piedi',
-            'Contrai addominali e glutei',
-            'Respira normalmente e mantieni la posizione'
-        ]
-    }
-];
+async function loadWorkoutDetails(schedaId) {
+    try {
+        const response = await fetch(`/api/schede/${schedaId}`, {
+            credentials: 'include'
+        });
+        
+        if (!response.ok) throw new Error('Errore nel caricamento della scheda');
+        
+        currentScheda = await response.json();
+        exercises = currentScheda.esercizi.map(ex => ({
+            id: ex.id,
+            name: ex.nome,
+            category: ex.gruppo || 'Generale',
+            // Usa l'API esistente per lo streaming del video
+            videoSrc: `/api/exercise/video/${ex.id}`,
+            sets: ex.serie,
+            reps: ex.ripetizioni,
+            rest: ex.recupero || 60,
+            weight: ex.peso_kg,
+            instructions: ex.descrizione ? ex.descrizione.split('\n') : [
+                'Nessuna istruzione disponibile'
+            ]
+        }));
 
-// Initialize page
-function initializePage() {
-    updateExerciseDisplay(currentExerciseIndex);
-    setupEventListeners();
-    animateElements();
+        // Inizializza la schermata con il primo esercizio
+        updateExerciseDisplay(0);
+        setupEventListeners();
+        animateElements();
+
+    } catch (error) {
+        console.error('Errore:', error);
+        showError('Errore nel caricamento della scheda');
+    }
+}
+
+function updateExerciseDisplay(index) {
+    const exercise = exercises[index];
+    if (!exercise) return;
+    
+    // Update exercise name and category
+    exerciseName.textContent = exercise.name;
+    document.querySelector('.badge').textContent = exercise.category;
+    
+    // Update video source and display
+    exerciseVideo.src = exercise.videoSrc;
+    exerciseVideo.style.display = 'block';
+    videoOverlay.style.display = 'flex';
+    
+    // Reset video state
+    exerciseVideo.pause();
+    exerciseVideo.currentTime = 0;
+    videoOverlay.style.opacity = '1';
+    
+    // Update exercise info
+    document.querySelector('.sets .value').textContent = exercise.sets;
+    document.querySelector('.reps .value').textContent = exercise.reps;
+    document.querySelector('.rest .value').textContent = `${exercise.rest}s`;
+    
+    // Update timer
+    totalSeconds = exercise.rest;
+    currentSeconds = totalSeconds;
+    updateTimerDisplay();
+    
+    // Update instructions
+    const instructionsText = exercise.instructions.map((instruction, i) => {
+        return `${i + 1}. ${instruction}`;
+    }).join('<br>');
+    document.querySelector('.instructions p').innerHTML = instructionsText;
+    
+    // Update navigation buttons state
+    updateNavigationButtons(index);
+}
+
+function updateNavigationButtons(index) {
+    prevExerciseBtn.disabled = index === 0;
+    nextExerciseBtn.disabled = index === exercises.length - 1;
+    
+    prevExerciseBtn.style.opacity = prevExerciseBtn.disabled ? '0.5' : '1';
+    prevExerciseBtn.style.cursor = prevExerciseBtn.disabled ? 'not-allowed' : 'pointer';
+    
+    nextExerciseBtn.style.opacity = nextExerciseBtn.disabled ? '0.5' : '1';
+    nextExerciseBtn.style.cursor = nextExerciseBtn.disabled ? 'not-allowed' : 'pointer';
+}
+
+function showError(message) {
+    const errorDiv = document.createElement('div');
+    errorDiv.className = 'error-message';
+    errorDiv.innerHTML = `
+        <i class="fas fa-exclamation-circle"></i>
+        <span>${message}</span>
+    `;
+    document.querySelector('main').prepend(errorDiv);
+    
+    setTimeout(() => {
+        errorDiv.remove();
+    }, 5000);
 }
 
 // Setup event listeners
@@ -105,8 +152,7 @@ function toggleVideo(){
     }
 }
 
-
-//timer functions
+// Timer functions
 function startTimer(){
     if (!isTimerRunning) {
         isTimerRunning = true;
@@ -222,16 +268,15 @@ function showTimerCompleteNotification(){
     }, 3000);
 }
 
-
-// navigazione esercizi
-function nextExercise(){
+// Navigazione esercizi
+function nextExercise() {
     if (currentExerciseIndex < exercises.length - 1) {
         currentExerciseIndex++;
         updateExerciseWithAnimation();
     }
 }
 
-function prevExercise(){
+function prevExercise() {
     if (currentExerciseIndex > 0) {
         currentExerciseIndex--;
         updateExerciseWithAnimation();
@@ -268,53 +313,7 @@ function updateExerciseWithAnimation(){
     resetTimer();
 }
 
-function updateExerciseDisplay(index){const exercise = exercises[index];
-    
-    // Update exercise name and category
-    exerciseName.textContent = exercise.name;
-    document.querySelector('.badge').textContent = exercise.category;
-    
-    // Update video source
-    exerciseVideo.src = exercise.videoSrc;
-    
-    // Update exercise info
-    document.querySelector('.sets .value').textContent = exercise.sets;
-    document.querySelector('.reps .value').textContent = exercise.reps;
-    document.querySelector('.rest .value').textContent = exercise.rest + 's';
-    
-    // Update timer
-    totalSeconds = exercise.rest;
-    currentSeconds = totalSeconds;
-    updateTimerDisplay();
-    
-    // Update instructions
-    const instructionsText = exercise.instructions.map((instruction, i) => {
-        return `${i + 1}. ${instruction}`;
-    }).join('<br>');
-    document.querySelector('.instructions p').innerHTML = instructionsText;
-    
-    // Update navigation buttons state
-    prevExerciseBtn.disabled = index === 0;
-    nextExerciseBtn.disabled = index === exercises.length - 1;
-    
-    if (prevExerciseBtn.disabled) {
-        prevExerciseBtn.style.opacity = '0.5';
-        prevExerciseBtn.style.cursor = 'not-allowed';
-    } else {
-        prevExerciseBtn.style.opacity = '1';
-        prevExerciseBtn.style.cursor = 'pointer';
-    }
-    
-    if (nextExerciseBtn.disabled) {
-        nextExerciseBtn.style.opacity = '0.5';
-        nextExerciseBtn.style.cursor = 'not-allowed';
-    } else {
-        nextExerciseBtn.style.opacity = '1';
-        nextExerciseBtn.style.cursor = 'pointer';
-    }
-}
-
-// animazioni
+// Animazioni
 function animateElements() {
     // Animate info boxes with delay
     infoBoxes.forEach((box, index) => {
@@ -347,4 +346,13 @@ function animateTimerButton(button) {
 }
 
 // Initialize on page load
-document.addEventListener('DOMContentLoaded', initializePage);
+document.addEventListener('DOMContentLoaded', function() {
+    const urlParams = new URLSearchParams(window.location.search);
+    const schedaId = urlParams.get('scheda_id');
+    
+    if (schedaId) {
+        loadWorkoutDetails(schedaId);
+    } else {
+        showError('ID scheda non trovato');
+    }
+});

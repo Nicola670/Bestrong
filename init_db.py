@@ -279,19 +279,19 @@ def populate_database():
 
         # --- INSERIMENTO ESERCIZI ---
         exercises = [
-            ('Panca Piana', 'Distendersi sulla panca e spingere il bilanciere', 1, 2),
-            ('Trazioni', 'Trazione alla sbarra', 1, 3),
-            ('Military Press', 'Press sopra la testa', 1, 2),
-            ('Squat', 'Piegamenti gambe con bilanciere', 3, 2),
-            ('Curl Bicipiti', 'Curl con manubri', 1, 1),
-            ('Crunch', 'Addominali a terra', 2, 1)
+            ('Panca Piana', 'Distendersi sulla panca e spingere il bilanciere', 'video.mp4', 1, 2),
+            ('Trazioni', 'Trazione alla sbarra', 'video.mp4', 1, 3),
+            ('Military Press', 'Press sopra la testa', 'video.mp4', 1, 2),
+            ('Squat', 'Piegamenti gambe con bilanciere', 'video.mp4', 3, 2),
+            ('Curl Bicipiti', 'Curl con manubri', 'video.mp4', 1, 1),
+            ('Crunch', 'Addominali a terra', 'video.mp4', 2, 1)
         ]
         
-        for nome, descrizione, obiettivo_id, difficolta_id in exercises:
+        for nome, descrizione, video_url, obiettivo_id, difficolta_id in exercises:
             cursor.execute("""
-                INSERT OR IGNORE INTO Esercizi (nome, descrizione, obiettivo_id, difficolta_id)
-                VALUES (?, ?, ?, ?)
-            """, (nome, descrizione, obiettivo_id, difficolta_id))
+                INSERT OR IGNORE INTO Esercizi (nome, descrizione, video_url, obiettivo_id, difficolta_id)
+                VALUES (?, ?, ?, ?, ?)
+            """, (nome, descrizione, video_url, obiettivo_id, difficolta_id))
 
         # --- INSERIMENTO SCHEDE ---
         # Prima otteniamo alcuni ID necessari
