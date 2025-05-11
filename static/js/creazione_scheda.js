@@ -326,15 +326,10 @@ function aggiungiEsercizioAllaScheda(esercizio) {
 
 // Modifica la funzione per salvare la scheda
 async function salvaScheda() {
-    // Validazione dei campi come prima...
+    // Validazione dei campi
     const clienteId = document.getElementById('clienteId').textContent;
-    const nomeProgramma = document.getElementById('nomeProgramma').value;
-    const dataInizio = document.getElementById('dataInizio').value;
-    const dataFine = document.getElementById('dataFine').value;
-    const note = document.getElementById('note').value;
-
-    if (!nomeProgramma || !dataInizio || !dataFine) {
-        alert('Compila tutti i campi obbligatori');
+    if (!clienteId) {
+        alert('ID cliente non valido');
         return;
     }
 
@@ -347,11 +342,12 @@ async function salvaScheda() {
     const esercizi = [];
     for (const el of eserciziScheda) {
         const esercizioId = el.dataset.esercizioId;
-        const serie = el.querySelector('#serie').value;
-        const ripetizioni = el.querySelector('#ripetizioni').value;
-        const peso = el.querySelector('#peso').value;
-        const recupero = el.querySelector('#recupero').value;
-        const noteEsercizio = el.querySelector('#noteEsercizio').value;
+        const uniqueId = `esercizio-${esercizioId}`;
+        
+        const serie = document.getElementById(`serie-${uniqueId}`).value;
+        const ripetizioni = document.getElementById(`ripetizioni-${uniqueId}`).value;
+        const peso = document.getElementById(`peso-${uniqueId}`).value;
+        const recupero = document.getElementById(`recupero-${uniqueId}`).value;
 
         if (!serie || !ripetizioni) {
             alert('Inserisci serie e ripetizioni per tutti gli esercizi');
@@ -362,18 +358,13 @@ async function salvaScheda() {
             esercizio_id: parseInt(esercizioId),
             serie: parseInt(serie),
             ripetizioni: parseInt(ripetizioni),
-            peso_kg: peso ? parseFloat(peso) : 0,
-            recupero_secondi: recupero ? parseInt(recupero) : 0,
-            note: noteEsercizio
+            peso_kg: peso ? parseFloat(peso) : null,
+            recupero_secondi: recupero ? parseInt(recupero) : null
         });
     }
 
     const schedaData = {
         cliente_id: parseInt(clienteId),
-        nome: nomeProgramma,
-        data_inizio: dataInizio,
-        data_fine: dataFine,
-        note: note,
         esercizi: esercizi
     };
 
@@ -392,10 +383,12 @@ async function salvaScheda() {
 
         const result = await response.json();
         alert('Scheda salvata con successo!');
-        window.location.href = `/schede_cliente?id=${clienteId}`; // Redirect alla lista schede del cliente
+        
+        // Redirect alla dashboard o alla lista schede del cliente
+        window.location.href = '/dashboard';
 
     } catch (error) {
         console.error('Errore nel salvataggio della scheda:', error);
-        alert('Errore nel salvataggio della scheda');
+        alert('Errore nel salvataggio della scheda: ' + error.message);
     }
 }

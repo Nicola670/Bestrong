@@ -68,24 +68,19 @@ def get_clients():
 @api.route('/api/client/<int:client_id>', methods=['GET'])
 #@login_required
 def get_client_by_id(client_id):
-    """
-    if not current_user.is_trainer:
-        return jsonify({'error': 'Unauthorized'}), 403
-    """
-
     conn = sqlite3.connect(DB_FILE)
     cursor = conn.cursor()
     
     try:
-        # Esegui la query per ottenere i dettagli del cliente
+        # Prima verifica se l'utente esiste
         cursor.execute("""
-            SELECT Utenti.id, Utenti.username, Utenti.surname, Utenti.email. Utenti.phone, Utenti.date_of_birth
+            SELECT id, username, surname, email, phone, date_of_birth
             FROM Utenti
-            INNER JOIN Clienti_Trainer ON Utenti.id = Clienti_Trainer.cliente_id
-            WHERE Clienti_Trainer.cliente_id = ? AND Clienti_Trainer.trainer_id = ?
-        """, (client_id, 1)) # sostituire con current_user.id quando viene implementato le sessioni
+            WHERE id = ? AND is_trainer = 0
+        """, (client_id,))
+        
         client = cursor.fetchone()
-        print(client)
+    
         # Controlla se il cliente esiste
         if not client:
             return jsonify({'error': 'Client not found'}), 404
@@ -99,8 +94,9 @@ def get_client_by_id(client_id):
             'phone': client[4],
             'date_of_birth': client[5]
         })
+        
     except Exception as e:
-        # Gestione degli errori
+        print(f"Errore nel recupero del cliente: {e}")
         return jsonify({'error': str(e)}), 500
     finally:
         conn.close()
@@ -505,15 +501,11 @@ def create_scheda():
         # Inserisci la scheda
         cursor.execute("""
             INSERT INTO Schede (
-                cliente_id, nome, data_inizio, data_fine, 
-                note, creato, aggiornato
-            ) VALUES (?, ?, ?, ?, ?, datetime('now'), datetime('now'))
+                cliente_id, trainer_id, creato, aggiornato
+            ) VALUES (?, ?, datetime('now'), datetime('now'))
         """, (
             data['cliente_id'],
-            data['nome'],
-            data['data_inizio'],
-            data['data_fine'],
-            data['note']
+            current_user.id  # ID del trainer attualmente loggato
         ))
         
         scheda_id = cursor.lastrowid
@@ -523,16 +515,15 @@ def create_scheda():
             cursor.execute("""
                 INSERT INTO Schede_Esercizi (
                     scheda_id, esercizio_id, serie, ripetizioni,
-                    peso_kg, recupero_secondi, note
-                ) VALUES (?, ?, ?, ?, ?, ?, ?)
+                    peso_kg, recupero_secondi
+                ) VALUES (?, ?, ?, ?, ?, ?)
             """, (
                 scheda_id,
                 esercizio['esercizio_id'],
                 esercizio['serie'],
                 esercizio['ripetizioni'],
                 esercizio['peso_kg'],
-                esercizio['recupero_secondi'],
-                esercizio['note']
+                esercizio['recupero_secondi']
             ))
         
         conn.commit()
