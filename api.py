@@ -181,73 +181,84 @@ def stream_exercise_video(exercise_id):
 def get_client_schede(client_id):
     """Restituisce tutte le schede di allenamento di un cliente specifico"""
     try:
-        # Verifica autorizzazioni
-        if not current_user.is_trainer and current_user.id != client_id:
-            return jsonify({'error': 'Unauthorized'}), 403
-
         conn = sqlite3.connect(DB_FILE)
         cursor = conn.cursor()
-        
-        # Query per ottenere le schede con i relativi esercizi
+
+        # Prima verifica debug
+        print("\n=== DEBUG INFO ===")
+        cursor.execute("SELECT * FROM Schede WHERE cliente_id = ?", (client_id,))
+        schede_base = cursor.fetchall()
+        print(f"Schede base trovate: {schede_base}")
+
+        # Query principale modificata con LEFT JOIN
         cursor.execute("""
-            SELECT 
-                s.id AS scheda_id,
+            SELECT DISTINCT
+                s.id,
                 s.creato,
                 s.aggiornato,
-                se.id AS esercizio_scheda_id,
-                e.nome AS nome_esercizio,
-                e.descrizione AS descrizione_esercizio,
-                e.video_url,
-                se.ripetizioni,
-                se.serie,
-                se.durata_secondi,
-                se.recupero_secondi,
-                se.peso_kg,
-                m.nome AS nome_macchinario
+                GROUP_CONCAT(DISTINCT IFNULL(gm.nome, 'Generale')) as gruppi_muscolari,
+                COUNT(DISTINCT se.id) as num_esercizi
             FROM Schede s
             LEFT JOIN Schede_Esercizi se ON s.id = se.scheda_id
             LEFT JOIN Esercizi e ON se.esercizio_id = e.id
-            LEFT JOIN Macchinari m ON se.macchinario_id = m.id
+            LEFT JOIN Esercizi_Muscoli em ON e.id = em.esercizio_id
+            LEFT JOIN Gruppi_Muscolari gm ON em.muscolo_id = gm.id
             WHERE s.cliente_id = ?
-            ORDER BY s.creato DESC, s.id, se.id
+            GROUP BY s.id
+            ORDER BY s.creato DESC
         """, (client_id,))
         
         schede_raw = cursor.fetchall()
+        print(f"Schede dopo JOIN trovate: {schede_raw}")
         
         if not schede_raw:
             return jsonify({'message': 'Nessuna scheda trovata'}), 404
 
-        # Organizzo i dati in una struttura gerarchica
-        schede = {}
-        for row in schede_raw:
-            scheda_id = row[0]
-            if scheda_id not in schede:
-                schede[scheda_id] = {
-                    'id': scheda_id,
-                    'data_creazione': row[1],
-                    'ultimo_aggiornamento': row[2],
-                    'esercizi': []
-                }
+        schede = []
+        for scheda in schede_raw:
+            scheda_id, data_creazione, ultimo_aggiornamento, gruppi, num_esercizi = scheda
             
-            # Aggiungo l'esercizio solo se esiste (potrebbe essere una scheda vuota)
-            if row[3]:  # se esiste esercizio_scheda_id
-                esercizio = {
-                    'id': row[3],
-                    'nome': row[4],
-                    'descrizione': row[5],
-                    'video_url': row[6],
-                    'ripetizioni': row[7],
-                    'serie': row[8],
-                    'durata_secondi': row[9],
-                    'recupero_secondi': row[10],
-                    'peso_kg': row[11],
-                    'macchinario': row[12]
-                }
-                schede[scheda_id]['esercizi'].append(esercizio)
+            # Query modificata per gli esercizi
+            cursor.execute("""
+                SELECT 
+                    e.nome,
+                    se.serie,
+                    se.ripetizioni,
+                    se.peso_kg,
+                    se.recupero_secondi,
+                    IFNULL(gm.nome, 'Generale') as gruppo_muscolare
+                FROM Schede_Esercizi se
+                LEFT JOIN Esercizi e ON se.esercizio_id = e.id
+                LEFT JOIN Esercizi_Muscoli em ON e.id = em.esercizio_id
+                LEFT JOIN Gruppi_Muscolari gm ON em.muscolo_id = gm.id
+                WHERE se.scheda_id = ?
+            """, (scheda_id,))
+            
+            esercizi = cursor.fetchall()
+            print(f"Esercizi per scheda {scheda_id}: {esercizi}")
+            
+            scheda_data = {
+                'id': scheda_id,
+                'data_creazione': data_creazione,
+                'ultimo_aggiornamento': ultimo_aggiornamento,
+                'gruppi_muscolari': gruppi.split(',') if gruppi else ['Generale'],
+                'num_esercizi': num_esercizi,
+                'esercizi': [{
+                    'nome': es[0],
+                    'serie': es[1],
+                    'ripetizioni': es[2],
+                    'peso_kg': es[3],
+                    'recupero': es[4],
+                    'gruppo': es[5]
+                } for es in esercizi]
+            }
+            schede.append(scheda_data)
 
-        return jsonify(list(schede.values()))
+        print("=== FINE DEBUG ===\n")
+        return jsonify(schede)
 
     except Exception as e:
+        print(f"Errore nel recupero delle schede: {e}")
         return jsonify({'error': str(e)}), 500
     finally:
         conn.close()
