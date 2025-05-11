@@ -56,7 +56,6 @@ def get_clients():
             'telefono': client[4],
             'dataNascita': client[5],
             'obiettivo': client[6] or 'Non specificato',
-            'iscrizione': '2024-01-01'  # Per ora hardcoded, da aggiungere al DB
         } for client in clients])
         
     except Exception as e:

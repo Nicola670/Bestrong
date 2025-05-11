@@ -98,8 +98,6 @@ function formatDate(dateString) {
 
 // Funzione per mostrare i dettagli del cliente
 function showClientDetails(client) {
-    console.log('CARD SU SHOWCLIENT', client); // Debug
-
     document.getElementById('clientDetailsName').textContent = `Dettagli Cliente`;
     document.getElementById('clientInitials').textContent = getInitials(client.nome, client.cognome);
     document.getElementById('clientFullName').textContent = `${client.nome} ${client.cognome}`;
@@ -110,7 +108,6 @@ function showClientDetails(client) {
     
     document.getElementById('clientAge').textContent = calculateAge(client.dataNascita);
     document.getElementById('clientBirthday').textContent = formatDate(client.dataNascita);
-    document.getElementById('clientMembership').textContent = formatDate(client.iscrizione);
     document.getElementById('clientObjectiveDetail').textContent = client.obiettivo;
     
     clientDetailsModal.classList.add('open');
