@@ -760,3 +760,37 @@ def get_cliente_by_scheda(scheda_id):
         return jsonify({'error': str(e)}), 500
     finally:
         conn.close()
+
+@api.route('/api/schede/<int:scheda_id>', methods=['DELETE'])
+@login_required
+def delete_scheda(scheda_id):
+    try:
+        conn = sqlite3.connect(DB_FILE)
+        cursor = conn.cursor()
+        
+        # Verifica che la scheda esista
+        cursor.execute("SELECT cliente_id, trainer_id FROM Schede WHERE id = ?", (scheda_id,))
+        scheda = cursor.fetchone()
+        
+        if not scheda:
+            return jsonify({'error': 'Scheda non trovata'}), 404
+            
+        # Verifica che l'utente corrente sia autorizzato (trainer o cliente proprietario)
+        if not current_user.is_trainer and scheda[0] != current_user.id:
+            return jsonify({'error': 'Non autorizzato'}), 403
+            
+        # Elimina prima gli esercizi associati
+        cursor.execute("DELETE FROM Schede_Esercizi WHERE scheda_id = ?", (scheda_id,))
+        
+        # Elimina la scheda
+        cursor.execute("DELETE FROM Schede WHERE id = ?", (scheda_id,))
+        
+        conn.commit()
+        return jsonify({'message': 'Scheda eliminata con successo'})
+        
+    except Exception as e:
+        conn.rollback()
+        print(f"Errore nell'eliminazione della scheda: {e}")
+        return jsonify({'error': str(e)}), 500
+    finally:
+        conn.close()

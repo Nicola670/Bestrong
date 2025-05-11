@@ -496,8 +496,16 @@ function editWorkout(schedaId) {
     window.location.href = `/modifica_scheda?id=${schedaId}`;
 }
 
+// Modifica la funzione deleteWorkout per utilizzare l'URL corretto
 async function deleteWorkout() {
-    const schedaId = document.querySelector('.workout-details').dataset.schedaId;
+    // Ottieni l'ID della scheda dal modal
+    const modal = document.getElementById('workoutDetailsModal');
+    const schedaId = modal.dataset.schedaId;
+    
+    if (!schedaId) {
+        showNotification('ID scheda non trovato', 'error');
+        return;
+    }
     
     if (!confirm('Sei sicuro di voler eliminare questa scheda?')) {
         return;
@@ -505,16 +513,25 @@ async function deleteWorkout() {
     
     try {
         const response = await fetch(`/api/schede/${schedaId}`, {
-            method: 'DELETE'
+            method: 'DELETE',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            credentials: 'include'
         });
         
         if (!response.ok) {
             throw new Error('Errore nell\'eliminazione della scheda');
         }
         
-        // Chiudi il modal e ricarica le schede
-        document.getElementById('workoutDetailsModal').classList.remove('open');
-        const clientId = document.querySelector('.client-card.active').dataset.clientId;
+        // Chiudi il modal
+        modal.classList.remove('open');
+        
+        // Ottieni l'ID del cliente dal clientDetailsName
+        const clientId = document.getElementById('clientDetailsName')
+            .getAttribute('data-client-id');
+            
+        // Ricarica le schede del cliente
         await loadClientWorkouts(clientId);
         
         showNotification('Scheda eliminata con successo', 'success');
