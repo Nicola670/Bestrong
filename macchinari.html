@@ -130,7 +130,92 @@
         </div>
     </div>
 
-    
+    <!-- Modal per Visualizzare i Dettagli Macchinario -->
+    <div class="modal" id="machineDetailsModal">
+        <div class="modal-content modal-large">
+            <div class="modal-header">
+                <h2 id="machineDetailsName">Dettagli Macchinario</h2>
+                <span class="close-modal" id="closeDetailsModal">&times;</span>
+            </div>
+            <div class="modal-body client-details">
+                <div class="client-details-header">
+                    <div class="client-avatar large">
+                        <span id="machineIcon"><i class="fas fa-dumbbell"></i></span>
+                    </div>
+                    <div class="client-summary">
+                        <h3 id="machineFullName"></h3>
+                        <p id="machineBrand"></p>
+                        <span class="client-objective" id="machineBodyPart"></span>
+                    </div>
+                    <div class="client-actions">
+                        <button class="btn-edit" id="editMachineBtn">
+                            <i class="fas fa-edit"></i> Modifica
+                        </button>
+                        <button class="btn-delete" id="deleteMachineBtn">
+                            <i class="fas fa-trash"></i> Elimina
+                        </button>
+                    </div>
+                </div>
+
+                <div class="client-tabs">
+                    <ul class="tabs-nav">
+                        <li class="active" data-tab="info">Informazioni</li>
+                        <li data-tab="maintenance">Manutenzione</li>
+                        <li data-tab="notes">Note</li>
+                    </ul>
+
+                    <div class="tab-content active" id="info">
+                        <div class="info-grid">
+                            <div class="info-item">
+                                <h4>Tipologia</h4>
+                                <p id="machineType">--</p>
+                            </div>
+                            <div class="info-item">
+                                <h4>Parte del Corpo</h4>
+                                <p id="machineBodyPartDetail">--</p>
+                            </div>
+                            <div class="info-item">
+                                <h4>Data Acquisto</h4>
+                                <p id="machineAcquisitionDate">--</p>
+                            </div>
+                            <div class="info-item">
+                                <h4>Stato</h4>
+                                <p id="machineStatus">--</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="tab-content" id="maintenance">
+                        <div class="training-programs">
+                            <h3>Registro Manutenzioni</h3>
+                            <div class="program-card">
+                                <div class="program-header">
+                                    <h4>Ultima Manutenzione</h4>
+                                    <span class="program-date" id="lastMaintenanceDate">--</span>
+                                </div>
+                                <div class="program-body">
+                                    <p id="lastMaintenanceDetails">Nessuna manutenzione registrata</p>
+                                </div>
+                                <div class="program-footer">
+                                    <button class="btn-assign" id="addMaintenanceBtn">Registra Manutenzione</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="tab-content" id="notes">
+                        <div class="notes-container">
+                            <h3>Note e Osservazioni</h3>
+                            <div class="notes-editor">
+                                <textarea id="machineNotes" placeholder="Aggiungi note sul macchinario..."></textarea>
+                                <button class="btn-save-notes" id="saveNotesBtn">Salva Note</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 
     <!-- <script src="{{ url_for('static', filename='js/macchinari.js') }}"></script> -->
     <script src="js/macchinari.js"></script>
