@@ -270,15 +270,37 @@ function showSchedaDetails(scheda) {
                         <strong>${es.nome}</strong>
                         <p>Serie: ${es.serie} x Ripetizioni: ${es.ripetizioni}</p>
                         ${es.peso_kg ? `<p>Peso: ${es.peso_kg}kg</p>` : ''}
-                        ${es.recupero_secondi ? `<p>Recupero: ${es.recupero_secondi}s</p>` : ''}
+                        ${es.recupero ? `<p>Recupero: ${es.recupero}s</p>` : ''}
                         ${es.note ? `<p>Note: ${es.note}</p>` : ''}
                     </li>
                 `).join('')}
             </ul>
         </div>
+        <div class="modal-actions">
+            <button class="action-button start-workout" onclick="startWorkout(${scheda.id})">
+                <i class="fas fa-play"></i> Avvia Allenamento
+            </button>
+            <button class="action-button edit-workout" onclick="editWorkout(${scheda.id})">
+                <i class="fas fa-edit"></i> Modifica Scheda
+            </button>
+        </div>
     `;
     
     schedaDetailsModal.classList.add('open');
+}
+
+// Aggiungi le nuove funzioni per gestire le azioni
+function startWorkout(schedaId) {
+    // Reindirizza alla schermata di esecuzione passando l'ID della scheda come parametro
+    window.location.href = `/schermata_esecuzione?scheda_id=${schedaId}`;
+}
+
+function editWorkout(schedaId) {
+    // Per ora solo un log, implementeremo la funzionalità in seguito
+    console.log('Modifica scheda:', schedaId);
+    // Qui puoi aggiungere la logica per modificare la scheda
+    // Per esempio, reindirizzare a una pagina di modifica:
+    // window.location.href = `/edit-workout/${schedaId}`;
 }
 
 // Utility Functions
