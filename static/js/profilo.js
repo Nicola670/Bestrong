@@ -249,7 +249,61 @@ document.addEventListener('DOMContentLoaded', function() {
             }, 300);
         }, 3000);
     }
+
+    // Carica i dati del profilo
+    loadUserProfile();
 });
+
+function loadUserProfile() {
+    fetch('/api/current-user')
+        .then(response => response.json())
+        .then(user => {
+            // Aggiorna le informazioni personali - sezione Informazioni Personali
+            const infoPersonali = document.querySelector('.info-group:nth-child(1)');
+            infoPersonali.querySelectorAll('.info-row')[0].querySelector('.info-value').textContent = user.nome;
+            infoPersonali.querySelectorAll('.info-row')[1].querySelector('.info-value').textContent = user.cognome;
+            infoPersonali.querySelectorAll('.info-row')[2].querySelector('.info-value').textContent = formatDate(user.dataNascita);
+
+            // Aggiorna i contatti - sezione Contatti
+            const contatti = document.querySelector('.info-group:nth-child(2)');
+            contatti.querySelectorAll('.info-row')[0].querySelector('.info-value').textContent = user.email;
+            contatti.querySelectorAll('.info-row')[1].querySelector('.info-value').textContent = user.telefono;
+
+            // Aggiorna i dati fitness - sezione Dati Fitness
+            const datiFitness = document.querySelector('.info-group:nth-child(3)');
+            datiFitness.querySelectorAll('.info-row')[0].querySelector('.info-value').textContent = user.obiettivo;
+
+            // Aggiorna le iniziali e il nome completo
+            const initials = `${user.nome[0]}${user.cognome[0]}`;
+            document.querySelector('.profile-image span').textContent = initials;
+            document.querySelector('.avatar span').textContent = initials;
+            document.querySelector('.trainer-info h4').textContent = `${user.nome} ${user.cognome}`;
+            document.querySelector('.trainer-info p').textContent = user.is_trainer ? 'Trainer' : 'Cliente';
+
+            // Popola il form di modifica
+            document.getElementById('nome').value = user.nome;
+            document.getElementById('cognome').value = user.cognome;
+            document.getElementById('dataNascita').value = user.dataNascita.split('T')[0];
+            document.getElementById('email').value = user.email;
+            document.getElementById('telefono').value = user.telefono;
+            document.getElementById('obiettivo').value = user.obiettivo;
+        })
+        .catch(error => {
+            console.error('Errore nel caricamento del profilo:', error);
+            showNotification('Errore nel caricamento del profilo', 'error');
+        });
+}
+
+// Funzione helper per formattare la data
+function formatDate(dateString) {
+    if (!dateString) return 'Non specificata';
+    const date = new Date(dateString);
+    return date.toLocaleDateString('it-IT', {
+        day: '2-digit',
+        month: '2-digit',
+        year: 'numeric'
+    });
+}
 
 document.addEventListener('DOMContentLoaded', function() {
     const currentPath = window.location.pathname;
