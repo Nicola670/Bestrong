@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Macchinari-bestrong</title>
+
+        <link rel="stylesheet" href="css/dashboard.css">
+        <!-- <link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard.css') }}"> -->
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    </head>
+
+    <body>
+        <div class="app-container">
+            <!-- Sidebar -->
+            <aside class="sidebar" id="sidebar">
+                <!-- Contenuto principale della sidebar -->
+                <div class="sidebar-content">
+                    <div class="logo">
+                        <i class="fas fa-dumbbell"></i>
+                        <span>BeStrong</span>
+                    </div>
+                    <nav class="nav-menu">
+                        <ul>
+                            <li><a href="{{ url_for('dashboard') }}"><i class="fas fa-home"></i> <span>Clienti</span></a></li>
+                            <li><a href="{{ url_for('creazione_scheda') }}"><i class="fas fa-calendar-alt"></i> <span>Schede</span></a></li>
+                            <li><a href="{{ url_for('macchinari') }}"><i class="fas fa-cogs"></i> <span>Macchinari</span></a></li>
+                            <li><a href="{{ url_for('about') }}"><i class="fas fa-users"></i> <span>About</span></a></li>
+                            <li><a href="{{ url_for('about') }}"><i class="fas fa-user"></i> <span>Profilo</span></a></li>
+                            <li><a href="{{ url_for('logout') }}"><i class="fas fa-sign-out-alt"></i> <span>Logout</span></a></li>
+                        </ul>
+                    </nav>
+                    <div class="trainer-profile">
+                        <div class="avatar">
+                            <span>GC</span>
+                        </div>
+                        <div class="trainer-info">
+                            <h4>Giovanni Cei</h4>
+                            <p>Cliente</p>
+                        </div>
+                    </div>
+                </div>
+                <!-- Parte visibile con pulsante menu -->
+                <div class="sidebar-peek">
+                    <button class="menu-toggle" id="menuToggle">
+                        <i class="fas fa-bars"></i>
+                    </button>
+                </div>
+            </aside>
+    
+            <!-- Main Content -->
+            <main class="main-content">
+                <header class="content-header">
+                    <h1>Gestione Macchinari</h1>
+                    <div class="search-container">
+                        <input type="text" id="searchInput" placeholder="Cerca macchinario...">
+                        <i class="fas fa-search"></i>
+                    </div>
+                    <button class="add-client-btn" id="addMachineBtn">
+                        <i class="fas fa-plus"></i>
+                        <span>Nuovo Macchinario</span>
+                    </button>
+                </header>
+    
+                <!-- Machines Grid -->
+                <section class="clients-grid" id="machinesGrid">
+                    <!-- Contenuto generato dinamicamente da JavaScript -->
+                    <div class="loading">
+                        <i class="fas fa-spinner fa-spin"></i>
+                        <span>Caricamento macchinari...</span>
+                    </div>
+                </section>
+            </main>
+        </div>
+
+    <!-- <script src="{{ url_for('static', filename='js/macchinari.js') }}"></script> -->
+    <script src="js/macchinari.js"></script>
+
+    </body>
+</html>
