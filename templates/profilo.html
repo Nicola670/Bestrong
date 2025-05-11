@@ -39,11 +39,11 @@
                 </nav>
                 <div class="trainer-profile">
                     <div class="avatar">
-                        <span>GC</span>
+                        <span> {{ user_initials }} </span>
                     </div>
                     <div class="trainer-info">
-                        <h4>{{ current_user.username }}</h4>
-                        <p>{% if current_user.is_trainer %}Personal Trainer{% else %}Cliente{% endif %}</p>
+                        <h4>{{ user_name }} {{ user_surname }}</h4>
+                        <p>{{ 'Trainer' if user_is_trainer else 'Cliente' }}</p>
                     </div>
                 </div>
             </div>
