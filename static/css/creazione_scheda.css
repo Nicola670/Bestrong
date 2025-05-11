@@ -1,118 +1,509 @@
 /* Stili generali */
 body {
-    background-color: #f5f5f5;
+    background-color: #f8f9fa;
+    font-family: 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+    color: #343a40;
+}
+
+.container {
+    max-width: 1400px;
+}
+
+/* Personalizzazione dei componenti bootstrap */
+.card {
+    border-radius: 10px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+    border: none;
+    margin-bottom: 1.5rem;
+    transition: all 0.3s ease;
+}
+
+.card:hover {
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+}
+
+.card-header {
+    border-top-left-radius: 10px !important;
+    border-top-right-radius: 10px !important;
+    padding: 0.75rem 1.25rem;
+}
+
+.card-header.bg-primary {
+    background: linear-gradient(135deg, #0d6efd, #0a58ca) !important;
+}
+
+.card-header.bg-success {
+    background: linear-gradient(135deg, #198754, #157347) !important;
+}
+
+.card-header.bg-info {
+    background: linear-gradient(135deg, #0dcaf0, #0aa2c0) !important;
+}
+
+.btn {
+    border-radius: 5px;
+    font-weight: 500;
+    text-transform: uppercase;
+    font-size: 0.85rem;
+    letter-spacing: 0.5px;
+    transition: all 0.3s ease;
+}
+
+.btn-primary {
+    background: linear-gradient(135deg, #0d6efd, #0a58ca);
+    border: none;
+}
+
+.btn-primary:hover {
+    background: linear-gradient(135deg, #0a58ca, #084298);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(10, 88, 202, 0.3);
+}
+
+.btn-danger {
+    background: linear-gradient(135deg, #dc3545, #b02a37);
+    border: none;
+}
+
+.btn-danger:hover {
+    background: linear-gradient(135deg, #b02a37, #842029);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 8px rgba(176, 42, 55, 0.3);
+}
+
+.form-control, .form-select {
+    border-radius: 5px;
+    border: 1px solid #ced4da;
+    padding: 0.5rem 0.75rem;
+    transition: all 0.3s ease;
+}
+
+.form-control:focus, .form-select:focus {
+    border-color: #86b7fe;
+    box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
 }
 
 /* Stili per le carte degli esercizi */
 .esercizio-card {
     cursor: grab;
-    transition: all 0.2s ease;
-    border-left: 4px solid #17a2b8;
+    transition: all 0.3s ease;
+    border: none;
+    position: relative;
+    overflow: hidden;
+}
+
+.esercizio-card::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    height: 100%;
+    width: 5px;
+    background: linear-gradient(to bottom, #17a2b8, #138496);
+    transition: all 0.3s ease;
 }
 
 .esercizio-card:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    transform: translateY(-5px);
+    box-shadow: 0 8px 15px rgba(0, 0, 0, 0.1);
+}
+
+.esercizio-card:hover::before {
+    width: 7px;
 }
 
 .esercizio-card:active {
     cursor: grabbing;
+    transform: translateY(-2px);
+}
+
+.esercizio-card .card-title {
+    font-weight: 600;
+    font-size: 1.1rem;
+    margin-bottom: 0.5rem;
+    color: #343a40;
+}
+
+.esercizio-card .card-body {
+    padding: 1.25rem;
 }
 
 /* Stili per l'area di rilascio degli esercizi */
 .scheda-drop-area {
-    min-height: 200px;
+    min-height: 250px;
     border: 2px dashed #adb5bd;
-    border-radius: 8px;
+    border-radius: 12px;
     background-color: #f8f9fa;
     transition: all 0.3s ease;
+    padding: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
 }
 
 .scheda-drop-area.dragover {
-    background-color: #e9ecef;
-    border-color: #17a2b8;
-    box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.1);
+    background-color: rgba(13, 110, 253, 0.05);
+    border-color: #0d6efd;
+    box-shadow: inset 0 0 15px rgba(13, 110, 253, 0.1);
+}
+
+.scheda-drop-area #emptyMessage {
+    color: #adb5bd;
+    font-size: 1.1rem;
+    font-weight: 500;
+    text-align: center;
+    margin: 2rem 0;
 }
 
 /* Stili per gli esercizi nella scheda */
+.esercizio-scheda {
+    transition: all 0.3s ease;
+}
+
 .esercizio-scheda .card {
-    border-left: 4px solid #28a745;
+    position: relative;
+    overflow: hidden;
+}
+
+.esercizio-scheda .card::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    height: 100%;
+    width: 5px;
+    background: linear-gradient(to bottom, #28a745, #218838);
+}
+
+.esercizio-scheda .card-title {
+    font-weight: 600;
+    font-size: 1.1rem;
+    margin-bottom: 0.5rem;
+    color: #343a40;
 }
 
 .esercizio-scheda .remove-esercizio {
-    opacity: 0.7;
-    transition: opacity 0.2s ease;
+    opacity: 0.85;
+    transition: all 0.3s ease;
+    padding: 0.25rem 0.5rem;
+    font-size: 0.75rem;
 }
 
 .esercizio-scheda .remove-esercizio:hover {
     opacity: 1;
+    transform: translateY(-2px);
 }
 
 /* Stili per gli elementi trascinati */
 .esercizio-dragging {
-    opacity: 0.5;
+    opacity: 0.6;
+    transform: scale(0.98);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15) !important;
 }
 
-/* Responsive adjustments */
-@media (max-width: 768px) {
-    .esercizio-card {
-        margin-bottom: 10px;
-    }
-    
-    .scheda-drop-area {
-        min-height: 150px;
-    }
+/* Form floating enhancement */
+.form-floating > .form-control,
+.form-floating > .form-select {
+    height: calc(2.5rem + 2px);
+    line-height: 1.25;
+}
+
+.form-floating > label {
+    padding: 0.5rem 0.75rem;
+}
+
+.form-floating > .form-control:focus ~ label,
+.form-floating > .form-control:not(:placeholder-shown) ~ label,
+.form-floating > .form-select ~ label {
+    transform: scale(0.85) translateY(-0.75rem) translateX(0.15rem);
+    color: #0d6efd;
+    font-weight: 500;
 }
 
 /* Stili per filtri dei gruppi muscolari */
 .gruppo-muscolare-badge {
     font-size: 0.75rem;
-    padding: 0.25rem 0.5rem;
-    margin-right: 0.3rem;
-    margin-bottom: 0.3rem;
+    padding: 0.35rem 0.75rem;
+    margin-right: 0.4rem;
+    margin-bottom: 0.4rem;
     display: inline-block;
-    border-radius: 1rem;
-    background-color: #e9ecef;
-    color: #495057;
+    border-radius: 20px;
     font-weight: 600;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    transition: all 0.3s ease;
 }
 
-/* Colori per i diversi gruppi muscolari */
-.gruppo-petto { background-color: #ffcdd2; color: #b71c1c; }
-.gruppo-gambe { background-color: #c8e6c9; color: #1b5e20; }
-.gruppo-schiena { background-color: #bbdefb; color: #0d47a1; }
-.gruppo-braccia { background-color: #fff9c4; color: #f57f17; }
-.gruppo-spalle { background-color: #e1bee7; color: #4a148c; }
-.gruppo-addominali { background-color: #b2dfdb; color: #004d40; }
-.gruppo-core { background-color: #d7ccc8; color: #3e2723; }
+.gruppo-muscolare-badge:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 3px 5px rgba(0, 0, 0, 0.1);
+}
 
-/* Stili per icone di Bootstrap */
-.bi::before {
+/* Colori migliorati per i diversi gruppi muscolari */
+.gruppo-petto { 
+    background: linear-gradient(135deg, #ffcdd2, #ef9a9a);
+    color: #b71c1c;
+}
+
+.gruppo-gambe { 
+    background: linear-gradient(135deg, #c8e6c9, #a5d6a7);
+    color: #1b5e20;
+}
+
+.gruppo-schiena { 
+    background: linear-gradient(135deg, #bbdefb, #90caf9);
+    color: #0d47a1;
+}
+
+.gruppo-braccia { 
+    background: linear-gradient(135deg, #fff9c4, #fff59d);
+    color: #f57f17;
+}
+
+.gruppo-spalle { 
+    background: linear-gradient(135deg, #e1bee7, #ce93d8);
+    color: #4a148c;
+}
+
+.gruppo-addominali { 
+    background: linear-gradient(135deg, #b2dfdb, #80cbc4);
+    color: #004d40;
+}
+
+.gruppo-core { 
+    background: linear-gradient(135deg, #d7ccc8, #bcaaa4);
+    color: #3e2723;
+}
+
+/* Miglioramenti filtri e ricerca */
+#searchEsercizi {
+    border-top-right-radius: 0;
+    border-bottom-right-radius: 0;
+    border-right: none;
+}
+
+#btnSearch {
+    border-top-left-radius: 0;
+    border-bottom-left-radius: 0;
+    background-color: #f8f9fa;
+    border: 1px solid #ced4da;
+    border-left: none;
+}
+
+#btnSearch:hover {
+    background-color: #e9ecef;
+}
+
+.dropdown-menu {
+    border-radius: 8px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    border: none;
+    padding: 0.5rem;
+}
+
+.dropdown-item {
+    border-radius: 5px;
+    padding: 0.5rem 1rem;
+    transition: all 0.2s ease;
+}
+
+.dropdown-item:hover {
+    background-color: rgba(13, 110, 253, 0.1);
+}
+
+.dropdown-item.active {
+    background-color: #0d6efd;
+    color: white;
+}
+
+/* Stili per icone di Bootstrap migliorati */
+.bi {
+    display: inline-block;
+    vertical-align: -0.125em;
+}
+
+.bi-search::before {
     display: inline-block;
     content: "";
-    vertical-align: -.125em;
-    background-image: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'><path fill='%23fff' d='M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z'/></svg>");
+    width: 1em;
+    height: 1em;
+    background-image: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'><path fill='%236c757d' d='M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z'/></svg>");
     background-repeat: no-repeat;
     background-size: 1rem 1rem;
 }
 
-.bi-search::before {
-    width: 1em;
-    height: 1em;
-}
-
 .bi-trash::before {
+    display: inline-block;
+    content: "";
     width: 1em;
     height: 1em;
     background-image: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'><path fill='%23fff' d='M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0V6z'/><path fill='%23fff' fill-rule='evenodd' d='M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1v1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4H4.118zM2.5 3V2h11v1h-11z'/></svg>");
+    background-repeat: no-repeat;
+    background-size: 1rem 1rem;
 }
 
-/* Animazioni */
+/* Animazioni migliorate */
 @keyframes fadeIn {
-    from { opacity: 0; transform: translateY(10px); }
-    to { opacity: 1; transform: translateY(0); }
+    from { 
+        opacity: 0; 
+        transform: translateY(15px); 
+    }
+    to { 
+        opacity: 1; 
+        transform: translateY(0); 
+    }
 }
 
-.esercizio-card, .esercizio-scheda {
-    animation: fadeIn 0.3s ease-out;
+@keyframes scaleIn {
+    from {
+        opacity: 0;
+        transform: scale(0.9);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+.esercizio-card {
+    animation: fadeIn 0.4s ease-out;
+}
+
+.esercizio-scheda {
+    animation: scaleIn 0.5s ease-out;
+}
+
+/* Sezione Informazioni Cliente */
+.card-header h3 {
+    font-weight: 600;
+    letter-spacing: 0.5px;
+}
+
+#clienteNome, #clienteEmail, #clienteTelefono, #clienteId {
+    font-weight: 500;
+    color: #0d6efd;
+}
+
+/* Responsive adjustments */
+@media (max-width: 992px) {
+    .container {
+        max-width: 100%;
+        padding: 0 15px;
+    }
+    
+    .card-header h3 {
+        font-size: 1.25rem;
+    }
+}
+
+@media (max-width: 768px) {
+    .esercizio-card {
+        margin-bottom: 15px;
+    }
+    
+    .scheda-drop-area {
+        min-height: 200px;
+    }
+    
+    .card-body {
+        padding: 1rem;
+    }
+    
+    .form-floating > .form-control {
+        font-size: 0.9rem;
+    }
+    
+    .btn {
+        font-size: 0.8rem;
+        padding: 0.375rem 0.75rem;
+    }
+}
+
+@media (max-width: 576px) {
+    h1 {
+        font-size: 1.75rem;
+    }
+    
+    .card-header h3 {
+        font-size: 1.1rem;
+    }
+    
+    .esercizio-scheda .row {
+        margin-top: 0.5rem;
+    }
+    
+    .scheda-drop-area {
+        min-height: 150px;
+        padding: 1rem;
+    }
+    
+    .card-body {
+        padding: 0.75rem;
+    }
+}
+
+/* Effetti particolari */
+.salvaScheda-pulse {
+    animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+    0% {
+        box-shadow: 0 0 0 0 rgba(13, 110, 253, 0.7);
+    }
+    70% {
+        box-shadow: 0 0 0 10px rgba(13, 110, 253, 0);
+    }
+    100% {
+        box-shadow: 0 0 0 0 rgba(13, 110, 253, 0);
+    }
+}
+
+/* Scrollbar personalizzata */
+::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb {
+    background: #adb5bd;
+    border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: #6c757d;
+}
+
+/* Tooltip personalizzati */
+.tooltip {
+    font-size: 0.85rem;
+}
+
+.tooltip .tooltip-inner {
+    background-color: #343a40;
+    border-radius: 5px;
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.2);
+}
+
+/* Mostra visivamente gli elenchi di schede impilati */
+.esercizio-scheda .card {
+    position: relative;
+}
+
+.esercizio-scheda .card::after {
+    content: "";
+    position: absolute;
+    bottom: -3px;
+    left: 3px;
+    right: 3px;
+    height: 3px;
+    background-color: rgba(0, 0, 0, 0.05);
+    border-bottom-left-radius: 10px;
+    border-bottom-right-radius: 10px;
+    z-index: -1;
 }
