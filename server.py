@@ -275,6 +275,18 @@ def schermata_esecuzione():
 
     return render_template('schermata_esecuzione.html', **user_data)
 
+@app.route('/modifica_scheda')
+@login_required
+@client_required
+def modifica_scheda():
+    scheda_id = request.args.get('scheda_id')
+    user_data = database.get_user_template_data(current_user.id)
+    
+    # Aggiungi l'ID della scheda ai dati utente
+    user_data['scheda_id'] = scheda_id
+    
+    return render_template('modifica_scheda.html', **user_data)
+
 @app.route('/about')
 @login_required
 def about():
@@ -370,11 +382,6 @@ def profile():
 
     return render_template('profilo.html', **user_data)
 
-@app.route('/modifica_scheda')
-@login_required
-@trainer_required
-def modifica_scheda():
-    return render_template('modifica_scheda.html')
 
 @app.errorhandler(404)
 def page_not_found(error):
