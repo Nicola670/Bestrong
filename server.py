@@ -280,15 +280,15 @@ def schermata_esecuzione():
 
 @app.route('/modifica_scheda')
 @login_required
-@client_required
+@trainer_required
 def modifica_scheda():
     scheda_id = request.args.get('scheda_id')
+    if not scheda_id:
+        flash('ID scheda non valido')
+        return redirect(url_for('dashboard'))
+    
     user_data = database.get_user_template_data(current_user.id)
-    
-    # Aggiungi l'ID della scheda ai dati utente
-    user_data['scheda_id'] = scheda_id
-    
-    return render_template('modifica_scheda.html', **user_data)
+    return render_template('modifica_scheda.html', scheda_id=scheda_id, **user_data)
 
 @app.route('/about')
 @login_required

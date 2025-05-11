@@ -476,6 +476,9 @@ async function viewWorkoutDetails(schedaId) {
 
         // Aggiorna i pulsanti di azione esistenti invece di crearne di nuovi
         const editButton = modal.querySelector('.btn-edit');
+        if (editButton) {
+            editButton.onclick = () => editWorkout(schedaId);
+        }
         const deleteButton = modal.querySelector('.btn-delete');
         
         if (editButton && deleteButton) {
@@ -493,7 +496,7 @@ async function viewWorkoutDetails(schedaId) {
 
 // Funzione per gestire la modifica della scheda
 function editWorkout(schedaId) {
-    window.location.href = `/modifica_scheda?id=${schedaId}`;
+    window.location.href = `/modifica_scheda?scheda_id=${schedaId}`;
 }
 
 // Modifica la funzione deleteWorkout per utilizzare l'URL corretto

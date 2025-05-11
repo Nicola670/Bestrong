@@ -681,19 +681,15 @@ def update_scheda(scheda_id):
         scheda = cursor.fetchone()
         if not scheda:
             return jsonify({'error': 'Scheda non trovata'}), 404
-            
-        # Verifica che l'utente corrente sia il cliente proprietario della scheda
-        if scheda[0] != current_user.id and not current_user.is_trainer:
-            return jsonify({'error': 'Non autorizzato a modificare questa scheda'}), 403
-
-        # Aggiorna la data di modifica della scheda
+        
+        # Aggiorna la data di modifica
         cursor.execute("""
             UPDATE Schede 
             SET aggiornato = datetime('now')
             WHERE id = ?
         """, (scheda_id,))
 
-        # Rimuovi tutti gli esercizi esistenti
+        # Elimina gli esercizi esistenti
         cursor.execute("DELETE FROM Schede_Esercizi WHERE scheda_id = ?", (scheda_id,))
         
         # Inserisci i nuovi esercizi
@@ -717,10 +713,7 @@ def update_scheda(scheda_id):
             ))
         
         conn.commit()
-        return jsonify({
-            'success': True,
-            'message': 'Scheda aggiornata con successo'
-        }), 200
+        return jsonify({'success': True, 'message': 'Scheda aggiornata con successo'})
         
     except Exception as e:
         conn.rollback()

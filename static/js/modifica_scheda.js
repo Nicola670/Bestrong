@@ -154,10 +154,6 @@ async function caricaDatiCliente(schedaId) {
 
 async function caricaScheda(schedaId) {
     try {
-        // Carica i dati del cliente
-        await caricaDatiCliente(schedaId);
-        
-        // Carica i dati della scheda
         const response = await fetch(`/api/schede/${schedaId}`);
         if (!response.ok) {
             throw new Error('Errore nel caricamento della scheda');
@@ -165,24 +161,9 @@ async function caricaScheda(schedaId) {
         
         const scheda = await response.json();
         
-        // Imposta i dati della scheda
-        document.getElementById('nomeProgramma').value = scheda.nome || '';
-        document.getElementById('dataInizio').value = scheda.data_inizio || '';
-        document.getElementById('dataFine').value = scheda.data_fine || '';
-        document.getElementById('note').value = scheda.note || '';
-        
-        // Popola gli esercizi esistenti
-        const schedaEsercizi = document.getElementById('schedaEsercizi');
-        const emptyMessage = document.getElementById('emptyMessage');
-        
-        if (emptyMessage) {
-            emptyMessage.style.display = 'none';
-        }
-        
-        if (scheda.esercizi && scheda.esercizi.length > 0) {
-            scheda.esercizi.forEach(esercizio => {
-                aggiungiEsercizioAllaScheda(esercizio);
-            });
+        // Popola il form con i dati esistenti
+        for (const esercizio of scheda.esercizi) {
+            aggiungiEsercizioAllaScheda(esercizio);
         }
         
     } catch (error) {
@@ -330,50 +311,36 @@ function filtraEsercizi() {
 }
 
 async function salvaModifiche() {
-    const urlParams = new URLSearchParams(window.location.search);
-    const schedaId = urlParams.get('scheda_id');
-    
-    const schedaData = {
-        nome: document.getElementById('nomeProgramma').value,
-        data_inizio: document.getElementById('dataInizio').value,
-        data_fine: document.getElementById('dataFine').value,
-        note: document.getElementById('note').value,
-        esercizi: []
-    };
+    const schedaId = new URLSearchParams(window.location.search).get('scheda_id');
+    const esercizi = [];
     
     // Raccogli i dati degli esercizi
     document.querySelectorAll('.esercizio-scheda').forEach(el => {
-        schedaData.esercizi.push({
+        esercizi.push({
             esercizio_id: parseInt(el.dataset.esercizioId),
             serie: parseInt(el.querySelector('#serie').value) || 0,
             ripetizioni: parseInt(el.querySelector('#ripetizioni').value) || 0,
             peso_kg: parseFloat(el.querySelector('#peso').value) || null,
-            recupero_secondi: parseInt(el.querySelector('#recupero').value) || null,
-            note: el.querySelector('#noteEsercizio').value
+            recupero_secondi: parseInt(el.querySelector('#recupero').value) || null
         });
     });
 
     try {
-        // Modifica qui: usa il percorso corretto dell'API
         const response = await fetch(`/api/schede/${schedaId}`, {
             method: 'PUT',
             headers: {
-                'Content-Type': 'application/json',
-                // Aggiungi anche l'header per CSRF se necessario
-                'X-CSRFToken': document.querySelector('meta[name="csrf-token"]')?.content
+                'Content-Type': 'application/json'
             },
-            body: JSON.stringify(schedaData),
-            credentials: 'include' // Importante per includere i cookie di autenticazione
+            body: JSON.stringify({ esercizi }),
+            credentials: 'include'
         });
 
         if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
+            throw new Error('Errore nel salvataggio delle modifiche');
         }
 
-        // Se tutto va bene
         alert('Modifiche salvate con successo!');
-        // Reindirizza alla dashboard del cliente
-        window.location.href = '/client';
+        window.location.href = '/dashboard';
         
     } catch (error) {
         console.error('Errore:', error);
