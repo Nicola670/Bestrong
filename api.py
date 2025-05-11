@@ -40,7 +40,8 @@ def get_clients():
                 u.email,
                 u.phone,
                 u.date_of_birth,
-                o.nome as obiettivo
+                u.obiettivo_id,
+                o.nome as obiettivo_nome
             FROM Utenti u
             LEFT JOIN Obiettivi o ON u.obiettivo_id = o.id
             WHERE u.is_trainer = 0
@@ -55,8 +56,8 @@ def get_clients():
             'email': client[3],
             'telefono': client[4],
             'dataNascita': client[5],
-            'obiettivo': client[6] or 'Non specificato',
-            'iscrizione': '2024-01-01'  # Per ora hardcoded, da aggiungere al DB
+            'obiettivo_id': client[6],
+            'obiettivo': client[7] or 'Non specificato'
         } for client in clients])
         
     except Exception as e:

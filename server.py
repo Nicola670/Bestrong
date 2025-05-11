@@ -215,7 +215,7 @@ def register():
             password_change_required = True,
             obiettivo_id = obiettivo_id
         )
-        print(obiettivo_id)
+
         if success:
             # Ottieni l'utente appena creato
             new_user = database.get_user_by_email(email)
