@@ -676,8 +676,8 @@ def update_scheda(scheda_id):
         if not scheda:
             return jsonify({'error': 'Scheda non trovata'}), 404
             
-        # Verifica che l'utente corrente sia il trainer che ha creato la scheda
-        if scheda[1] != current_user.id:
+        # Verifica che l'utente corrente sia il cliente proprietario della scheda
+        if scheda[0] != current_user.id and not current_user.is_trainer:
             return jsonify({'error': 'Non autorizzato a modificare questa scheda'}), 403
 
         # Aggiorna la data di modifica della scheda
@@ -706,7 +706,7 @@ def update_scheda(scheda_id):
                 esercizio['esercizio_id'],
                 esercizio['serie'],
                 esercizio['ripetizioni'],
-                esercizio.get('peso_kg'),  # Usa get() per gestire valori opzionali
+                esercizio.get('peso_kg'),
                 esercizio.get('recupero_secondi')
             ))
         
