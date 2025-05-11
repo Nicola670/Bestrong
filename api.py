@@ -183,11 +183,8 @@ def get_client_schede(client_id):
         conn = sqlite3.connect(DB_FILE)
         cursor = conn.cursor()
 
-        # Prima verifica debug
-        print("\n=== DEBUG INFO ===")
         cursor.execute("SELECT * FROM Schede WHERE cliente_id = ?", (client_id,))
         schede_base = cursor.fetchall()
-        print(f"Schede base trovate: {schede_base}")
 
         # Query principale modificata con LEFT JOIN
         cursor.execute("""
@@ -208,7 +205,6 @@ def get_client_schede(client_id):
         """, (client_id,))
         
         schede_raw = cursor.fetchall()
-        print(f"Schede dopo JOIN trovate: {schede_raw}")
         
         if not schede_raw:
             return jsonify({'message': 'Nessuna scheda trovata'}), 404
@@ -234,7 +230,6 @@ def get_client_schede(client_id):
             """, (scheda_id,))
             
             esercizi = cursor.fetchall()
-            print(f"Esercizi per scheda {scheda_id}: {esercizi}")
             
             scheda_data = {
                 'id': scheda_id,
@@ -253,7 +248,6 @@ def get_client_schede(client_id):
             }
             schede.append(scheda_data)
 
-        print("=== FINE DEBUG ===\n")
         return jsonify(schede)
 
     except Exception as e:
