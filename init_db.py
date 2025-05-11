@@ -301,28 +301,50 @@ def populate_database():
         cursor.execute("SELECT id FROM Utenti WHERE is_trainer = FALSE AND username != 'admin' LIMIT 2")
         client_ids = [row[0] for row in cursor.fetchall()]
 
-        # Creiamo alcune schede
+        # Crea solo 3 schede di test per ogni cliente
         for client_id in client_ids:
-            cursor.execute("""
-                INSERT INTO Schede (cliente_id, trainer_id)
-                VALUES (?, ?)
-            """, (client_id, trainer_id))
-            
-            scheda_id = cursor.lastrowid
-            
-            # Aggiungiamo esercizi alle schede
-            esercizi_scheda = [
-                (1, 1, 4, 12, 60, None),  # (esercizio_id, macchinario_id, serie, ripetizioni, recupero, peso)
-                (2, None, 3, 10, 90, None),
-                (4, 3, 4, 15, 60, 60.0)
-            ]
-            
-            for es_id, mac_id, serie, reps, rec, peso in esercizi_scheda:
+            for _ in range(3):  # Crea 3 schede invece di tutte quelle duplicate
                 cursor.execute("""
-                    INSERT INTO Schede_Esercizi 
-                    (scheda_id, esercizio_id, macchinario_id, serie, ripetizioni, recupero_secondi, peso_kg)
-                    VALUES (?, ?, ?, ?, ?, ?, ?)
-                """, (scheda_id, es_id, mac_id, serie, reps, rec, peso))
+                    INSERT INTO Schede (cliente_id, trainer_id, creato, aggiornato)
+                    VALUES (?, ?, datetime('now'), datetime('now'))
+                """, (client_id, trainer_id))
+                
+                scheda_id = cursor.lastrowid
+                
+                # Aggiungi esercizi diversi per ogni scheda
+                esercizi_scheda = [
+                    (1, 1, 4, 12, 60, None),  # Panca Piana
+                    (2, None, 3, 10, 90, None),  # Trazioni
+                    (4, 3, 4, 15, 60, 60.0),  # Squat
+                    (5, None, 3, 12, 60, None),  # Curl Bicipiti
+                    (6, None, 3, 20, 45, None)   # Crunch
+                ]
+                
+                # Prendi solo 3 esercizi casuali per ogni scheda
+                import random
+                selected_exercises = random.sample(esercizi_scheda, 3)
+                
+                for es_id, mac_id, serie, reps, rec, peso in selected_exercises:
+                    cursor.execute("""
+                        INSERT INTO Schede_Esercizi 
+                        (scheda_id, esercizio_id, macchinario_id, serie, ripetizioni, recupero_secondi, peso_kg)
+                        VALUES (?, ?, ?, ?, ?, ?, ?)
+                    """, (scheda_id, es_id, mac_id, serie, reps, rec, peso))
+
+        # Aggiungi le associazioni esercizi-muscoli
+        esercizi_muscoli = [
+            (1, 2, 'primario'),   # Panca Piana -> Pettorali
+            (2, 12, 'primario'),  # Trazioni -> Dorsali
+            (4, 7, 'primario'),   # Squat -> Quadricipiti
+            (5, 3, 'primario'),   # Curl Bicipiti -> Bicipiti
+            (6, 5, 'primario')    # Crunch -> Addominali
+        ]
+        
+        for es_id, musc_id, tipo in esercizi_muscoli:
+            cursor.execute("""
+                INSERT INTO Esercizi_Muscoli (esercizio_id, muscolo_id, tipo)
+                VALUES (?, ?, ?)
+            """, (es_id, musc_id, tipo))
 
         conn.commit()
     except Exception as e:
