@@ -11,7 +11,6 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Mostra l'ID del cliente nella pagina
     document.getElementById('clienteId').textContent = clienteId || 'Non specificato';
-    alert('ID cliente: ' + clienteId);
 
 
     // Se non c'è un ID cliente, mostra un avviso
@@ -49,13 +48,10 @@ document.addEventListener('DOMContentLoaded', function() {
     setupDragAndDrop();
 });
 
-// Aggiungi la costante per l'indirizzo del server
-const ip_server = 'http://localhost:5001';
-
 // Modifica la funzione per caricare i dati del cliente
 async function caricaDatiCliente(clienteId) {
     try {
-        const response = await fetch(`${ip_server}/api/client/${clienteId}`);
+        const response = await fetch(`/api/client/${clienteId}`);
         if (!response.ok) {
             throw new Error('Cliente non trovato');
         }
@@ -76,7 +72,7 @@ async function caricaDatiCliente(clienteId) {
 //funzione per caricare gli esercizi disponibili
 async function caricaEserciziDisponibili() {
     try {
-        const response = await fetch(`${ip_server}/api/exercises`);
+        const response = await fetch('/api/exercises');
         if (!response.ok) {
             throw new Error('Errore nel caricamento degli esercizi');
         }
@@ -391,7 +387,7 @@ async function salvaScheda() {
     };
 
     try {
-        const response = await fetch(`${ip_server}/api/schede`, {
+        const response = await fetch('/api/schede', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',

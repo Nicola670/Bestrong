@@ -80,19 +80,22 @@ def check_session_activity():
         # Aggiorna timestamp ultima attività
         session['last_activity'] = datetime.now().isoformat()
 
-@app.before_request
+@app.before_request 
 def disable_cors():
     if request.method == 'OPTIONS':
-        response = app.make_default_options_response()
         headers = {
             'Access-Control-Allow-Origin': '*',
-            'Access-Control-Allow-Methods': '*',
-            'Access-Control-Allow-Headers': '*'
+            'Access-Control-Allow-Methods': 'DELETE, GET, POST, PUT, OPTIONS',
+            'Access-Control-Allow-Headers': 'Content-Type, Authorization'
         }
-        for k, v in headers.items():
-            response.headers[k] = v
-        return response
+        return '', 200, headers
 
+@app.after_request
+def add_cors_headers(response):
+    response.headers['Access-Control-Allow-Origin'] = '*'
+    response.headers['Access-Control-Allow-Methods'] = 'DELETE, GET, POST, PUT, OPTIONS'
+    response.headers['Access-Control-Allow-Headers'] = 'Content-Type, Authorization'
+    return response
 
 # Decoratore personalizzato per verificare se l'utente è un trainer
 def trainer_required(f):

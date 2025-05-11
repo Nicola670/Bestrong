@@ -98,7 +98,10 @@ function formatDate(dateString) {
 
 // Funzione per mostrare i dettagli del cliente
 function showClientDetails(client) {
-    document.getElementById('clientDetailsName').textContent = `Dettagli Cliente`;
+    const clientDetailsName = document.getElementById('clientDetailsName');
+    clientDetailsName.textContent = `Dettagli Cliente`;
+    clientDetailsName.setAttribute('data-client-id', client.id); // Aggiungi questa riga
+
     document.getElementById('clientInitials').textContent = getInitials(client.nome, client.cognome);
     document.getElementById('clientFullName').textContent = `${client.nome} ${client.cognome}`;
     document.getElementById('clientEmail').textContent = client.email;
@@ -520,4 +523,19 @@ async function deleteWorkout() {
         console.error('Errore:', error);
         showNotification('Errore nell\'eliminazione della scheda', 'error');
     }
+}
+
+// Aggiungi questa funzione 
+function createNewWorkout() {
+    // Ottieni l'ID del cliente dai dettagli mostrati nel modal
+    const clientId = document.getElementById('clientDetailsName')
+        .getAttribute('data-client-id');
+    
+    if (!clientId) {
+        showNotification('Errore: ID cliente non trovato', 'error');
+        return;
+    }
+
+    // Reindirizza alla pagina di creazione scheda con l'ID del cliente
+    window.location.href = `/creazione_scheda?id-cliente=${clientId}`;
 }
