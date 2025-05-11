@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Modifica Scheda</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/creazione_scheda.css') }}">
+</head>
+<body>
+    <div class="container mt-4">
+        <h1>Modifica Scheda</h1>
+        
+        <!-- Info cliente -->
+        <div class="card mb-4">
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <p class="fw-bold">Cliente: <span id="clienteNome">Caricamento...</span></p>
+                        <p class="fw-bold">Email: <span id="clienteEmail">Caricamento...</span></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+         <div class="row">
+            <div class="col-md-6">
+                <div class="card mb-4">
+                    <div class="card-header bg-success text-white">
+                        <h3 class="card-title mb-0">Esercizi Disponibili</h3>
+                        <div class="d-flex justify-content-between align-items-center mt-2">
+                            <div class="input-group input-group-sm" style="max-width: 300px;">
+                                <input type="text" class="form-control" id="searchEsercizi" placeholder="Cerca esercizi...">
+                                <button class="btn btn-light" type="button" id="btnSearch">
+                                    <i class="bi bi-search"></i> Cerca
+                                </button>
+                            </div>
+                            <div class="dropdown">
+                                <button class="btn btn-light btn-sm dropdown-toggle" type="button" id="dropdownGruppiMuscolari" data-bs-toggle="dropdown" aria-expanded="false">
+                                    Filtra per gruppo
+                                </button>
+                                <ul class="dropdown-menu" id="filtroGruppiMuscolari" aria-labelledby="dropdownGruppiMuscolari">
+                                    <li><a class="dropdown-item active" href="#" data-gruppo="tutti"></a></li>
+                                    <!-- I gruppi muscolari saranno aggiunti dinamicamente -->
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div id="eserciziList" class="row row-cols-1 row-cols-md-2 g-3">
+                            <!-- Gli esercizi saranno inseriti qui dinamicamente -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-6">
+                <div class="card mb-4">
+                    <div class="card-header bg-info text-white">
+                        <h3 class="card-title mb-0">Scheda di Allenamento</h3>
+                    </div>
+                    <div class="card-body">
+                        <div class="mb-3">
+                            <label for="nomeProgramma" class="form-label">Nome Programma</label>
+                            <input type="text" class="form-control" id="nomeProgramma" placeholder="Es. Programma Forza">
+                        </div>
+                        <div class="mb-3">
+                            <label for="dataInizio" class="form-label">Data Inizio</label>
+                            <input type="date" class="form-control" id="dataInizio">
+                        </div>
+                        <div class="mb-3">
+                            <label for="dataFine" class="form-label">Data Fine</label>
+                            <input type="date" class="form-control" id="dataFine">
+                        </div>
+                        <div class="mb-3">
+                            <label for="note" class="form-label">Note</label>
+                            <textarea class="form-control" id="note" rows="2"></textarea>
+                        </div>
+                        
+                        <div class="mt-4">
+                            <h4>Esercizi Selezionati</h4>
+                            <p class="text-muted small">Trascina qui gli esercizi che vuoi aggiungere alla scheda</p>
+                            <div id="schedaEsercizi" class="scheda-drop-area p-3">
+                                <!-- Gli esercizi aggiunti saranno inseriti qui -->
+                                <p id="emptyMessage" class="text-center text-muted">Nessun esercizio aggiunto</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-footer">
+                        <button id="salvaScheda" class="btn btn-primary float-end">Salva Scheda</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Template per gli esercizi disponibili -->
+    <template id="esercizioTemplate">
+        <div class="col">
+            <div class="card h-100 esercizio-card" draggable="true">
+                <div class="card-body">
+                    <h5 class="card-title esercizio-nome"></h5>
+                    <p class="card-text esercizio-categoria small"></p>
+                    <p class="card-text esercizio-descrizione small text-muted"></p>
+                </div>
+            </div>
+        </div>
+    </template>
+    
+    <!-- Template per gli esercizi nella scheda -->
+    <template id="esercizioSchedaTemplate">
+        <div class="esercizio-scheda mb-3">
+            <div class="card">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <h5 class="card-title esercizio-nome mb-0"></h5>
+                        <button class="btn btn-danger btn-sm remove-esercizio">
+                            <i class="bi bi-trash"></i> Rimuovi
+                        </button>
+                    </div>
+                    <p class="card-text esercizio-categoria small"></p>
+                    <div class="row g-2">
+                        <div class="col-md-3">
+                            <div class="form-floating">
+                                <input type="number" class="form-control" id="serie" placeholder="Serie" min="1">
+                                <label for="serie">Serie</label>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="form-floating">
+                                <input type="number" class="form-control" id="ripetizioni" placeholder="Ripetizioni" min="1">
+                                <label for="ripetizioni">Ripetizioni</label>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="form-floating">
+                                <input type="number" class="form-control" id="peso" placeholder="Peso (kg)" min="0" step="0.5">
+                                <label for="peso">Peso (kg)</label>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="form-floating">
+                                <input type="number" class="form-control" id="recupero" placeholder="Recupero (sec)" min="0">
+                                <label for="recupero">Recupero (sec)</label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-floating mt-2">
+                        <textarea class="form-control" id="noteEsercizio" style="height: 60px" placeholder="Note"></textarea>
+                        <label for="noteEsercizio">Note</label>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </template>
+
+        
+        <div class="row mt-4">
+            <div class="col-12">
+                <button class="btn btn-primary" onclick="salvaModifiche()">Salva Modifiche</button>
+                <button class="btn btn-secondary" onclick="window.history.back()">Annulla</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="{{ url_for('static', filename='js/modifica_scheda.js') }}"></script>
+</body>
+</html>

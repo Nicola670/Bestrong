@@ -73,7 +73,7 @@ async function caricaDatiCliente(clienteId) {
     }
 }
 
-// Modifica la funzione per caricare gli esercizi disponibili
+//funzione per caricare gli esercizi disponibili
 async function caricaEserciziDisponibili() {
     try {
         const response = await fetch(`${ip_server}/api/exercises`);

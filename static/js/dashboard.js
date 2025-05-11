@@ -8,6 +8,8 @@ const addClientForm = document.getElementById('addClientForm');
 const clientDetailsModal = document.getElementById('clientDetailsModal');
 const closeDetailsModal = document.getElementById('closeDetailsModal');
 const searchInput = document.getElementById('searchInput');
+const workoutDetailsModal = document.getElementById('workoutDetailsModal');
+const closeWorkoutModal = document.getElementById('closeWorkoutModal');
 
 // Variabile per i clienti
 let clients = [];
@@ -119,6 +121,9 @@ function showClientDetails(client) {
     if (deleteBtn) {
         deleteBtn.onclick = () => deleteClient(client.id);
     }
+
+    // Aggiungi il caricamento delle schede
+    loadClientWorkouts(client.id);
 }
 
 // Funzione per impostare le tab
@@ -204,6 +209,13 @@ closeDetailsModal.addEventListener('click', () => {
     clientDetailsModal.classList.remove('open');
 });
 
+// Aggiungi l'event listener per la chiusura del modal dettagli scheda
+if (closeWorkoutModal) {
+    closeWorkoutModal.addEventListener('click', () => {
+        workoutDetailsModal.classList.remove('open');
+    });
+}
+
 // Evento per aggiungere un nuovo cliente
 addClientForm.addEventListener('submit', async (e) => {
     e.preventDefault();
@@ -262,6 +274,10 @@ window.addEventListener('click', (e) => {
     
     if (e.target === clientDetailsModal) {
         clientDetailsModal.classList.remove('open');
+    }
+
+    if (e.target === workoutDetailsModal) {
+        workoutDetailsModal.classList.remove('open');
     }
 });
 
@@ -369,3 +385,142 @@ async function loadObiettivi() {
 
 // Carica gli obiettivi quando la pagina è pronta
 document.addEventListener('DOMContentLoaded', loadObiettivi);
+
+// Aggiungi queste funzioni dopo la funzione showClientDetails
+
+async function loadClientWorkouts(clientId) {
+    try {
+        const response = await fetch(`/api/client/${clientId}/schede`);
+        if (!response.ok) {
+            throw new Error('Errore nel caricamento delle schede');
+        }
+        
+        const schede = await response.json();
+        const programsList = document.querySelector('.programs-list');
+        
+        if (schede.length === 0) {
+            programsList.innerHTML = `
+                <div class="no-workouts">
+                    <p>Nessun programma di allenamento presente</p>
+                </div>
+            `;
+            return;
+        }
+
+        programsList.innerHTML = schede.map(scheda => `
+            <div class="program-card" data-scheda-id="${scheda.id}">
+                <div class="program-header">
+                    <div class="program-info">
+                        <h4>Scheda #${scheda.id}</h4>
+                        <span class="program-date">
+                            Creata: ${formatDate(scheda.data_creazione)}
+                        </span>
+                    </div>
+                    <div class="program-stats">
+                        <span class="exercise-count">
+                            <i class="fas fa-dumbbell"></i> ${scheda.num_esercizi} esercizi
+                        </span>
+                        <span class="muscle-groups">
+                            ${scheda.gruppi_muscolari.join(', ')}
+                        </span>
+                    </div>
+                </div>
+                <div class="program-actions">
+                    <button class="btn-view" onclick="viewWorkoutDetails(${scheda.id})">
+                        <i class="fas fa-eye"></i> Visualizza
+                    </button>
+                </div>
+            </div>
+        `).join('');
+
+    } catch (error) {
+        console.error('Errore:', error);
+        showNotification('Errore nel caricamento delle schede', 'error');
+    }
+}
+
+async function viewWorkoutDetails(schedaId) {
+    try {
+        const response = await fetch(`/api/schede/${schedaId}`);
+        if (!response.ok) {
+            throw new Error('Errore nel caricamento dei dettagli della scheda');
+        }
+        
+        const scheda = await response.json();
+        const modal = document.getElementById('workoutDetailsModal');
+        const workoutTitle = document.getElementById('workoutTitle');
+        const workoutDates = document.getElementById('workoutDates');
+        const workoutExercises = document.querySelector('.workout-exercises');
+        
+        // Aggiungi l'ID della scheda al modal per riferimento futuro
+        modal.dataset.schedaId = scheda.id;
+        
+        workoutTitle.textContent = `Scheda #${scheda.id}`;
+        workoutDates.textContent = `Creata: ${formatDate(scheda.data_creazione)}`;
+        
+        // Aggiorna il contenuto degli esercizi
+        workoutExercises.innerHTML = scheda.esercizi.map(esercizio => `
+            <div class="exercise-item">
+                <div class="exercise-header">
+                    <h4>${esercizio.nome}</h4>
+                    <span class="muscle-group">${esercizio.gruppo}</span>
+                </div>
+                <div class="exercise-details">
+                    <span>Serie: ${esercizio.serie}</span>
+                    <span>Ripetizioni: ${esercizio.ripetizioni}</span>
+                    ${esercizio.peso_kg ? `<span>Peso: ${esercizio.peso_kg}kg</span>` : ''}
+                    ${esercizio.recupero ? `<span>Recupero: ${esercizio.recupero}s</span>` : ''}
+                </div>
+            </div>
+        `).join('');
+
+        // Aggiorna i pulsanti di azione esistenti invece di crearne di nuovi
+        const editButton = modal.querySelector('.btn-edit');
+        const deleteButton = modal.querySelector('.btn-delete');
+        
+        if (editButton && deleteButton) {
+            editButton.onclick = () => editWorkout(scheda.id);
+            deleteButton.onclick = () => deleteWorkout(scheda.id);
+        }
+        
+        modal.classList.add('open');
+        
+    } catch (error) {
+        console.error('Errore:', error);
+        showNotification('Errore nel caricamento dei dettagli della scheda', 'error');
+    }
+}
+
+// Funzione per gestire la modifica della scheda
+function editWorkout(schedaId) {
+    window.location.href = `/modifica_scheda?id=${schedaId}`;
+}
+
+async function deleteWorkout() {
+    const schedaId = document.querySelector('.workout-details').dataset.schedaId;
+    
+    if (!confirm('Sei sicuro di voler eliminare questa scheda?')) {
+        return;
+    }
+    
+    try {
+        const response = await fetch(`/api/schede/${schedaId}`, {
+            method: 'DELETE'
+        });
+        
+        if (!response.ok) {
+            throw new Error('Errore nell\'eliminazione della scheda');
+        }
+        
+        // Chiudi il modal e ricarica le schede
+        document.getElementById('workoutDetailsModal').classList.remove('open');
+        const clientId = document.querySelector('.client-card.active').dataset.clientId;
+        await loadClientWorkouts(clientId);
+        
+        showNotification('Scheda eliminata con successo', 'success');
+        
+    } catch (error) {
+        console.error('Errore:', error);
+        showNotification('Errore nell\'eliminazione della scheda', 'error');
+    }
+}

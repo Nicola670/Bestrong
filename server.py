@@ -358,6 +358,12 @@ def profile():
 
     return render_template('profilo.html', **user_data)
 
+@app.route('/modifica_scheda')
+@login_required
+@trainer_required
+def modifica_scheda():
+    return render_template('modifica_scheda.html')
+
 @app.errorhandler(404)
 def page_not_found(error):
     return render_template('404.html'), 404

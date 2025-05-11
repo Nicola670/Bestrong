@@ -40,8 +40,7 @@ def get_clients():
                 u.email,
                 u.phone,
                 u.date_of_birth,
-                u.obiettivo_id,
-                o.nome as obiettivo_nome
+                o.nome as obiettivo
             FROM Utenti u
             LEFT JOIN Obiettivi o ON u.obiettivo_id = o.id
             WHERE u.is_trainer = 0
@@ -56,8 +55,8 @@ def get_clients():
             'email': client[3],
             'telefono': client[4],
             'dataNascita': client[5],
-            'obiettivo_id': client[6],
-            'obiettivo': client[7] or 'Non specificato'
+            'obiettivo': client[6] or 'Non specificato',
+            'iscrizione': '2024-01-01'  # Per ora hardcoded, da aggiungere al DB
         } for client in clients])
         
     except Exception as e:
@@ -69,17 +68,22 @@ def get_clients():
 @api.route('/api/client/<int:client_id>', methods=['GET'])
 #@login_required
 def get_client_by_id(client_id):
+    """
+    if not current_user.is_trainer:
+        return jsonify({'error': 'Unauthorized'}), 403
+    """
+
     conn = sqlite3.connect(DB_FILE)
     cursor = conn.cursor()
     
     try:
-        # Prima verifica se l'utente esiste
+        # Esegui la query per ottenere i dettagli del cliente
         cursor.execute("""
-            SELECT id, username, surname, email, phone, date_of_birth
+            SELECT Utenti.id, Utenti.username, Utenti.surname, Utenti.email, Utenti.phone, Utenti.date_of_birth
             FROM Utenti
-            WHERE id = ? AND is_trainer = 0
-        """, (client_id,))
-        
+            INNER JOIN Clienti_Trainer ON Utenti.id = Clienti_Trainer.cliente_id
+            WHERE Clienti_Trainer.cliente_id = ? AND Clienti_Trainer.trainer_id = ?
+        """, (client_id, 1)) # sostituire con current_user.id quando viene implementato le sessioni
         client = cursor.fetchone()
     
         # Controlla se il cliente esiste
@@ -95,9 +99,8 @@ def get_client_by_id(client_id):
             'phone': client[4],
             'date_of_birth': client[5]
         })
-        
     except Exception as e:
-        print(f"Errore nel recupero del cliente: {e}")
+        # Gestione degli errori
         return jsonify({'error': str(e)}), 500
     finally:
         conn.close()
@@ -323,24 +326,6 @@ def get_exercises():
     finally:
         conn.close()
 
-
-@api.route('/api/obiettivi', methods=['GET'])
-@login_required
-def get_obiettivi():
-    conn = sqlite3.connect(DB_FILE)
-    cursor = conn.cursor()
-
-    try:
-        cursor.execute("SELECT id, nome FROM Obiettivi")
-        obiettivi = cursor.fetchall()
-
-        return jsonify([{'id': obiettivo[0], 'nome': obiettivo[1]} for obiettivo in obiettivi])
-    except Exception as e:
-        print(f"Errore nel recupero degli obiettivi: {e}")
-        return jsonify({'error': str(e)}), 500
-    finally:
-        conn.close()
-
 @api.route('/api/exercises', methods=['POST'])
 @login_required
 def add_exercise():
@@ -555,6 +540,67 @@ def create_scheda():
     finally:
         conn.close()
 
+@api.route('/api/schede/<int:scheda_id>', methods=['GET'])
+@login_required
+def get_scheda_details(scheda_id):
+    conn = sqlite3.connect(DB_FILE)
+    cursor = conn.cursor()
+    
+    try:
+        # Prima recupera i dettagli della scheda
+        cursor.execute("""
+            SELECT s.id, s.creato, s.aggiornato
+            FROM Schede s
+            WHERE s.id = ?
+        """, (scheda_id,))
+        
+        scheda = cursor.fetchone()
+        if not scheda:
+            return jsonify({'error': 'Scheda non trovata'}), 404
+
+        # Poi recupera gli esercizi della scheda con i loro dettagli
+        cursor.execute("""
+            SELECT 
+                e.id,
+                e.nome,
+                se.serie,
+                se.ripetizioni,
+                se.peso_kg,
+                se.recupero_secondi,
+                GROUP_CONCAT(DISTINCT gm.nome) as gruppi_muscolari
+            FROM Schede_Esercizi se
+            JOIN Esercizi e ON se.esercizio_id = e.id
+            LEFT JOIN Esercizi_Muscoli em ON e.id = em.esercizio_id
+            LEFT JOIN Gruppi_Muscolari gm ON em.muscolo_id = gm.id
+            WHERE se.scheda_id = ?
+            GROUP BY e.id
+        """, (scheda_id,))
+        
+        esercizi = []
+        for row in cursor.fetchall():
+            esercizi.append({
+                'id': row[0],
+                'nome': row[1],
+                'serie': row[2],
+                'ripetizioni': row[3],
+                'peso_kg': row[4],
+                'recupero': row[5],
+                'gruppo': row[6]
+            })
+
+        return jsonify({
+            'id': scheda[0],
+            'data_creazione': scheda[1],
+            'data_aggiornamento': scheda[2],
+            'esercizi': esercizi
+        })
+
+    except Exception as e:
+        print(f"Errore nel recupero dei dettagli della scheda: {e}")
+        return jsonify({'error': str(e)}), 500
+    finally:
+        conn.close()
+
 @api.route('/api/current-user', methods=['GET'])
 @login_required
 def get_current_user():
@@ -593,6 +639,125 @@ def get_current_user():
         
     except Exception as e:
         print(f"Errore nel recupero dei dati utente: {e}")
+        return jsonify({'error': str(e)}), 500
+    finally:
+        conn.close()
+
+@api.route('/api/obiettivi', methods=['GET'])
+def get_obiettivi():
+    conn = sqlite3.connect(DB_FILE)
+    cursor = conn.cursor()
+    
+    try:
+        cursor.execute("""
+            SELECT id, nome
+            FROM Obiettivi
+            ORDER BY nome
+        """)
+        
+        obiettivi = [{'id': row[0], 'nome': row[1]} for row in cursor.fetchall()]
+        return jsonify(obiettivi)
+        
+    except Exception as e:
+        print(f"Errore nel recupero degli obiettivi: {e}")
+        return jsonify({'error': 'Errore nel caricamento degli obiettivi'}), 500
+    finally:
+        conn.close()
+
+@api.route('/api/schede/<int:scheda_id>', methods=['PUT'])
+@login_required
+def update_scheda(scheda_id):
+    try:
+        data = request.json
+        conn = sqlite3.connect(DB_FILE)
+        cursor = conn.cursor()
+        
+        # Verifica che la scheda esista
+        cursor.execute("""
+            SELECT cliente_id, trainer_id 
+            FROM Schede 
+            WHERE id = ?
+        """, (scheda_id,))
+        
+        scheda = cursor.fetchone()
+        if not scheda:
+            return jsonify({'error': 'Scheda non trovata'}), 404
+            
+        # Verifica che l'utente corrente sia il trainer che ha creato la scheda
+        if scheda[1] != current_user.id:
+            return jsonify({'error': 'Non autorizzato a modificare questa scheda'}), 403
+
+        # Aggiorna la data di modifica della scheda
+        cursor.execute("""
+            UPDATE Schede 
+            SET aggiornato = datetime('now')
+            WHERE id = ?
+        """, (scheda_id,))
+
+        # Rimuovi tutti gli esercizi esistenti
+        cursor.execute("DELETE FROM Schede_Esercizi WHERE scheda_id = ?", (scheda_id,))
+        
+        # Inserisci i nuovi esercizi
+        for esercizio in data['esercizi']:
+            cursor.execute("""
+                INSERT INTO Schede_Esercizi (
+                    scheda_id, 
+                    esercizio_id, 
+                    serie, 
+                    ripetizioni,
+                    peso_kg, 
+                    recupero_secondi
+                ) VALUES (?, ?, ?, ?, ?, ?)
+            """, (
+                scheda_id,
+                esercizio['esercizio_id'],
+                esercizio['serie'],
+                esercizio['ripetizioni'],
+                esercizio.get('peso_kg'),  # Usa get() per gestire valori opzionali
+                esercizio.get('recupero_secondi')
+            ))
+        
+        conn.commit()
+        return jsonify({
+            'success': True,
+            'message': 'Scheda aggiornata con successo'
+        }), 200
+        
+    except Exception as e:
+        conn.rollback()
+        print(f"Errore nell'aggiornamento della scheda: {e}")
+        return jsonify({'error': str(e)}), 500
+    finally:
+        conn.close()
+
+@api.route('/api/schede/<int:scheda_id>/cliente', methods=['GET'])
+@login_required
+def get_cliente_by_scheda(scheda_id):
+    conn = sqlite3.connect(DB_FILE)
+    cursor = conn.cursor()
+    
+    try:
+        cursor.execute("""
+            SELECT u.id, u.username, u.surname, u.email
+            FROM Utenti u
+            JOIN Schede s ON u.id = s.cliente_id
+            WHERE s.id = ?
+        """, (scheda_id,))
+        
+        cliente = cursor.fetchone()
+        
+        if not cliente:
+            return jsonify({'error': 'Cliente non trovato'}), 404
+            
+        return jsonify({
+            'id': cliente[0],
+            'nome': cliente[1],
+            'cognome': cliente[2],
+            'email': cliente[3]
+        })
+        
+    except Exception as e:
+        print(f"Errore nel recupero dei dati del cliente: {e}")
         return jsonify({'error': str(e)}), 500
     finally:
         conn.close()

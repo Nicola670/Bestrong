@@ -23,7 +23,7 @@
                     <nav class="nav-menu">
                         <ul>
                             <li><a href="{{ url_for('dashboard') }}"><i class="fas fa-home"></i> <span>Clienti</span></a></li>
-                            <li><a href="{{ url_for('creazione_scheda') }}"><i class="fas fa-calendar-alt"></i> <span>Schede</span></a></li>
+                            <li><a href="{{ url_for('esercizi') }}"><i class="fas fa-calendar-alt"></i> <span>Gestisci esercizi</span></a></li>
                             <li><a href="{{ url_for('about') }}"><i class="fas fa-users"></i> <span>About</span></a></li>
                             <li><a href="{{ url_for('about') }}"><i class="fas fa-user"></i> <span>Profilo</span></a></li>
                             <li><a href="{{ url_for('logout') }}"><i class="fas fa-sign-out-alt"></i> <span>Logout</span></a></li>
@@ -178,17 +178,13 @@
                     <div class="tab-content" id="programs">
                         <div class="training-programs">
                             <h3>Programmi di Allenamento</h3>
-                            <div class="program-card">
-                                <div class="program-header">
-                                    <h4>Programma Attuale</h4>
-                                    <span class="program-date">Dal 15/03/2025</span>
-                                </div>
-                                <div class="program-body">
-                                    <p>Nessun programma assegnato</p>
-                                </div>
-                                <div class="program-footer">
-                                    <button class="btn-assign"><a id="link-neworkout">Assegna Programma</a></button>
-                                </div>
+                            <div class="programs-list">
+                                <!-- Qui verranno inserite dinamicamente le schede -->
+                            </div>
+                            <div class="program-actions">
+                                <button class="btn-primary" onclick="createNewWorkout()">
+                                    <a href="{{ url_for('creazione_scheda') }}"> <span>Assegna</span></a></li>
+                                </button>
                             </div>
                         </div>
                     </div>
@@ -202,6 +198,35 @@
                             </div>
                         </div>
                     </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal per Visualizzare i Dettagli Scheda -->
+    <div class="modal" id="workoutDetailsModal">
+        <div class="modal-content modal-large">
+            <div class="modal-header">
+                <h2>Dettagli Scheda</h2>
+                <span class="close-modal" id="closeWorkoutModal">&times;</span>
+            </div>
+            <div class="modal-body">
+                <div class="workout-details">
+                    <div class="workout-header">
+                        <h3 id="workoutTitle"></h3>
+                        <span id="workoutDates"></span>
+                    </div>
+                    <div class="workout-exercises">
+                        <!-- Gli esercizi verranno inseriti qui -->
+                    </div>
+                </div>
+                <div class="modal-actions">
+                    <button class="btn-edit" onclick="editWorkout()">
+                        <i class="fas fa-edit"></i> Modifica
+                    </button>
+                    <button class="btn-delete" onclick="deleteWorkout()">
+                        <i class="fas fa-trash"></i> Elimina
+                    </button>
                 </div>
             </div>
         </div>
