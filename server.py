@@ -263,6 +263,18 @@ def client_dashboard():
 
     return render_template('schedeClient.html', **user_data)
 
+@app.route('/schermata_esecuzione')
+@login_required
+@client_required
+def schermata_esecuzione():
+    user_data = database.get_user_template_data(current_user.id)
+    scheda_id = request.args.get('scheda_id')
+
+    # Aggiungi l'ID della scheda ai dati utente
+    user_data['scheda_id'] = scheda_id
+
+    return render_template('schermata_esecuzione.html', **user_data)
+
 @app.route('/about')
 @login_required
 def about():
