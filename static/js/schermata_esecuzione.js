@@ -70,12 +70,14 @@ function updateExerciseDisplay(index) {
     // Update video source and display
     exerciseVideo.src = exercise.videoSrc;
     exerciseVideo.style.display = 'block';
+    exerciseVideo.controls = true; // Mostra sempre i controlli
     videoOverlay.style.display = 'flex';
     
     // Reset video state
     exerciseVideo.pause();
     exerciseVideo.currentTime = 0;
     videoOverlay.style.opacity = '1';
+    videoOverlay.style.pointerEvents = 'auto';
     
     // Update exercise info
     document.querySelector('.sets .value').textContent = exercise.sets;
@@ -128,9 +130,17 @@ function setupEventListeners(){
     playButton.addEventListener('click', toggleVideo);
     exerciseVideo.addEventListener('play', () => {
         videoOverlay.style.opacity = '0';
+        videoOverlay.style.pointerEvents = 'none'; // Permette di interagire con il video
     });
     exerciseVideo.addEventListener('pause', () => {
         videoOverlay.style.opacity = '1';
+        videoOverlay.style.pointerEvents = 'auto';
+    });
+    
+    // Aggiungi event listener per mostrare i controlli quando il mouse è sopra il video
+    const videoWrapper = document.querySelector('.video-wrapper');
+    videoWrapper.addEventListener('mouseover', () => {
+        exerciseVideo.controls = true;
     });
     
     // Timer controls
