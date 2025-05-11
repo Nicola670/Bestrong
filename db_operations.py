@@ -67,9 +67,8 @@ def get_user_by_email(email):
                 u.phone,
                 u.date_of_birth,
                 u.is_trainer,
-                o.nome as obiettivo
+                u.obiettivo_id
             FROM Utenti u
-            LEFT JOIN Obiettivi o ON u.obiettivo_id = o.id
             WHERE u.email = ?
         """, (email,))
         user = cursor.fetchone()
@@ -82,7 +81,7 @@ def get_user_by_email(email):
                 'phone': user[4],
                 'date_of_birth': user[5],
                 'is_trainer': user[6],
-                'obiettivo': user[7]
+                'obiettivo_id': user[7]
             }
         return None
     finally:
@@ -127,19 +126,12 @@ def get_user_by_username(username):
     finally:
         conn.close()
 
-def register_user(username, surname, email, phone, date_of_birth, password_hash, is_trainer=False, password_change_required=True, obiettivo=None):
+def register_user(username, surname, email, phone, date_of_birth, password_hash, is_trainer=False, password_change_required=True, obiettivo_id=None):
     """Registra un nuovo utente"""
     conn = sqlite3.connect(DB_FILE)
     cursor = conn.cursor()
-    try:
-        # Ottieni l'ID dell'obiettivo se specificato
-        obiettivo_id = None
-        if obiettivo:
-            cursor.execute("SELECT id FROM Obiettivi WHERE nome = ?", (obiettivo,))
-            result = cursor.fetchone()
-            if result:
-                obiettivo_id = result[0]
 
+    try:
         cursor.execute("""
             INSERT INTO Utenti (
                 username,
@@ -163,10 +155,11 @@ def register_user(username, surname, email, phone, date_of_birth, password_hash,
             password_change_required,
             obiettivo_id
         ))
+
         conn.commit()
         return True
     except Exception as e:
-        print(f"Errore durante la registrazione: {e}")
+        print(f"Errore durante qui: {e}")
         conn.rollback()
         return False
     finally:
@@ -320,5 +313,33 @@ def change_macchinari(nome_vecchio, nome_nuovo):
     except Exception as e:
         print(f"Errore durante la modifica dei macchinari: {e}")
         return False
+    finally:
+        conn.close()
+
+def get_user_template_data(user_id):
+    user_details = get_user_by_id(user_id)
+
+    user_name = user_details.get('username', '')
+    user_surname = user_details.get('surname', '')
+    user_initials = user_name[0] + user_surname[0] if user_name and user_surname else ''
+
+    return {
+        'user_name': user_name,
+        'user_surname': user_surname,
+        'user_initials': user_initials,
+        'user_is_trainer': user_details.get('is_trainer', False)
+    }
+
+def get_obiettivo_name(obiettivo_id):
+    conn = sqlite3.connect(DB_FILE)
+    cursor = conn.cursor()
+    
+    try:
+        cursor.execute("SELECT nome FROM Obiettivi WHERE id = ?", (obiettivo_id,))
+        result = cursor.fetchone()
+        return result[0] if result else None
+    except Exception as e:
+        print(f"Errore durante il recupero del nome dell'obiettivo: {e}")
+        return None
     finally:
         conn.close()

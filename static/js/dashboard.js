@@ -21,6 +21,7 @@ async function loadClientsFromAPI() {
         }
         const data = await response.json();
         clients = data;
+        console.log('DENTRO CARIACMENTO DA API', clients); // Debug
         loadClients(clients);
     } catch (error) {
         console.error('Error loading clients:', error);
@@ -40,12 +41,15 @@ function getInitials(nome, cognome) {
 
 // Funzione per creare una card cliente
 function createClientCard(client) {
+    console.log('CARD INIZIO:', client); // Debug
+
     const card = document.createElement('div');
     card.className = 'client-card';
     card.dataset.clientId = client.id;
     
     const initials = getInitials(client.nome, client.cognome);
-    
+    const obiettivoNome = client.obiettivo;
+    console.log('obbiettivoNome:', obiettivoNome, 'Type:', typeof obiettivoNome ); 
     card.innerHTML = `
         <div class="client-avatar">
             <span>${initials}</span>
@@ -53,26 +57,17 @@ function createClientCard(client) {
         <div class="client-info">
             <h3>${client.nome} ${client.cognome}</h3>
             <p>${client.email}</p>
-            <span class="client-tag tag-${client.obiettivo?.toLowerCase()}">${client.obiettivo}</span>
+            <span class="client-tag tag-${obiettivoNome}">${obiettivoNome}</span>
         </div>
     `;
-    
+    // Memorizza sia l'ID che il nome dell'obiettivo nei dati del client
+    client.obiettivo_id = client.obiettivo_id;
+    client.obiettivo = obiettivoNome;
+    console.log('CARD FINE FUNZIONE:', client); // Debug
+
     card.addEventListener('click', () => showClientDetails(client));
     
     return card;
-}
-
-// Funzione per formattare l'obiettivo
-function formatObjective(objective) {
-    const objectives = {
-        'dimagrimento': 'Dimagrimento',
-        'tonificazione': 'Tonificazione',
-        'massa': 'Massa muscolare',
-        'forza': 'Forza',
-        'benessere': 'Benessere'
-    };
-    
-    return objectives[objective] || objective;
 }
 
 // Funzione per calcolare l'età
@@ -101,13 +96,15 @@ function formatDate(dateString) {
 
 // Funzione per mostrare i dettagli del cliente
 function showClientDetails(client) {
+    console.log('CARD SU SHOWCLIENT', client); // Debug
+
     document.getElementById('clientDetailsName').textContent = `Dettagli Cliente`;
     document.getElementById('clientInitials').textContent = getInitials(client.nome, client.cognome);
     document.getElementById('clientFullName').textContent = `${client.nome} ${client.cognome}`;
     document.getElementById('clientEmail').textContent = client.email;
     document.getElementById('clientPhone').textContent = client.telefono;
     document.getElementById('clientObjective').textContent = client.obiettivo;
-    document.getElementById('clientObjective').className = `client-objective tag-${client.obiettivo?.toLowerCase()}`;
+    document.getElementById('clientObjective').className = `client-objective tag-${client.obiettivo}`;
     
     document.getElementById('clientAge').textContent = calculateAge(client.dataNascita);
     document.getElementById('clientBirthday').textContent = formatDate(client.dataNascita);
@@ -149,7 +146,7 @@ function setupTabs() {
 function loadClients(clientsData) {
     // Rimuovi il messaggio di caricamento
     clientsGrid.innerHTML = '';
-    
+    console.log('DENTRO PRIMA LOADCLIENTS:', clientsData); // Debug
     if (clientsData.length === 0) {
         clientsGrid.innerHTML = `
             <div class="no-results">
@@ -162,6 +159,7 @@ function loadClients(clientsData) {
     
     // Crea le card per ogni cliente
     clientsData.forEach(client => {
+        console.log('DENTRO LOADCLIENTS:', client); // Debug
         const card = createClientCard(client);
         clientsGrid.appendChild(card);
     });
@@ -245,10 +243,15 @@ addClientForm.addEventListener('submit', async (e) => {
         // Mostra notifica di successo
         showNotification(data.message, 'success');
         
+        setTimeout(() => {
+            window.location.reload();
+        }, 1); 
+    
     } catch (error) {
         console.error('Error:', error);
         showNotification(error.message, 'error');
     }
+    
 });
 
 // Chiudi i modal quando si clicca al di fuori
@@ -340,3 +343,29 @@ function showNotification(message, type = 'success') {
 
 // Avvia l'applicazione quando il DOM è caricato
 document.addEventListener('DOMContentLoaded', init);
+
+async function loadObiettivi() {
+    try {
+        const response = await fetch('/api/obiettivi');
+        if (!response.ok) {
+            throw new Error('Errore nel caricamento degli obiettivi');
+        }
+        const obiettivi = await response.json();
+        const obiettivoSelect = document.getElementById('obiettivo');
+
+        // Svuota il select e aggiungi le opzioni
+        obiettivoSelect.innerHTML = '<option value="">Seleziona un obiettivo</option>';
+        obiettivi.forEach(obiettivo => {
+            const option = document.createElement('option');
+            option.value = obiettivo.id;
+            option.textContent = obiettivo.nome;
+            obiettivoSelect.appendChild(option);
+        });
+    } catch (error) {
+        console.error('Errore:', error);
+        alert('Impossibile caricare gli obiettivi. Riprova più tardi.');
+    }
+}
+
+// Carica gli obiettivi quando la pagina è pronta
+document.addEventListener('DOMContentLoaded', loadObiettivi);

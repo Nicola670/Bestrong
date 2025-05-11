@@ -26,11 +26,11 @@
                 </nav>
                 <div class="trainer-profile">
                     <div class="avatar">
-                        <span id="userInitials">--</span>
+                        <span>{{ user_initials }}</span>
                     </div>
                     <div class="trainer-info">
-                        <h4 id="userName">Caricamento...</h4>
-                        <p id="userRole">Cliente</p>
+                        <h4> {{ user_name }} {{ user_surname }} </h4>
+                        <p> {{ 'Trainer' if user_is_trainer else 'Cliente' }} </p>
                     </div>
                 </div>
             </div>

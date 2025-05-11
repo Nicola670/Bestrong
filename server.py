@@ -135,13 +135,13 @@ def login():
     
     if not username or not password:
         flash('Per favore, inserisci tutti i campi')
-        return redirect(url_for('home'))
+        return redirect(url_for('login_page'))
 
     user = database.get_user_by_username(username)
     
     if user is None:
         flash('Username o password non validi')
-        return redirect(url_for('home'))
+        return redirect(url_for('login_page'))
     
     try:
         if database.verify_password(password, user['password']):
@@ -168,11 +168,11 @@ def login():
                 return redirect(url_for('client_dashboard'))
         else:
             flash('Username o password non validi')
-            return redirect(url_for('home'))
+            return redirect(url_for('login_page'))
     except Exception as e:
         print(f"Errore durante il login: {e}")
         flash('Si è verificato un errore durante il login')
-        return redirect(url_for('home'))
+        return redirect(url_for('login_page'))
 
 @app.route('/register', methods=['POST'])
 @login_required
@@ -185,11 +185,11 @@ def register():
         email = request.form.get('email')
         telefono = request.form.get('telefono')
         data_nascita = request.form.get('dataNascita')
-        obiettivo = request.form.get('obiettivo')
+        obiettivo_id = request.form.get('obiettivo')
         temp_password = "Password123"  # Password temporanea
         
         # Verifica che i campi obbligatori siano presenti
-        if not all([nome, cognome, email, telefono, data_nascita, obiettivo]):
+        if not all([nome, cognome, email, telefono, data_nascita, obiettivo_id]):
             return jsonify({'error': 'Tutti i campi sono obbligatori'}), 400
 
         # Verifica se l'email è già registrata
@@ -205,15 +205,15 @@ def register():
         
         # Registra il nuovo utente con tutti i dati
         success = database.register_user(
-            username=nome,  # Usa il nome come username
-            surname=cognome,
-            email=email,
-            phone=telefono,
-            date_of_birth=data_nascita,
-            password_hash=hashed_password,
-            is_trainer=False,
-            password_change_required=True,
-            obiettivo=obiettivo
+            username = nome,  # Usa il nome come username
+            surname = cognome,
+            email = email,
+            phone = telefono,
+            date_of_birth = data_nascita,
+            password_hash = hashed_password,
+            is_trainer = False,
+            password_change_required = True,
+            obiettivo_id = obiettivo_id
         )
 
         if success:
@@ -231,7 +231,7 @@ def register():
                         'email': new_user['email'],
                         'telefono': new_user['phone'],
                         'dataNascita': new_user['date_of_birth'],
-                        'obiettivo': new_user['obiettivo']
+                        'obiettivo': new_user['obiettivo_id']
                     }
                 })
 
@@ -246,18 +246,29 @@ def register():
 @trainer_required
 def dashboard():
     clients = database.get_clients_by_trainer(current_user.id)
-    return render_template('dashboard.html', clients=clients)
+    
+    user_data = database.get_user_template_data(current_user.id)
+
+    # Il doppio asterisco (**) spacchetta il dizionario 'user_data' e passa 
+    # ogni chiave come argomento al template. per esempio, se 'user_data' ha
+    # {'username': 'Mario', 'surname': 'Rossi'}, il template riceverà
+    # username='Mario' e surname='Rossi'.
+    return render_template('dashboard.html', clients = clients, **user_data)
 
 @app.route('/client')
 @login_required
 @client_required
 def client_dashboard():
-    return render_template('schedeClient.html')
+    user_data = database.get_user_template_data(current_user.id)
+
+    return render_template('schedeClient.html', **user_data)
 
 @app.route('/about')
 @login_required
 def about():
-    return render_template('About.html')
+    user_data = database.get_user_template_data(current_user.id)
+
+    return render_template('About.html', **user_data)
 
 @app.route('/esercizi')
 @login_required
@@ -343,7 +354,9 @@ def profile():
     if not current_user.is_authenticated:
         return redirect(url_for('login'))
     
-    return render_template('profilo.html')
+    user_data = database.get_user_template_data(current_user.id)
+
+    return render_template('profilo.html', **user_data)
 
 @app.errorhandler(404)
 def page_not_found(error):

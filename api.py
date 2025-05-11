@@ -40,7 +40,8 @@ def get_clients():
                 u.email,
                 u.phone,
                 u.date_of_birth,
-                o.nome as obiettivo
+                u.obiettivo_id,
+                o.nome as obiettivo_nome
             FROM Utenti u
             LEFT JOIN Obiettivi o ON u.obiettivo_id = o.id
             WHERE u.is_trainer = 0
@@ -55,8 +56,8 @@ def get_clients():
             'email': client[3],
             'telefono': client[4],
             'dataNascita': client[5],
-            'obiettivo': client[6] or 'Non specificato',
-            'iscrizione': '2024-01-01'  # Per ora hardcoded, da aggiungere al DB
+            'obiettivo_id': client[6],
+            'obiettivo': client[7] or 'Non specificato'
         } for client in clients])
         
     except Exception as e:
@@ -318,6 +319,24 @@ def get_exercises():
         return jsonify(exercises_list)
 
     except Exception as e:
+        return jsonify({'error': str(e)}), 500
+    finally:
+        conn.close()
+
+
+@api.route('/api/obiettivi', methods=['GET'])
+@login_required
+def get_obiettivi():
+    conn = sqlite3.connect(DB_FILE)
+    cursor = conn.cursor()
+
+    try:
+        cursor.execute("SELECT id, nome FROM Obiettivi")
+        obiettivi = cursor.fetchall()
+
+        return jsonify([{'id': obiettivo[0], 'nome': obiettivo[1]} for obiettivo in obiettivi])
+    except Exception as e:
+        print(f"Errore nel recupero degli obiettivi: {e}")
         return jsonify({'error': str(e)}), 500
     finally:
         conn.close()

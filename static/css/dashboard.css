@@ -374,23 +374,23 @@ button {
     color: white;
 }
 
-.tag-dimagrimento {
+.tag-Dimagrimento {
     background-color: var(--danger-color);
 }
 
-.tag-tonificazione {
+.tag-Tonificazione {
     background-color: var(--accent-color);
 }
 
-.tag-massa {
+.tag-Massa.muscolare {
     background-color: var(--primary-color);
 }
 
-.tag-forza {
+.tag-Mobilità {
     background-color: var(--warning-color);
 }
 
-.tag-benessere {
+.tag-Proprociezione {
     background-color: var(--success-color);
 }
 
