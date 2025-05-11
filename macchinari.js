@@ -3,97 +3,57 @@ let machines = [
     {
         id: 1,
         nome: "Leg Press",
-        marca: "Technogym",
         tipologia: "forza",
         parteCorpo: "gambe",
-        dataAcquisto: "2023-04-15",
-        stato: "Operativo",
-        ultimaManutenzione: "2024-01-10",
-        dettagliManutenzione: "Manutenzione ordinaria e lubrificazione delle parti mobili.",
         note: "Macchina molto utilizzata, verificare usura cavi ogni 3 mesi."
     },
     {
         id: 2,
         nome: "Tapis Roulant",
-        marca: "Life Fitness",
         tipologia: "cardio",
         parteCorpo: "total",
-        dataAcquisto: "2022-11-20",
-        stato: "Operativo",
-        ultimaManutenzione: "2024-02-05",
-        dettagliManutenzione: "Sostituzione cinghia e calibrazione sensori.",
         note: "Utilizzato principalmente nelle ore mattutine, monitorare il motore."
     },
     {
         id: 3,
         nome: "Chest Press",
-        marca: "Hammer Strength",
         tipologia: "isotonica",
         parteCorpo: "petto",
-        dataAcquisto: "2023-07-30",
-        stato: "In Manutenzione",
-        ultimaManutenzione: "2024-03-20",
-        dettagliManutenzione: "Sostituzione cuscinetti e verifica cavi.",
         note: "Presenta rumore anomalo durante l'utilizzo, da controllare."
     },
     {
         id: 4,
         nome: "Lat Machine",
-        marca: "Panatta",
         tipologia: "isotonica",
         parteCorpo: "schiena",
-        dataAcquisto: "2023-05-12",
-        stato: "Operativo",
-        ultimaManutenzione: "2024-01-25",
-        dettagliManutenzione: "Controllo completo e lubrificazione.",
         note: ""
     },
     {
         id: 5,
         nome: "Shoulder Press",
-        marca: "Matrix",
         tipologia: "forza",
         parteCorpo: "spalle",
-        dataAcquisto: "2023-09-18",
-        stato: "Operativo",
-        ultimaManutenzione: "2024-02-15",
-        dettagliManutenzione: "Regolazione tensione cavi e lubrificazione.",
         note: "Preferito dagli utenti esperti, molto stabile."
     },
     {
         id: 6,
         nome: "Cyclette",
-        marca: "Schwinn",
         tipologia: "cardio",
         parteCorpo: "total",
-        dataAcquisto: "2022-08-14",
-        stato: "Operativo",
-        ultimaManutenzione: "2024-01-05",
-        dettagliManutenzione: "Calibrazione display e verifica resistenza.",
         note: "Ideale per riscaldamento, molto silenziosa."
     },
     {
         id: 7,
         nome: "TRX",
-        marca: "TRX Training",
         tipologia: "funzionale",
         parteCorpo: "total",
-        dataAcquisto: "2023-03-25",
-        stato: "Operativo",
-        ultimaManutenzione: "2023-12-10",
-        dettagliManutenzione: "Sostituzione cinghie e controllo ancoraggi.",
         note: "Controllare periodicamente l'usura delle cinghie."
     },
     {
         id: 8,
         nome: "Curl Machine",
-        marca: "Technogym",
         tipologia: "isotonica",
         parteCorpo: "braccia",
-        dataAcquisto: "2023-06-05",
-        stato: "Operativo",
-        ultimaManutenzione: "2024-02-20",
-        dettagliManutenzione: "Manutenzione ordinaria.",
         note: ""
     }
 ];
@@ -123,7 +83,6 @@ function generateMachineCard(machine) {
             </div>
             <div class="client-info">
                 <h3>${machine.nome}</h3>
-                <p>${machine.marca}</p>
                 <span class="client-tag tag-${machine.tipologia}">${capitalizeFirstLetter(machine.tipologia)}</span>
                 <span class="client-tag tag-${machine.parteCorpo}">${capitalizeFirstLetter(machine.parteCorpo)}</span>
             </div>
@@ -134,13 +93,6 @@ function generateMachineCard(machine) {
 // Funzione per rendere maiuscola la prima lettera
 function capitalizeFirstLetter(string) {
     return string.charAt(0).toUpperCase() + string.slice(1);
-}
-
-// Funzione per formattare la data in formato leggibile
-function formatDate(dateString) {
-    if (!dateString) return '--';
-    const date = new Date(dateString);
-    return date.toLocaleDateString('it-IT', { day: '2-digit', month: '2-digit', year: 'numeric' });
 }
 
 // Funzione per popolare la griglia dei macchinari
@@ -182,14 +134,9 @@ function openMachineDetails(machineId) {
     // Popola i dettagli nel modal
     document.getElementById('machineDetailsName').textContent = `Dettagli: ${machine.nome}`;
     document.getElementById('machineFullName').textContent = machine.nome;
-    document.getElementById('machineBrand').textContent = `Marca: ${machine.marca}`;
     document.getElementById('machineBodyPart').textContent = capitalizeFirstLetter(machine.parteCorpo);
     document.getElementById('machineType').textContent = capitalizeFirstLetter(machine.tipologia);
     document.getElementById('machineBodyPartDetail').textContent = capitalizeFirstLetter(machine.parteCorpo);
-    document.getElementById('machineAcquisitionDate').textContent = formatDate(machine.dataAcquisto);
-    document.getElementById('machineStatus').textContent = machine.stato;
-    document.getElementById('lastMaintenanceDate').textContent = formatDate(machine.ultimaManutenzione);
-    document.getElementById('lastMaintenanceDetails').textContent = machine.dettagliManutenzione || 'Nessun dettaglio disponibile';
     document.getElementById('machineNotes').value = machine.note || '';
     
     // Gestione icona in base alla tipologia
@@ -231,10 +178,8 @@ function addNewMachine(event) {
     
     // Raccogli i dati dal form
     const nome = document.getElementById('nome').value;
-    const marca = document.getElementById('marca').value;
     const tipologia = document.getElementById('tipologia').value;
     const parteCorpo = document.getElementById('parteCorpo').value;
-    const dataAcquisto = document.getElementById('dataAcquisto').value;
     
     // Genera un nuovo ID incrementale
     const newId = machines.length > 0 ? Math.max(...machines.map(m => m.id)) + 1 : 1;
@@ -243,13 +188,8 @@ function addNewMachine(event) {
     const newMachine = {
         id: newId,
         nome: nome,
-        marca: marca,
         tipologia: tipologia,
         parteCorpo: parteCorpo,
-        dataAcquisto: dataAcquisto,
-        stato: "Operativo",
-        ultimaManutenzione: "",
-        dettagliManutenzione: "",
         note: ""
     };
     
@@ -312,39 +252,6 @@ function saveMachineNotes() {
     }
 }
 
-// Funzione per registrare una nuova manutenzione
-function registerMaintenance() {
-    const machineId = parseInt(document.getElementById('machineDetailsModal').getAttribute('data-machine-id'));
-    
-    // Richiedi informazioni sulla manutenzione
-    const maintenanceDate = prompt("Data manutenzione (YYYY-MM-DD):", new Date().toISOString().split('T')[0]);
-    if (!maintenanceDate) return;
-    
-    const maintenanceDetails = prompt("Dettagli manutenzione:");
-    if (maintenanceDetails === null) return;
-    
-    // Trova l'indice del macchinario nell'array
-    const index = machines.findIndex(m => m.id === machineId);
-    
-    if (index !== -1) {
-        // Aggiorna le informazioni sulla manutenzione
-        machines[index].ultimaManutenzione = maintenanceDate;
-        machines[index].dettagliManutenzione = maintenanceDetails;
-        machines[index].stato = "Operativo"; // Reset dello stato
-        
-        // Salva i dati
-        saveMachines();
-        
-        // Aggiorna i dettagli visualizzati
-        document.getElementById('lastMaintenanceDate').textContent = formatDate(maintenanceDate);
-        document.getElementById('lastMaintenanceDetails').textContent = maintenanceDetails;
-        document.getElementById('machineStatus').textContent = "Operativo";
-        
-        // Mostra un messaggio di conferma
-        alert("Manutenzione registrata con successo!");
-    }
-}
-
 // Funzione per modificare un macchinario
 function editMachine() {
     const machineId = parseInt(document.getElementById('machineDetailsModal').getAttribute('data-machine-id'));
@@ -356,20 +263,12 @@ function editMachine() {
     const nome = prompt("Nome macchinario:", machine.nome);
     if (nome === null) return;
     
-    const marca = prompt("Marca:", machine.marca);
-    if (marca === null) return;
-    
-    const stato = prompt("Stato (Operativo/In Manutenzione):", machine.stato);
-    if (stato === null) return;
-    
     // Trova l'indice del macchinario nell'array
     const index = machines.findIndex(m => m.id === machineId);
     
     if (index !== -1) {
         // Aggiorna le informazioni
         machines[index].nome = nome;
-        machines[index].marca = marca;
-        machines[index].stato = stato;
         
         // Salva i dati
         saveMachines();
@@ -396,7 +295,6 @@ function searchMachines(query) {
     
     const filteredMachines = machines.filter(machine => 
         machine.nome.toLowerCase().includes(query) ||
-        machine.marca.toLowerCase().includes(query) ||
         machine.tipologia.toLowerCase().includes(query) ||
         machine.parteCorpo.toLowerCase().includes(query)
     );
@@ -465,9 +363,6 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Event listener per salvare le note
     document.getElementById('saveNotesBtn').addEventListener('click', saveMachineNotes);
-    
-    // Event listener per registrare una manutenzione
-    document.getElementById('addMaintenanceBtn').addEventListener('click', registerMaintenance);
     
     // Event listener per modificare un macchinario
     document.getElementById('editMachineBtn').addEventListener('click', editMachine);

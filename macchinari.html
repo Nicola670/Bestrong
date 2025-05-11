@@ -74,8 +74,6 @@
             </main>
         </div>
         
-
-    
     <!-- Modal per Aggiungere un Macchinario -->
     <div class="modal" id="addMachineModal">
         <div class="modal-content">
@@ -88,10 +86,6 @@
                     <div class="form-group">
                         <label for="nome">Nome Macchinario</label>
                         <input type="text" id="nome" name="nome" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="marca">Marca</label>
-                        <input type="text" id="marca" name="marca" required>
                     </div>
                     <div class="form-group">
                         <label for="tipologia">Tipologia</label>
@@ -117,10 +111,6 @@
                             <option value="total">Total Body</option>
                         </select>
                     </div>
-                    <div class="form-group">
-                        <label for="dataAcquisto">Data di Acquisto</label>
-                        <input type="date" id="dataAcquisto" name="dataAcquisto" required>
-                    </div>
                     <div class="form-actions">
                         <button type="button" class="btn-cancel" id="cancelAddMachine">Annulla</button>
                         <button type="submit" class="btn-submit">Salva Macchinario</button>
@@ -144,7 +134,6 @@
                     </div>
                     <div class="client-summary">
                         <h3 id="machineFullName"></h3>
-                        <p id="machineBrand"></p>
                         <span class="client-objective" id="machineBodyPart"></span>
                     </div>
                     <div class="client-actions">
@@ -160,7 +149,6 @@
                 <div class="client-tabs">
                     <ul class="tabs-nav">
                         <li class="active" data-tab="info">Informazioni</li>
-                        <li data-tab="maintenance">Manutenzione</li>
                         <li data-tab="notes">Note</li>
                     </ul>
 
@@ -173,32 +161,6 @@
                             <div class="info-item">
                                 <h4>Parte del Corpo</h4>
                                 <p id="machineBodyPartDetail">--</p>
-                            </div>
-                            <div class="info-item">
-                                <h4>Data Acquisto</h4>
-                                <p id="machineAcquisitionDate">--</p>
-                            </div>
-                            <div class="info-item">
-                                <h4>Stato</h4>
-                                <p id="machineStatus">--</p>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="tab-content" id="maintenance">
-                        <div class="training-programs">
-                            <h3>Registro Manutenzioni</h3>
-                            <div class="program-card">
-                                <div class="program-header">
-                                    <h4>Ultima Manutenzione</h4>
-                                    <span class="program-date" id="lastMaintenanceDate">--</span>
-                                </div>
-                                <div class="program-body">
-                                    <p id="lastMaintenanceDetails">Nessuna manutenzione registrata</p>
-                                </div>
-                                <div class="program-footer">
-                                    <button class="btn-assign" id="addMaintenanceBtn">Registra Manutenzione</button>
-                                </div>
                             </div>
                         </div>
                     </div>
