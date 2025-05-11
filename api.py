@@ -605,15 +605,18 @@ def get_current_user():
         conn = sqlite3.connect(DB_FILE)
         cursor = conn.cursor()
         
-        # Modifica la query per ottenere più informazioni
         cursor.execute("""
             SELECT 
                 u.id,
                 u.username,
                 u.surname,
                 u.email,
-                u.is_trainer
+                u.phone,
+                u.date_of_birth,
+                u.is_trainer,
+                o.nome as obiettivo
             FROM Utenti u
+            LEFT JOIN Obiettivi o ON u.obiettivo_id = o.id
             WHERE u.id = ?
         """, (current_user.id,))
         
@@ -627,7 +630,10 @@ def get_current_user():
             'nome': user[1],
             'cognome': user[2],
             'email': user[3],
-            'is_trainer': bool(user[4])
+            'telefono': user[4],
+            'dataNascita': user[5],
+            'is_trainer': bool(user[6]),
+            'obiettivo': user[7] or 'Non specificato'
         })
         
     except Exception as e:
