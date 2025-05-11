@@ -87,7 +87,8 @@
                         </div>
                     </div>
                     <div class="card-footer">
-                        <button id="salvaScheda" class="btn btn-primary float-end">Salva Scheda</button>
+                        <button class="btn btn-primary" onclick="salvaModifiche()">Salva Modifiche</button>
+                        <button class="btn btn-secondary" onclick="window.history.back()">Annulla</button>
                     </div>
                 </div>
             </div>
@@ -153,14 +154,6 @@
             </div>
         </div>
     </template>
-
-        
-        <div class="row mt-4">
-            <div class="col-12">
-                <button class="btn btn-primary" onclick="salvaModifiche()">Salva Modifiche</button>
-                <button class="btn btn-secondary" onclick="window.history.back()">Annulla</button>
-            </div>
-        </div>
     </div>
 
     <script src="{{ url_for('static', filename='js/modifica_scheda.js') }}"></script>

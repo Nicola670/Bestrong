@@ -1,5 +1,3 @@
-const ip_server = 'http://localhost:5001';
-
 document.addEventListener('DOMContentLoaded', async () => {
 
     // Variabili globali per i filtri
@@ -15,7 +13,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     
     // Ottieni l'ID della scheda dall'URL
     const urlParams = new URLSearchParams(window.location.search);
-    const schedaId = urlParams.get('id');
+    const schedaId = urlParams.get('scheda_id'); // Modifica da 'id' a 'scheda_id'
     
     if (!schedaId) {
         alert('ID scheda non valido');
@@ -29,7 +27,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
 async function caricaEserciziDisponibili() {
     try {
-        const response = await fetch(`${ip_server}/api/exercises`);
+        const response = await fetch('/api/exercises'); // Rimuovi ip_server e usa path relativo
         if (!response.ok) {
             throw new Error('Errore nel caricamento degli esercizi');
         }
@@ -136,7 +134,7 @@ function visualizzaEserciziDisponibili(esercizi) {
 
 async function caricaDatiCliente(schedaId) {
     try {
-        const response = await fetch(`${ip_server}/api/schede/${schedaId}/cliente`);
+        const response = await fetch(`/api/schede/${schedaId}/cliente`);
         if (!response.ok) {
             throw new Error('Errore nel caricamento dei dati del cliente');
         }
@@ -160,7 +158,7 @@ async function caricaScheda(schedaId) {
         await caricaDatiCliente(schedaId);
         
         // Carica i dati della scheda
-        const response = await fetch(`${ip_server}/api/schede/${schedaId}`);
+        const response = await fetch(`/api/schede/${schedaId}`);
         if (!response.ok) {
             throw new Error('Errore nel caricamento della scheda');
         }
@@ -333,7 +331,7 @@ function filtraEsercizi() {
 
 async function salvaModifiche() {
     const urlParams = new URLSearchParams(window.location.search);
-    const schedaId = urlParams.get('id');
+    const schedaId = urlParams.get('scheda_id');
     
     const schedaData = {
         nome: document.getElementById('nomeProgramma').value,
@@ -356,20 +354,26 @@ async function salvaModifiche() {
     });
 
     try {
-        const response = await fetch(`${ip_server}/api/schede/${schedaId}`, {
+        // Modifica qui: usa il percorso corretto dell'API
+        const response = await fetch(`/api/schede/${schedaId}`, {
             method: 'PUT',
             headers: {
                 'Content-Type': 'application/json',
+                // Aggiungi anche l'header per CSRF se necessario
+                'X-CSRFToken': document.querySelector('meta[name="csrf-token"]')?.content
             },
-            body: JSON.stringify(schedaData)
+            body: JSON.stringify(schedaData),
+            credentials: 'include' // Importante per includere i cookie di autenticazione
         });
 
         if (!response.ok) {
-            throw new Error('Errore durante il salvataggio delle modifiche');
+            throw new Error(`HTTP error! status: ${response.status}`);
         }
 
+        // Se tutto va bene
         alert('Modifiche salvate con successo!');
-        window.location.href = '/dashboard';
+        // Reindirizza alla dashboard del cliente
+        window.location.href = '/client';
         
     } catch (error) {
         console.error('Errore:', error);

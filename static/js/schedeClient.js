@@ -296,11 +296,8 @@ function startWorkout(schedaId) {
 }
 
 function editWorkout(schedaId) {
-    // Per ora solo un log, implementeremo la funzionalità in seguito
-    console.log('Modifica scheda:', schedaId);
-    // Qui puoi aggiungere la logica per modificare la scheda
-    // Per esempio, reindirizzare a una pagina di modifica:
-    // window.location.href = `/edit-workout/${schedaId}`;
+    // Reindirizza alla pagina di modifica scheda passando l'ID come parametro
+    window.location.href = `/modifica_scheda?scheda_id=${schedaId}`;
 }
 
 // Utility Functions
