@@ -83,6 +83,7 @@ function updateExerciseDisplay(index) {
     document.querySelector('.sets .value').textContent = exercise.sets;
     document.querySelector('.reps .value').textContent = exercise.reps;
     document.querySelector('.rest .value').textContent = `${exercise.rest}s`;
+    document.querySelector('.weight .value').textContent = exercise.weight ? `${exercise.weight}kg` : '0kg';
     
     // Update timer
     totalSeconds = exercise.rest;
