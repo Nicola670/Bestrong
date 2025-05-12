@@ -1,15 +1,13 @@
 // Array di percorsi delle GIF da mostrare casualmente
 const randomMedia = [
-    "../static/gifs/error1.gif",
-    "../static/gifs/error2.gif",
-    "../static/gifs/error3.gif",
-    "../static/gifs/error4.gif",
-    "../static/gifs/error5.gif",
-    "../static/gifs/error6.gif",
-    "../static/gifs/error7.gif",
-    "../static/gifs/error8.gif",
-    "../static/gifs/error9.gif",
-    "../static/gifs/error10.gif"
+    "../static/gifs/gif1.webm",
+    "../static/gifs/gif2.webm",
+    "../static/gifs/gif3.webm",
+    "../static/gifs/gif4.webm",
+    "../static/gifs/gif5.webm",
+    "../static/gifs/gif6.webm",
+    "../static/gifs/gif7.webm",
+    "../static/gifs/gif8.webm"
 ];
 
 // Funzione che viene eseguita quando la pagina è completamente caricata
