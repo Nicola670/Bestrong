@@ -227,58 +227,75 @@ function resetFilters() {
 
 // Funzione per salvare/modificare un esercizio
 async function saveExercise() {
-    // Validazione
-    const form = document.getElementById('exercise-form');
-    if (!form.checkValidity()) {
-        form.reportValidity();
-        return;
-    }
-
-    // Raccolta dati
-    const exerciseId = document.getElementById('exercise-id').value;
-    const name = document.getElementById('exercise-name').value.trim();
-    const description = document.getElementById('exercise-description').value.trim();
-    const goal = document.getElementById('exercise-goal').value;
-    const difficulty = document.getElementById('exercise-difficulty').value;
-    
-    // Raccolta gruppi muscolari primari
-    const primaryMuscles = Array.from(document.querySelectorAll('#primary-muscles input:checked')).map(input => input.value);
-    if (primaryMuscles.length === 0) {
-        alert('Seleziona almeno un gruppo muscolare primario');
-        return;
-    }
-    
-    // Raccolta gruppi muscolari secondari
-    const secondaryMuscles = Array.from(document.querySelectorAll('#secondary-muscles input:checked')).map(input => input.value);
-    
-    // Gestione media
-    let mediaType = null;
-    let mediaUrl = null;
-    
-    const mediaFile = document.getElementById('exercise-media').files[0];
-    
-    // Se stiamo modificando un esercizio esistente
-    if (exerciseId) {
-        const existingExercise = exercises.find(ex => ex.id === exerciseId);
-        if (existingExercise) {
-            mediaType = existingExercise.mediaType;
-            mediaUrl = existingExercise.mediaUrl;
+    try {
+        // Validazione
+        const form = document.getElementById('exercise-form');
+        if (!form.checkValidity()) {
+            form.reportValidity();
+            return;
         }
-    }
-    
-    // Se è stato caricato un nuovo file
-    if (mediaFile) {
-        if (mediaFile.type.startsWith('image/')) {
-            mediaType = 'image';
-        } else if (mediaFile.type.startsWith('video/')) {
-            mediaType = 'video';
+
+        const exerciseId = document.getElementById('exercise-id').value;
+        const name = document.getElementById('exercise-name').value.trim();
+        const description = document.getElementById('exercise-description').value.trim();
+        const goal = document.getElementById('exercise-goal').value;
+        const difficulty = document.getElementById('exercise-difficulty').value;
+        
+        // Raccolta gruppi muscolari
+        const primaryMuscles = Array.from(document.querySelectorAll('#primary-muscles input:checked')).map(input => input.value);
+        if (primaryMuscles.length === 0) {
+            alert('Seleziona almeno un gruppo muscolare primario');
+            return;
         }
         
-        // TODO: Implementare caricamento file
-        mediaUrl = '/api/placeholder/400/300';
-    }
+        const secondaryMuscles = Array.from(document.querySelectorAll('#secondary-muscles input:checked')).map(input => input.value);
+        
+        // Gestione media
+        const mediaFile = document.getElementById('exercise-media').files[0];
+        let mediaType = null;
+        let mediaUrl = null;
 
-    try {
+        // Se stiamo modificando un esercizio esistente
+        if (exerciseId) {
+            const existingExercise = exercises.find(ex => ex.id == exerciseId);
+            if (existingExercise) {
+                mediaType = existingExercise.mediaType;
+                mediaUrl = existingExercise.mediaUrl;
+            }
+        }
+
+        // Se è stato caricato un nuovo file
+        if (mediaFile) {
+            const formData = new FormData();
+            formData.append('file', mediaFile);
+
+            // Carica il file
+            const uploadResponse = await fetch(`${ip_server}/api/upload-media`, {
+                method: 'POST',
+                body: formData,
+                credentials: 'include' // Aggiungi questa riga
+            });
+
+            if (uploadResponse.redirected) {
+                window.location.href = uploadResponse.url;
+                return;
+            }
+
+            if (!uploadResponse.ok) {
+                if (uploadResponse.status === 401) {
+                    // Sessione scaduta, reindirizza al login
+                    window.location.href = '/login';
+                    return;
+                }
+                throw new Error('Errore durante il caricamento del file');
+            }
+
+            const uploadResult = await uploadResponse.json();
+            mediaUrl = uploadResult.filename;
+            mediaType = mediaFile.type.startsWith('video/') ? 'video' : 'image';
+        }
+
+        // Prepara i dati dell'esercizio
         const exerciseData = {
             name,
             description,
@@ -302,10 +319,21 @@ async function saveExercise() {
             headers: {
                 'Content-Type': 'application/json',
             },
+            credentials: 'include', // Aggiungi questa riga
             body: JSON.stringify(exerciseData)
         });
 
+        if (response.redirected) {
+            window.location.href = response.url;
+            return;
+        }
+
         if (!response.ok) {
+            if (response.status === 401) {
+                // Sessione scaduta, reindirizza al login
+                window.location.href = '/login';
+                return;
+            }
             throw new Error('Errore durante il salvataggio dell\'esercizio');
         }
 
@@ -313,24 +341,22 @@ async function saveExercise() {
 
         // Aggiorna l'array locale degli esercizi
         if (exerciseId) {
-            const idToUpdate = parseInt(exerciseId, 10);
-            const index = exercises.findIndex(ex => ex.id === idToUpdate);
+            const index = exercises.findIndex(ex => ex.id == exerciseId);
             if (index !== -1) {
                 exercises[index] = {
                     ...exercises[index],
                     ...exerciseData,
-                    id: idToUpdate
+                    id: exerciseId
                 };
             }
         } else {
             exercises.push({
                 ...exerciseData,
-                id: parseInt(savedExercise.id, 10)  // Converti anche l'ID del nuovo esercizio
+                id: savedExercise.id
             });
         }
         
-        // Salva n
-        // el localStorage e aggiorna UI
+        // Salva nel localStorage e aggiorna UI
         saveExercises();
         renderExercises();
         
@@ -343,6 +369,11 @@ async function saveExercise() {
 
     } catch (error) {
         console.error('Errore durante il salvataggio:', error);
+        if (error.message.includes('<!doctype')) {
+            // Sessione scaduta, reindirizza al login
+            window.location.href = '/login';
+            return;
+        }
         alert('Errore durante il salvataggio dell\'esercizio');
     }
 }
