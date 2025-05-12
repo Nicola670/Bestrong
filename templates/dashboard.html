@@ -23,8 +23,9 @@
                     </div>
                     <nav class="nav-menu">
                         <ul>
-                            <li><a href="{{ url_for('dashboard') }}"><i class="fas fa-home"></i> <span>Clienti</span></a></li>
+                            <li class="active"><a href="{{ url_for('dashboard') }}"><i class="fas fa-home"></i> <span>Clienti</span></a></li>
                             <li><a href="{{ url_for('creazione_scheda') }}"><i class="fas fa-calendar-alt"></i> <span>Schede</span></a></li>
+                            <li><a href="{{ url_for('macchinari') }}"><i class="fas fa-cogs"></i> <span>Macchinari</span></a></li>
                             <li><a href="{{ url_for('about') }}"><i class="fas fa-users"></i> <span>About</span></a></li>
                             <li><a href="{{ url_for('about') }}"><i class="fas fa-user"></i> <span>Profilo</span></a></li>
                             <li><a href="{{ url_for('logout') }}"><i class="fas fa-sign-out-alt"></i> <span>Logout</span></a></li>
