@@ -2,8 +2,77 @@
 let exercises = [];
 const ip_server = 'http://localhost:5001';  // Aggiunto http:// che mancava
 
+// Aggiungi questa funzione all'inizio del file
+async function loadFilterMetadata() {
+    try {
+        const response = await fetch(`${ip_server}/api/exercise-metadata`);
+        if (!response.ok) {
+            throw new Error('Errore nel caricamento dei metadati dei filtri');
+        }
+        const metadata = await response.json();
+        
+        // Popola i filtri dei gruppi muscolari
+        const muscleFilters = document.getElementById('muscle-filters');
+        metadata.muscles.forEach(muscle => {
+            const muscleId = muscle.toLowerCase().replace(/\s+/g, '-');
+            muscleFilters.innerHTML += `
+                <div class="form-check">
+                    <input class="form-check-input filter-muscle" type="checkbox" 
+                           value="${muscle}" id="m-${muscleId}">
+                    <label class="form-check-label" for="m-${muscleId}">${muscle}</label>
+                </div>
+            `;
+        });
+        
+        // Popola i filtri degli obiettivi
+        const goalFilters = document.getElementById('goal-filters');
+        metadata.goals.forEach(goal => {
+            const goalId = goal.toLowerCase().replace(/\s+/g, '-');
+            goalFilters.innerHTML += `
+                <div class="form-check">
+                    <input class="form-check-input filter-goal" type="checkbox" 
+                           value="${goal}" id="g-${goalId}">
+                    <label class="form-check-label" for="g-${goalId}">${goal}</label>
+                </div>
+            `;
+        });
+        
+        // Popola i filtri delle difficoltà
+        const difficultyFilters = document.getElementById('difficulty-filters');
+        metadata.difficulties.forEach(difficulty => {
+            const difficultyId = difficulty.toLowerCase().replace(/\s+/g, '-');
+            difficultyFilters.innerHTML += `
+                <div class="form-check">
+                    <input class="form-check-input filter-difficulty" type="checkbox" 
+                           value="${difficulty}" id="d-${difficultyId}">
+                    <label class="form-check-label" for="d-${difficultyId}">${difficulty}</label>
+                </div>
+            `;
+        });
+
+        // Riattacca gli event listener dopo aver popolato i filtri
+        setupFilterEventListeners();
+        
+    } catch (error) {
+        console.error('Errore nel caricamento dei metadati:', error);
+    }
+}
+
+// Modifica la funzione setupEventListeners esistente
+function setupEventListeners() {
+    loadFilterMetadata();
+}
+
+// Aggiungi questa nuova funzione per gestire gli event listener dei filtri
+function setupFilterEventListeners() {
+    document.querySelectorAll('.filter-muscle, .filter-goal, .filter-difficulty').forEach(filter => {
+        filter.addEventListener('change', renderExercises);
+    });
+}
+
 // Verificare se ci sono esercizi salvati nel localStorage
 document.addEventListener('DOMContentLoaded', () => {
+    loadFilterMetadata
     loadExercises();
     setupEventListeners();
     renderExercises();
@@ -116,7 +185,7 @@ function setupEventListeners() {
             window.history.back();
         }
     });
-    
+
     // Reset del form modal quando viene chiuso
     document.getElementById('exerciseModal').addEventListener('hidden.bs.modal', () => {
         document.getElementById('exercise-form').reset();
@@ -128,6 +197,8 @@ function setupEventListeners() {
         document.getElementById('delete-exercise').classList.add('d-none');
         document.getElementById('exerciseModalLabel').textContent = 'Nuovo Esercizio';
     });
+
+    loadFilterMetadata();
 }
 
 // Gestione anteprima media

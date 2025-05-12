@@ -787,3 +787,32 @@ def delete_scheda(scheda_id):
         return jsonify({'error': str(e)}), 500
     finally:
         conn.close()
+
+@api.route('/api/exercise-metadata', methods=['GET'])
+def get_exercise_metadata():
+    conn = sqlite3.connect(DB_FILE)
+    cursor = conn.cursor()
+    try:
+        # Ottieni gruppi muscolari
+        cursor.execute("SELECT DISTINCT nome FROM Gruppi_Muscolari ORDER BY nome")
+        muscles = [row[0] for row in cursor.fetchall()]
+        
+        # Ottieni obiettivi
+        cursor.execute("SELECT DISTINCT nome FROM Obiettivi ORDER BY nome")
+        goals = [row[0] for row in cursor.fetchall()]
+        
+        # Ottieni livelli di difficoltà
+        cursor.execute("SELECT DISTINCT livello FROM Difficolta ORDER BY id")
+        difficulties = [row[0] for row in cursor.fetchall()]
+        
+        return jsonify({
+            'muscles': muscles,
+            'goals': goals,
+            'difficulties': difficulties
+        })
+        
+    except Exception as e:
+        print(f"Errore nel recupero dei metadati: {e}")
+        return jsonify({'error': str(e)}), 500
+    finally:
+        conn.close()
