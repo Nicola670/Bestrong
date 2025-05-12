@@ -356,6 +356,16 @@ video {
     background-color: #e63e3e;
 }
 
+#finish-workout {
+    background-color: #28a745;  /* Colore verde per indicare completamento */
+    color: white;
+    border: none;
+}
+
+#finish-workout:hover {
+    background-color: #218838;  /* Verde più scuro all'hover */
+}
+
 /* Footer */
 footer {
     text-align: center;
