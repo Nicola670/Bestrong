@@ -164,25 +164,34 @@ function toggleVideo(){
 }
 
 // Timer functions
-function startTimer(){
+function startTimer() {
     if (!isTimerRunning) {
         isTimerRunning = true;
         timerInterval = setInterval(updateTimer, 1000);
         animateTimerButton(startTimerBtn);
         
-        // Start progress bar animation
+        // Calcola la percentuale di completamento corrente
+        const percentageLeft = (currentSeconds / totalSeconds);
+        
+        // Reset della transizione e imposta la barra alla posizione corrente
+        timerProgressBar.style.transition = 'none';
+        timerProgressBar.offsetHeight; // Forza il reflow del DOM
+        timerProgressBar.style.transform = `scaleX(${percentageLeft})`;
+        timerProgressBar.offsetHeight; // Forza il reflow del DOM
+        
+        // Imposta la nuova transizione per il tempo rimanente
         timerProgressBar.style.transition = `transform ${currentSeconds}s linear`;
         timerProgressBar.style.transform = 'scaleX(0)';
     }
 }
 
-function pauseTimer(){
+function pauseTimer() {
     if (isTimerRunning) {
         isTimerRunning = false;
         clearInterval(timerInterval);
         animateTimerButton(pauseTimerBtn);
         
-        // Pause progress bar animation
+        // Mantieni la posizione corrente della barra
         const computedStyle = window.getComputedStyle(timerProgressBar);
         const transform = computedStyle.getPropertyValue('transform');
         timerProgressBar.style.transition = 'none';
@@ -190,15 +199,16 @@ function pauseTimer(){
     }
 }
 
-function resetTimer(){
+function resetTimer() {
     isTimerRunning = false;
     clearInterval(timerInterval);
     currentSeconds = totalSeconds;
     updateTimerDisplay();
     animateTimerButton(resetTimerBtn);
     
-    // Reset progress bar
+    // Reset completo della barra
     timerProgressBar.style.transition = 'none';
+    timerProgressBar.offsetHeight; // Forza il reflow del DOM
     timerProgressBar.style.transform = 'scaleX(1)';
 }
 
