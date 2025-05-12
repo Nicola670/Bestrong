@@ -154,6 +154,8 @@ async function caricaDatiCliente(schedaId) {
 
 async function caricaScheda(schedaId) {
     try {
+        await caricaDatiCliente(schedaId);
+
         const response = await fetch(`/api/schede/${schedaId}`);
         if (!response.ok) {
             throw new Error('Errore nel caricamento della scheda');
