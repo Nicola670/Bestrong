@@ -3,6 +3,7 @@ import os
 from flask import Blueprint, jsonify, request, send_file, Response
 from flask_login import login_required, current_user
 from init_db import DB_FILE
+from werkzeug.utils import secure_filename
 
 # Crea un Blueprint per le API
 api = Blueprint('api', __name__)
@@ -11,6 +12,13 @@ api = Blueprint('api', __name__)
 VIDEOS_DIRECTORY = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'static', 'videos')
 # Crea la cartella se non esiste
 os.makedirs(VIDEOS_DIRECTORY, exist_ok=True)
+
+# Aggiungi queste configurazioni all'inizio del file
+ALLOWED_EXTENSIONS = {'mp4', 'mov', 'avi', 'jpg', 'jpeg', 'png', 'gif'}
+UPLOAD_FOLDER = os.path.join('static', 'videos')
+
+def allowed_file(filename):
+    return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
 def get_chunk_size():
     return 1024 * 1024  # 1MB per chunk
@@ -787,3 +795,61 @@ def delete_scheda(scheda_id):
         return jsonify({'error': str(e)}), 500
     finally:
         conn.close()
+
+@api.route('/api/exercise-metadata', methods=['GET'])
+def get_exercise_metadata():
+    conn = sqlite3.connect(DB_FILE)
+    cursor = conn.cursor()
+    try:
+        # Ottieni gruppi muscolari
+        cursor.execute("SELECT DISTINCT nome FROM Gruppi_Muscolari ORDER BY nome")
+        muscles = [row[0] for row in cursor.fetchall()]
+        
+        # Ottieni obiettivi
+        cursor.execute("SELECT DISTINCT nome FROM Obiettivi ORDER BY nome")
+        goals = [row[0] for row in cursor.fetchall()]
+        
+        # Ottieni livelli di difficoltà
+        cursor.execute("SELECT DISTINCT livello FROM Difficolta ORDER BY id")
+        difficulties = [row[0] for row in cursor.fetchall()]
+        
+        return jsonify({
+            'muscles': muscles,
+            'goals': goals,
+            'difficulties': difficulties
+        })
+        
+    except Exception as e:
+        print(f"Errore nel recupero dei metadati: {e}")
+        return jsonify({'error': str(e)}), 500
+    finally:
+        conn.close()
+
+@api.route('/api/upload-media', methods=['POST'])
+@login_required
+def upload_media():
+    if 'file' not in request.files:
+        return jsonify({'error': 'Nessun file inviato'}), 400
+        
+    file = request.files['file']
+    
+    if file.filename == '':
+        return jsonify({'error': 'Nessun file selezionato'}), 400
+        
+    if file and allowed_file(file.filename):
+        filename = secure_filename(file.filename)
+        file_path = os.path.join(UPLOAD_FOLDER, filename)
+        
+        # Salva il file
+        file.save(file_path)
+        
+        # Se è un video, genera la thumbnail
+        if filename.rsplit('.', 1)[1].lower() in {'mp4', 'mov', 'avi'}:
+            thumbnail_name = f"{filename.rsplit('.', 1)[0]}.jpg"
+            thumbnail_path = os.path.join('static', 'thumbnails', thumbnail_name)
+            from init_db import generate_thumbnail
+            generate_thumbnail(file_path, thumbnail_path)
+        
+        return jsonify({'filename': filename})
+        
+    return jsonify({'error': 'Tipo file non permesso'}), 400

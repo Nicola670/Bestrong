@@ -2,12 +2,82 @@
 let exercises = [];
 const ip_server = 'http://localhost:5001';  // Aggiunto http:// che mancava
 
+// Aggiungi questa funzione all'inizio del file
+async function loadFilterMetadata() {
+    try {
+        const response = await fetch(`${ip_server}/api/exercise-metadata`);
+        if (!response.ok) {
+            throw new Error('Errore nel caricamento dei metadati dei filtri');
+        }
+        const metadata = await response.json();
+        
+        // Popola i filtri dei gruppi muscolari
+        const muscleFilters = document.getElementById('muscle-filters');
+        metadata.muscles.forEach(muscle => {
+            const muscleId = muscle.toLowerCase().replace(/\s+/g, '-');
+            muscleFilters.innerHTML += `
+                <div class="form-check">
+                    <input class="form-check-input filter-muscle" type="checkbox" 
+                           value="${muscle}" id="m-${muscleId}">
+                    <label class="form-check-label" for="m-${muscleId}">${muscle}</label>
+                </div>
+            `;
+        });
+        
+        // Popola i filtri degli obiettivi
+        const goalFilters = document.getElementById('goal-filters');
+        metadata.goals.forEach(goal => {
+            const goalId = goal.toLowerCase().replace(/\s+/g, '-');
+            goalFilters.innerHTML += `
+                <div class="form-check">
+                    <input class="form-check-input filter-goal" type="checkbox" 
+                           value="${goal}" id="g-${goalId}">
+                    <label class="form-check-label" for="g-${goalId}">${goal}</label>
+                </div>
+            `;
+        });
+        
+        // Popola i filtri delle difficoltà
+        const difficultyFilters = document.getElementById('difficulty-filters');
+        metadata.difficulties.forEach(difficulty => {
+            const difficultyId = difficulty.toLowerCase().replace(/\s+/g, '-');
+            difficultyFilters.innerHTML += `
+                <div class="form-check">
+                    <input class="form-check-input filter-difficulty" type="checkbox" 
+                           value="${difficulty}" id="d-${difficultyId}">
+                    <label class="form-check-label" for="d-${difficultyId}">${difficulty}</label>
+                </div>
+            `;
+        });
+        
+        populateExerciseForms(metadata)
+        // Riattacca gli event listener dopo aver popolato i filtri
+        setupFilterEventListeners();
+        
+    } catch (error) {
+        console.error('Errore nel caricamento dei metadati:', error);
+    }
+}
+
+// Modifica la funzione setupEventListeners esistente
+function setupEventListeners() {
+    loadFilterMetadata();
+}
+
+// Aggiungi questa nuova funzione per gestire gli event listener dei filtri
+function setupFilterEventListeners() {
+    document.querySelectorAll('.filter-muscle, .filter-goal, .filter-difficulty').forEach(filter => {
+        filter.addEventListener('change', renderExercises);
+    });
+}
+
 // Verificare se ci sono esercizi salvati nel localStorage
 document.addEventListener('DOMContentLoaded', () => {
+    loadFilterMetadata
     loadExercises();
     setupEventListeners();
     renderExercises();
-});
+}); 
 
 // Caricare gli esercizi da localStorage
 async function loadExercises() {
@@ -15,22 +85,6 @@ async function loadExercises() {
     if (savedExercises) {
         exercises = JSON.parse(savedExercises);
     } else {
-
-        /*
-        // Esempi di esercizi predefiniti per demo
-        exercises = [
-            {
-                id: 'ex1',
-                name: 'Panca Piana',
-                primaryMuscles: ['Pettorali', 'Tricipiti'],
-                secondaryMuscles: ['Spalle'],
-                goal: 'Massa muscolare',
-                difficulty: 'Medio',
-                description: 'Sdraiati sulla panca con i piedi ben piantati a terra. Afferra il bilanciere con una presa leggermente più ampia delle spalle. Abbassa il bilanciere al petto controllando il movimento, quindi spingi verso l\'alto fino a distendere completamente le braccia.',
-                mediaType: 'image',
-                mediaUrl: '/api/placeholder/400/300'
-            }
-        ];*/
         try {
             const response = await fetch(`${ip_server}/api/exercises`);
             if (!response.ok) {
@@ -42,7 +96,8 @@ async function loadExercises() {
                 name: ex.nome,
                 description: ex.descrizione,
                 mediaType: ex.video_url ? 'video' : (ex.immagine_url ? 'image' : null),
-                mediaUrl: ex.video_url || ex.immagine_url || null,
+                mediaUrl: ex.video_url,
+                immagine_url: ex.immagine_url,
                 goal: ex.obiettivo,
                 difficulty: ex.difficolta,
                 primaryMuscles: ex.muscoli_primari || [],
@@ -55,9 +110,6 @@ async function loadExercises() {
             document.getElementById('no-exercises').textContent = 'Errore nel caricamento degli esercizi. Riprova più tardi.';
             document.getElementById('no-exercises').classList.remove('d-none');
         }
-    
-        
-
     }
 }
 
@@ -104,6 +156,19 @@ function setupEventListeners() {
         openEditModal(exerciseId);
     });
 
+    document.getElementById('btnBack').addEventListener('click', function() {
+        // Se ci sono modifiche non salvate, chiedi conferma
+        const hasUnsavedChanges = localStorage.getItem('unsaved-changes') === 'true';
+        
+        if (hasUnsavedChanges) {
+            if (confirm('Ci sono modifiche non salvate. Sei sicuro di voler tornare indietro?')) {
+                window.history.back();
+            }
+        } else {
+            window.history.back();
+        }
+    });
+
     // Reset del form modal quando viene chiuso
     document.getElementById('exerciseModal').addEventListener('hidden.bs.modal', () => {
         document.getElementById('exercise-form').reset();
@@ -115,6 +180,8 @@ function setupEventListeners() {
         document.getElementById('delete-exercise').classList.add('d-none');
         document.getElementById('exerciseModalLabel').textContent = 'Nuovo Esercizio';
     });
+
+    loadFilterMetadata();
 }
 
 // Gestione anteprima media
@@ -160,58 +227,75 @@ function resetFilters() {
 
 // Funzione per salvare/modificare un esercizio
 async function saveExercise() {
-    // Validazione
-    const form = document.getElementById('exercise-form');
-    if (!form.checkValidity()) {
-        form.reportValidity();
-        return;
-    }
-
-    // Raccolta dati
-    const exerciseId = document.getElementById('exercise-id').value;
-    const name = document.getElementById('exercise-name').value.trim();
-    const description = document.getElementById('exercise-description').value.trim();
-    const goal = document.getElementById('exercise-goal').value;
-    const difficulty = document.getElementById('exercise-difficulty').value;
-    
-    // Raccolta gruppi muscolari primari
-    const primaryMuscles = Array.from(document.querySelectorAll('#primary-muscles input:checked')).map(input => input.value);
-    if (primaryMuscles.length === 0) {
-        alert('Seleziona almeno un gruppo muscolare primario');
-        return;
-    }
-    
-    // Raccolta gruppi muscolari secondari
-    const secondaryMuscles = Array.from(document.querySelectorAll('#secondary-muscles input:checked')).map(input => input.value);
-    
-    // Gestione media
-    let mediaType = null;
-    let mediaUrl = null;
-    
-    const mediaFile = document.getElementById('exercise-media').files[0];
-    
-    // Se stiamo modificando un esercizio esistente
-    if (exerciseId) {
-        const existingExercise = exercises.find(ex => ex.id === exerciseId);
-        if (existingExercise) {
-            mediaType = existingExercise.mediaType;
-            mediaUrl = existingExercise.mediaUrl;
+    try {
+        // Validazione
+        const form = document.getElementById('exercise-form');
+        if (!form.checkValidity()) {
+            form.reportValidity();
+            return;
         }
-    }
-    
-    // Se è stato caricato un nuovo file
-    if (mediaFile) {
-        if (mediaFile.type.startsWith('image/')) {
-            mediaType = 'image';
-        } else if (mediaFile.type.startsWith('video/')) {
-            mediaType = 'video';
+
+        const exerciseId = document.getElementById('exercise-id').value;
+        const name = document.getElementById('exercise-name').value.trim();
+        const description = document.getElementById('exercise-description').value.trim();
+        const goal = document.getElementById('exercise-goal').value;
+        const difficulty = document.getElementById('exercise-difficulty').value;
+        
+        // Raccolta gruppi muscolari
+        const primaryMuscles = Array.from(document.querySelectorAll('#primary-muscles input:checked')).map(input => input.value);
+        if (primaryMuscles.length === 0) {
+            alert('Seleziona almeno un gruppo muscolare primario');
+            return;
         }
         
-        // TODO: Implementare caricamento file
-        mediaUrl = '/api/placeholder/400/300';
-    }
+        const secondaryMuscles = Array.from(document.querySelectorAll('#secondary-muscles input:checked')).map(input => input.value);
+        
+        // Gestione media
+        const mediaFile = document.getElementById('exercise-media').files[0];
+        let mediaType = null;
+        let mediaUrl = null;
 
-    try {
+        // Se stiamo modificando un esercizio esistente
+        if (exerciseId) {
+            const existingExercise = exercises.find(ex => ex.id == exerciseId);
+            if (existingExercise) {
+                mediaType = existingExercise.mediaType;
+                mediaUrl = existingExercise.mediaUrl;
+            }
+        }
+
+        // Se è stato caricato un nuovo file
+        if (mediaFile) {
+            const formData = new FormData();
+            formData.append('file', mediaFile);
+
+            // Carica il file
+            const uploadResponse = await fetch(`${ip_server}/api/upload-media`, {
+                method: 'POST',
+                body: formData,
+                credentials: 'include' // Aggiungi questa riga
+            });
+
+            if (uploadResponse.redirected) {
+                window.location.href = uploadResponse.url;
+                return;
+            }
+
+            if (!uploadResponse.ok) {
+                if (uploadResponse.status === 401) {
+                    // Sessione scaduta, reindirizza al login
+                    window.location.href = '/login';
+                    return;
+                }
+                throw new Error('Errore durante il caricamento del file');
+            }
+
+            const uploadResult = await uploadResponse.json();
+            mediaUrl = uploadResult.filename;
+            mediaType = mediaFile.type.startsWith('video/') ? 'video' : 'image';
+        }
+
+        // Prepara i dati dell'esercizio
         const exerciseData = {
             name,
             description,
@@ -235,10 +319,21 @@ async function saveExercise() {
             headers: {
                 'Content-Type': 'application/json',
             },
+            credentials: 'include', // Aggiungi questa riga
             body: JSON.stringify(exerciseData)
         });
 
+        if (response.redirected) {
+            window.location.href = response.url;
+            return;
+        }
+
         if (!response.ok) {
+            if (response.status === 401) {
+                // Sessione scaduta, reindirizza al login
+                window.location.href = '/login';
+                return;
+            }
             throw new Error('Errore durante il salvataggio dell\'esercizio');
         }
 
@@ -246,24 +341,22 @@ async function saveExercise() {
 
         // Aggiorna l'array locale degli esercizi
         if (exerciseId) {
-            const idToUpdate = parseInt(exerciseId, 10);
-            const index = exercises.findIndex(ex => ex.id === idToUpdate);
+            const index = exercises.findIndex(ex => ex.id == exerciseId);
             if (index !== -1) {
                 exercises[index] = {
                     ...exercises[index],
                     ...exerciseData,
-                    id: idToUpdate
+                    id: exerciseId
                 };
             }
         } else {
             exercises.push({
                 ...exerciseData,
-                id: parseInt(savedExercise.id, 10)  // Converti anche l'ID del nuovo esercizio
+                id: savedExercise.id
             });
         }
         
-        // Salva n
-        // el localStorage e aggiorna UI
+        // Salva nel localStorage e aggiorna UI
         saveExercises();
         renderExercises();
         
@@ -276,6 +369,11 @@ async function saveExercise() {
 
     } catch (error) {
         console.error('Errore durante il salvataggio:', error);
+        if (error.message.includes('<!doctype')) {
+            // Sessione scaduta, reindirizza al login
+            window.location.href = '/login';
+            return;
+        }
         alert('Errore durante il salvataggio dell\'esercizio');
     }
 }
@@ -330,7 +428,6 @@ async function deleteExercise() {
 function viewExercise(exerciseId) {
     const exercise = exercises.find(ex => ex.id == exerciseId);
     
-    //if (!exercise) return;
     if (!exercise) {
         console.error('Esercizio non trovato:', exerciseId);
         return;
@@ -372,10 +469,10 @@ function viewExercise(exerciseId) {
     noMedia.classList.add('d-none');
     
     if (exercise.mediaType === 'image' && exercise.mediaUrl) {
-        viewImage.src = exercise.mediaUrl;
+        viewImage.src = `/static/${exercise.mediaUrl}`;
         viewImage.classList.remove('d-none');
     } else if (exercise.mediaType === 'video' && exercise.mediaUrl) {
-        viewVideo.src = exercise.mediaUrl;
+        viewVideo.src = `/static/videos/${exercise.mediaUrl}`; // Aggiungiamo il percorso corretto
         viewVideo.classList.remove('d-none');
     } else {
         noMedia.classList.remove('d-none');
@@ -384,13 +481,20 @@ function viewExercise(exerciseId) {
     // Mostrare il modal
     const viewModal = new bootstrap.Modal(document.getElementById('viewExerciseModal'));
     viewModal.show();
-}
 
+    // Aggiungi gestore eventi per quando il modal viene chiuso
+    document.getElementById('viewExerciseModal').addEventListener('hidden.bs.modal', function () {
+        // Ferma il video quando il modal viene chiuso
+        if (viewVideo) {
+            viewVideo.pause();
+            viewVideo.currentTime = 0;
+        }
+    });
+}
 
 // Funzione per aprire il modal di modifica
 function openEditModal(exerciseId) {
     const exercise = exercises.find(ex => ex.id == exerciseId);
-    //if (!exercise) return;
     if (!exercise) {
         console.error('Esercizio non trovato:', exerciseId);
         return;
@@ -410,7 +514,7 @@ function openEditModal(exerciseId) {
     
     // Seleziona gruppi muscolari primari
     exercise.primaryMuscles.forEach(muscle => {
-        if (muscle && typeof muscle === 'string') {  // Controlla che muscle sia definito
+        if (muscle && typeof muscle === 'string') {
             const inputId = `pm-${muscle.toLowerCase().replace(/\s+/g, '')}`;
             const input = document.getElementById(inputId);
             if (input) input.checked = true;
@@ -419,7 +523,7 @@ function openEditModal(exerciseId) {
     
     // Seleziona gruppi muscolari secondari
     exercise.secondaryMuscles.forEach(muscle => {
-        if (muscle && typeof muscle === 'string') {  // Controlla che muscle sia definito
+        if (muscle && typeof muscle === 'string') {
             const inputId = `sm-${muscle.toLowerCase().replace(/\s+/g, '')}`;
             const input = document.getElementById(inputId);
             if (input) input.checked = true;
@@ -438,12 +542,12 @@ function openEditModal(exerciseId) {
     if (exercise.mediaType && exercise.mediaUrl) {
         mediaPreview.classList.remove('d-none');
         
-        if (exercise.mediaType === 'image') {
-            imagePreview.src = exercise.mediaUrl;
-            imagePreview.classList.remove('d-none');
-        } else if (exercise.mediaType === 'video') {
-            videoPreview.src = exercise.mediaUrl;
+        if (exercise.mediaType === 'video') {
+            videoPreview.src = `/static/videos/${exercise.mediaUrl}`; // Aggiungi il percorso corretto
             videoPreview.classList.remove('d-none');
+        } else if (exercise.mediaType === 'image') {
+            imagePreview.src = `/static/${exercise.mediaUrl}`;
+            imagePreview.classList.remove('d-none');
         }
     }
     
@@ -526,10 +630,12 @@ function renderExercises() {
             card.innerHTML = `
                 <div class="card exercise-card shadow-sm h-100">
                     <div class="exercise-image-container">
-                        ${exercise.mediaType === 'image' && exercise.mediaUrl ? 
-                            `<img src="${exercise.mediaUrl}" alt="${exercise.name || 'Esercizio'}" class="card-img-top">` : 
-                            exercise.mediaType === 'video' && exercise.mediaUrl ? 
-                            `<video src="${exercise.mediaUrl}" class="card-img-top"></video>` :
+                        ${exercise.mediaType === 'video' ? 
+                            `<div class="video-thumbnail">
+                                <img src="/static/${exercise.immagine_url}" alt="${exercise.name || 'Esercizio'}" class="card-img-top">
+                            </div>` :
+                            exercise.mediaType === 'image' ? 
+                            `<img src="/static/${exercise.mediaUrl}" alt="${exercise.name || 'Esercizio'}" class="card-img-top">` :
                             `<div class="no-media">
                                 <i class="fas fa-dumbbell fa-3x mb-2"></i>
                                 <div>Nessun media</div>
@@ -580,4 +686,44 @@ function renderExercises() {
             button.addEventListener('click', () => openEditModal(button.dataset.id));
         });
     }
+}
+
+function populateExerciseForms(metadata) {
+    // Popola i gruppi muscolari primari
+    const primaryMuscles = document.getElementById('primary-muscles');
+    primaryMuscles.innerHTML = metadata.muscles.map(muscle => `
+        <div class="form-check">
+            <input class="form-check-input" type="checkbox" 
+                   value="${muscle}" id="pm-${muscle.toLowerCase().replace(/\s+/g, '')}">
+            <label class="form-check-label" for="pm-${muscle.toLowerCase().replace(/\s+/g, '')}">${muscle}</label>
+        </div>
+    `).join('');
+
+    // Popola i gruppi muscolari secondari
+    const secondaryMuscles = document.getElementById('secondary-muscles');
+    secondaryMuscles.innerHTML = metadata.muscles.map(muscle => `
+        <div class="form-check">
+            <input class="form-check-input" type="checkbox" 
+                   value="${muscle}" id="sm-${muscle.toLowerCase().replace(/\s+/g, '')}">
+            <label class="form-check-label" for="sm-${muscle.toLowerCase().replace(/\s+/g, '')}">${muscle}</label>
+        </div>
+    `).join('');
+
+    // Popola il select degli obiettivi
+    const goalSelect = document.getElementById('exercise-goal');
+    goalSelect.innerHTML = `
+        <option value="" selected disabled>Seleziona un obiettivo</option>
+        ${metadata.goals.map(goal => `
+            <option value="${goal}">${goal}</option>
+        `).join('')}
+    `;
+
+    // Popola il select delle difficoltà
+    const difficultySelect = document.getElementById('exercise-difficulty');
+    difficultySelect.innerHTML = `
+        <option value="" selected disabled>Seleziona una difficoltà</option>
+        ${metadata.difficulties.map(difficulty => `
+            <option value="${difficulty}">${difficulty}</option>
+        `).join('')}
+    `;
 }
