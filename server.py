@@ -375,7 +375,7 @@ def change_password():
 @login_required
 @trainer_required
 def macchinari_dashboard():
-    return render_template('machines.html')
+    return render_template('macchinari.html')
 
 @app.route('/add_machines')
 @login_required
