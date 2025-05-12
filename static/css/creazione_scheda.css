@@ -507,3 +507,34 @@ body {
     border-bottom-right-radius: 10px;
     z-index: -1;
 }
+
+/* Aggiungi questi stili alla fine del file */
+#btnBack {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 1rem;
+    font-weight: 500;
+    transition: all 0.3s ease;
+}
+
+#btnBack:hover {
+    transform: translateX(-2px);
+    background-color: #6c757d;
+    color: white;
+}
+
+#btnBack .bi-arrow-left {
+    font-size: 1.1rem;
+}
+
+/* Aggiungi l'icona della freccia */
+.bi-arrow-left::before {
+    display: inline-block;
+    content: "";
+    width: 1em;
+    height: 1em;
+    background-image: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'><path fill='currentColor' d='M15 8a.5.5 0 0 0-.5-.5H2.707l3.147-3.146a.5.5 0 1 0-.708-.708l-4 4a.5.5 0 0 0 0 .708l4 4a.5.5 0 0 0 .708-.708L2.707 8.5H14.5A.5.5 0 0 0 15 8z'/></svg>");
+    background-repeat: no-repeat;
+    background-size: 1rem 1rem;
+}
