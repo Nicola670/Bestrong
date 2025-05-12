@@ -77,6 +77,11 @@ function showMachineDetails(machine) {
     modal.classList.add('open');
 }
 
+// Funzione per chiudere il modal dei dettagli del macchinario
+function closeMachineDetailsModal() {
+    document.getElementById('machineDetailsModal').classList.remove('open');
+}
+
 // Funzione per eliminare un macchinario
 async function deleteMachine() {
     const machineId = parseInt(document.getElementById('machineDetailsModal').getAttribute('data-machine-id'));
@@ -167,6 +172,8 @@ document.addEventListener('DOMContentLoaded', function() {
     document.getElementById('addMachineBtn').addEventListener('click', openAddMachineModal);
     document.getElementById('closeAddModal').addEventListener('click', closeAddMachineModal);
     document.getElementById('cancelAddMachine').addEventListener('click', closeAddMachineModal);
+    document.getElementById('closeDetailsModal').addEventListener('click', closeMachineDetailsModal);
+    document.getElementById('deleteMachineBtn').addEventListener('click', deleteMachine);
     document.getElementById('addMachineForm').addEventListener('submit', async (e) => {
         e.preventDefault();
         const nome = document.getElementById('nome').value;
@@ -190,8 +197,6 @@ document.addEventListener('DOMContentLoaded', function() {
             alert('Errore durante l\'aggiunta del macchinario');
         }
     });
-    document.getElementById('closeDetailsModal').addEventListener('click', closeMachineDetailsModal);
-    document.getElementById('deleteMachineBtn').addEventListener('click', deleteMachine);
     document.getElementById('searchInput').addEventListener('input', (e) => {
         const searchValue = e.target.value.toLowerCase();
         const filteredMachines = machines.filter(machine => 
