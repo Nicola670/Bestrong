@@ -7,7 +7,7 @@ body {
 .exercise-card {
     transition: transform 0.2s, box-shadow 0.2s;
     height: 100%;
-}
+} 
 
 .exercise-card:hover {
     transform: translateY(-5px);
@@ -143,6 +143,35 @@ body {
     border-radius: 0.25rem;
     margin-right: 0.25rem;
     margin-bottom: 0.25rem;
+}
+
+/* Stili per il pulsante indietro */
+#btnBack {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    padding: 0.5rem 1rem;
+    font-weight: 500;
+    transition: all 0.3s ease;
+    line-height: 1;
+}
+
+#btnBack:hover {
+    transform: translateX(-2px);
+    background-color: #6c757d;
+    color: white;
+}
+
+.bi-arrow-left {
+    display: inline-block;
+    width: 20px;
+    height: 20px;
+    vertical-align: -0.125em;
+    background-image: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'><path fill='currentColor' d='M15 8a.5.5 0 0 0-.5-.5H2.707l3.147-3.146a.5.5 0 1 0-.708-.708l-4 4a.5.5 0 0 0 0 .708l4 4a.5.5 0 0 0 .708-.708L2.707 8.5H14.5A.5.5 0 0 0 15 8z'/></svg>");
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: contain;
 }
 
 /* Responsività */

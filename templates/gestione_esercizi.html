@@ -18,9 +18,18 @@
                 Gestione Esercizi Palestra
             </a>
         </div>
-    </nav>
+    </nav> 
 
     <div class="container my-4">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <button id="btnBack" class="btn btn-outline-secondary">
+                <i class="bi bi-arrow-left"></i> Indietro
+            </button>
+            <h2>Esercizi</h2>
+            <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exerciseModal">
+                <i class="fas fa-plus me-2"></i>Nuovo Esercizio
+            </button>
+        </div>
         <div class="row">
             <!-- Filtri -->
             <div class="col-lg-3 mb-4">
@@ -149,13 +158,6 @@
 
             <!-- Lista Esercizi -->
             <div class="col-lg-9">
-                <div class="d-flex justify-content-between align-items-center mb-4">
-                    <h2>Esercizi</h2>
-                    <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exerciseModal">
-                        <i class="fas fa-plus me-2"></i>Nuovo Esercizio
-                    </button>
-                </div>
-
                 <div class="input-group mb-4">
                     <span class="input-group-text"><i class="fas fa-search"></i></span>
                     <input type="text" id="search-input" class="form-control" placeholder="Cerca per nome...">

@@ -7,7 +7,7 @@ document.addEventListener('DOMContentLoaded', () => {
     loadExercises();
     setupEventListeners();
     renderExercises();
-});
+}); 
 
 // Caricare gli esercizi da localStorage
 async function loadExercises() {
@@ -104,6 +104,19 @@ function setupEventListeners() {
         openEditModal(exerciseId);
     });
 
+    document.getElementById('btnBack').addEventListener('click', function() {
+        // Se ci sono modifiche non salvate, chiedi conferma
+        const hasUnsavedChanges = localStorage.getItem('unsaved-changes') === 'true';
+        
+        if (hasUnsavedChanges) {
+            if (confirm('Ci sono modifiche non salvate. Sei sicuro di voler tornare indietro?')) {
+                window.history.back();
+            }
+        } else {
+            window.history.back();
+        }
+    });
+    
     // Reset del form modal quando viene chiuso
     document.getElementById('exerciseModal').addEventListener('hidden.bs.modal', () => {
         document.getElementById('exercise-form').reset();
