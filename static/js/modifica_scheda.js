@@ -341,7 +341,7 @@ async function salvaModifiche() {
             throw new Error('Errore nel salvataggio delle modifiche');
         }
 
-        alert('Modifiche salvate con successo!');
+        // alert('Modifiche salvate con successo!');
         window.location.href = '/dashboard';
         
     } catch (error) {
