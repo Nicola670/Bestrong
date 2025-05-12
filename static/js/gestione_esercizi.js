@@ -464,7 +464,6 @@ function viewExercise(exerciseId) {
 // Funzione per aprire il modal di modifica
 function openEditModal(exerciseId) {
     const exercise = exercises.find(ex => ex.id == exerciseId);
-    //if (!exercise) return;
     if (!exercise) {
         console.error('Esercizio non trovato:', exerciseId);
         return;
@@ -484,7 +483,7 @@ function openEditModal(exerciseId) {
     
     // Seleziona gruppi muscolari primari
     exercise.primaryMuscles.forEach(muscle => {
-        if (muscle && typeof muscle === 'string') {  // Controlla che muscle sia definito
+        if (muscle && typeof muscle === 'string') {
             const inputId = `pm-${muscle.toLowerCase().replace(/\s+/g, '')}`;
             const input = document.getElementById(inputId);
             if (input) input.checked = true;
@@ -493,7 +492,7 @@ function openEditModal(exerciseId) {
     
     // Seleziona gruppi muscolari secondari
     exercise.secondaryMuscles.forEach(muscle => {
-        if (muscle && typeof muscle === 'string') {  // Controlla che muscle sia definito
+        if (muscle && typeof muscle === 'string') {
             const inputId = `sm-${muscle.toLowerCase().replace(/\s+/g, '')}`;
             const input = document.getElementById(inputId);
             if (input) input.checked = true;
@@ -512,12 +511,12 @@ function openEditModal(exerciseId) {
     if (exercise.mediaType && exercise.mediaUrl) {
         mediaPreview.classList.remove('d-none');
         
-        if (exercise.mediaType === 'image') {
-            imagePreview.src = exercise.mediaUrl;
-            imagePreview.classList.remove('d-none');
-        } else if (exercise.mediaType === 'video') {
-            videoPreview.src = exercise.mediaUrl;
+        if (exercise.mediaType === 'video') {
+            videoPreview.src = `/static/videos/${exercise.mediaUrl}`; // Aggiungi il percorso corretto
             videoPreview.classList.remove('d-none');
+        } else if (exercise.mediaType === 'image') {
+            imagePreview.src = `/static/${exercise.mediaUrl}`;
+            imagePreview.classList.remove('d-none');
         }
     }
     
@@ -603,7 +602,6 @@ function renderExercises() {
                         ${exercise.mediaType === 'video' ? 
                             `<div class="video-thumbnail">
                                 <img src="/static/${exercise.immagine_url}" alt="${exercise.name || 'Esercizio'}" class="card-img-top">
-                                <div class="play-icon"><i class="fas fa-play"></i></div>
                             </div>` :
                             exercise.mediaType === 'image' ? 
                             `<img src="/static/${exercise.mediaUrl}" alt="${exercise.name || 'Esercizio'}" class="card-img-top">` :
