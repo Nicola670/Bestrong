@@ -41,6 +41,20 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
     
+    document.getElementById('btnBack').addEventListener('click', function() {
+        // Se ci sono modifiche non salvate, chiedi conferma
+        const eserciziAggiunti = document.querySelectorAll('.esercizio-scheda').length > 0;
+        
+        if (eserciziAggiunti) {
+            if (confirm('Ci sono modifiche non salvate. Sei sicuro di voler tornare indietro?')) {
+                window.history.back();
+            }
+        } else {
+            window.history.back();
+        }
+    });
+
+    
     // Imposta l'evento di salvataggio della scheda
     document.getElementById('salvaScheda').addEventListener('click', salvaScheda);
     
