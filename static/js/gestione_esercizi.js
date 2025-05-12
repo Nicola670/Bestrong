@@ -85,22 +85,6 @@ async function loadExercises() {
     if (savedExercises) {
         exercises = JSON.parse(savedExercises);
     } else {
-
-        /*
-        // Esempi di esercizi predefiniti per demo
-        exercises = [
-            {
-                id: 'ex1',
-                name: 'Panca Piana',
-                primaryMuscles: ['Pettorali', 'Tricipiti'],
-                secondaryMuscles: ['Spalle'],
-                goal: 'Massa muscolare',
-                difficulty: 'Medio',
-                description: 'Sdraiati sulla panca con i piedi ben piantati a terra. Afferra il bilanciere con una presa leggermente più ampia delle spalle. Abbassa il bilanciere al petto controllando il movimento, quindi spingi verso l\'alto fino a distendere completamente le braccia.',
-                mediaType: 'image',
-                mediaUrl: '/api/placeholder/400/300'
-            }
-        ];*/
         try {
             const response = await fetch(`${ip_server}/api/exercises`);
             if (!response.ok) {
@@ -112,7 +96,8 @@ async function loadExercises() {
                 name: ex.nome,
                 description: ex.descrizione,
                 mediaType: ex.video_url ? 'video' : (ex.immagine_url ? 'image' : null),
-                mediaUrl: ex.video_url || ex.immagine_url || null,
+                mediaUrl: ex.video_url,
+                immagine_url: ex.immagine_url,
                 goal: ex.obiettivo,
                 difficulty: ex.difficolta,
                 primaryMuscles: ex.muscoli_primari || [],
@@ -125,9 +110,6 @@ async function loadExercises() {
             document.getElementById('no-exercises').textContent = 'Errore nel caricamento degli esercizi. Riprova più tardi.';
             document.getElementById('no-exercises').classList.remove('d-none');
         }
-    
-        
-
     }
 }
 
@@ -611,10 +593,13 @@ function renderExercises() {
             card.innerHTML = `
                 <div class="card exercise-card shadow-sm h-100">
                     <div class="exercise-image-container">
-                        ${exercise.mediaType === 'image' && exercise.mediaUrl ? 
-                            `<img src="${exercise.mediaUrl}" alt="${exercise.name || 'Esercizio'}" class="card-img-top">` : 
-                            exercise.mediaType === 'video' && exercise.mediaUrl ? 
-                            `<video src="${exercise.mediaUrl}" class="card-img-top"></video>` :
+                        ${exercise.mediaType === 'video' ? 
+                            `<div class="video-thumbnail">
+                                <img src="/static/${exercise.immagine_url}" alt="${exercise.name || 'Esercizio'}" class="card-img-top">
+                                <div class="play-icon"><i class="fas fa-play"></i></div>
+                            </div>` :
+                            exercise.mediaType === 'image' ? 
+                            `<img src="/static/${exercise.mediaUrl}" alt="${exercise.name || 'Esercizio'}" class="card-img-top">` :
                             `<div class="no-media">
                                 <i class="fas fa-dumbbell fa-3x mb-2"></i>
                                 <div>Nessun media</div>
