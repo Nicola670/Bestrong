@@ -98,7 +98,7 @@ def initialize_db():
 
     # --- UTENTI ---
     # is_trainer = TRUE se è un personal trainer
-    # varchar in sqlite è TEXTclau
+    # varchar in sqlite è TEXT
     cursor.execute("""
         CREATE TABLE IF NOT EXISTS Utenti (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -231,70 +231,6 @@ def populate_database():
     cursor = conn.cursor()
     
     try:
-        # Verifica se il trainer esiste già
-        cursor.execute("SELECT id FROM Utenti WHERE username = 'admin' AND is_trainer = 1")
-        trainer = cursor.fetchone()
-        
-        if trainer is None:
-            # Se il trainer non esiste, crealo con tutti i campi obbligatori
-            hashed_password = bcrypt.hashpw("test123".encode('utf-8'), bcrypt.gensalt())
-            cursor.execute("""
-                INSERT INTO Utenti (
-                    username, 
-                    password_hash, 
-                    is_trainer,
-                    surname,
-                    email,
-                    phone,
-                    date_of_birth
-                )
-                VALUES (?, ?, ?, ?, ?, ?, ?)
-            """, (
-                'admin',
-                hashed_password,
-                1,
-                'Admin',                    
-                'admin@bestrong.com',     
-                '1234567890',              
-                '2000-01-01'               
-            ))
-            conn.commit()
-            
-            # Ora prendi l'ID del trainer appena creato
-            cursor.execute("SELECT id FROM Utenti WHERE username = 'admin' AND is_trainer = 1")
-            trainer = cursor.fetchone()
-            
-        trainer_id = trainer[0]
-
-        # Verifica se il cliente esiste già
-        cursor.execute("SELECT id FROM Utenti WHERE username = 'cliente'")
-        test_user = cursor.fetchone()
-        
-        if test_user is None:
-            # Creazione utente di test con credenziali diverse
-            test_password = bcrypt.hashpw("test123".encode('utf-8'), bcrypt.gensalt())
-            cursor.execute("""
-                INSERT INTO Utenti (
-                    username,
-                    password_hash,
-                    is_trainer,
-                    surname,
-                    email,
-                    phone,
-                    date_of_birth
-                )
-                VALUES (?, ?, ?, ?, ?, ?, ?)
-            """, (
-                'cliente',
-                test_password,
-                0,                          
-                'TestUser',                 
-                'cliente@bestrong.com',     # email diversa
-                '0987654321',              # telefono diverso
-                '1995-05-15'               
-            ))
-            conn.commit()
-
         # --- INSERIMENTO GRUPPI MUSCOLARI ---
         muscle_groups = [
             'Spalle',
@@ -341,113 +277,6 @@ def populate_database():
         
         for diff in difficulties:
             cursor.execute("INSERT OR IGNORE INTO Difficolta (livello) VALUES (?)", (diff,))
-
-        # --- INSERIMENTO MACCHINARI ---
-        machines = [
-            'Panca piana',
-            'Lat machine',
-            'Leg press',
-            'Chest press',
-            'Shoulder press',
-            'Cyclette',
-            'Tapis roulant',
-            'Cable machine'
-        ]
-        
-        for machine in machines:
-            cursor.execute("INSERT OR IGNORE INTO Macchinari (nome) VALUES (?)", (machine,))
-
-        # --- INSERIMENTO ESERCIZI ---
-        exercises = [
-            ('Panca Piana', 'Distendersi sulla panca e spingere il bilanciere', 'AffondiBulgari.mp4', 1, 2),
-            ('Trazioni', 'Trazione alla sbarra', 'AffondiBulgari.mp4', 1, 3),
-            ('Military Press', 'Press sopra la testa', 'AffondiBulgari.mp4', 1, 2),
-            ('Squat', 'Piegamenti gambe con bilanciere', 'AffondiBulgari.mp4', 3, 2),
-            ('Curl Bicipiti', 'Curl con manubri', 'AffondiBulgari.mp4', 1, 1),
-            ('Crunch', 'Addominali a terra', 'AffondiBulgari.mp4', 2, 1)
-        ]
-
-        # Definisci i percorsi delle directory
-        videos_dir = os.path.join('static', 'videos')
-        thumbnails_dir = os.path.join('static', 'thumbnails')
-        
-        # Crea le directory se non esistono
-        os.makedirs(videos_dir, exist_ok=True)
-        os.makedirs(thumbnails_dir, exist_ok=True)
-        
-        for nome, descrizione, video_url, obiettivo_id, difficolta_id in exercises:
-            # Genera il percorso del video e della thumbnail
-            video_path = os.path.join(videos_dir, video_url)
-            thumbnail_name = os.path.splitext(video_url)[0] + '.jpg'
-            thumbnail_path = os.path.join(thumbnails_dir, thumbnail_name)
-            
-            # Genera la thumbnail se il video esiste
-            if os.path.exists(video_path):
-                generate_thumbnail(video_path, thumbnail_path)
-                relative_thumbnail_path = os.path.join('thumbnails', thumbnail_name)
-            else:
-                relative_thumbnail_path = None
-
-            # Inserisci l'esercizio con il percorso della thumbnail
-            cursor.execute("""
-                INSERT OR IGNORE INTO Esercizi (
-                    nome, descrizione, video_url, immagine_url, obiettivo_id, difficolta_id
-                )
-                VALUES (?, ?, ?, ?, ?, ?)
-            """, (nome, descrizione, video_url, relative_thumbnail_path, obiettivo_id, difficolta_id))
-
-        # --- INSERIMENTO SCHEDE ---
-        # Prima otteniamo alcuni ID necessari
-        cursor.execute("SELECT id FROM Utenti WHERE is_trainer = TRUE LIMIT 1")
-        trainer_id = cursor.fetchone()[0]
-        
-        cursor.execute("SELECT id FROM Utenti WHERE is_trainer = FALSE AND username != 'admin' LIMIT 2")
-        client_ids = [row[0] for row in cursor.fetchall()]
-
-        # Crea solo 3 schede di test per ogni cliente
-        for client_id in client_ids:
-            for _ in range(3):  # Crea 3 schede invece di tutte quelle duplicate
-                cursor.execute("""
-                    INSERT INTO Schede (cliente_id, trainer_id, creato, aggiornato)
-                    VALUES (?, ?, datetime('now'), datetime('now'))
-                """, (client_id, trainer_id))
-                
-                scheda_id = cursor.lastrowid
-                
-                # Aggiungi esercizi diversi per ogni scheda
-                esercizi_scheda = [
-                    (1, 1, 4, 12, 60, None),  # Panca Piana
-                    (2, None, 3, 10, 90, None),  # Trazioni
-                    (4, 3, 4, 15, 60, 60.0),  # Squat
-                    (5, None, 3, 12, 60, None),  # Curl Bicipiti
-                    (6, None, 3, 20, 45, None)   # Crunch
-                ]
-                
-                # Prendi solo 3 esercizi casuali per ogni scheda
-                import random
-                selected_exercises = random.sample(esercizi_scheda, 3)
-                
-                for es_id, mac_id, serie, reps, rec, peso in selected_exercises:
-                    cursor.execute("""
-                        INSERT INTO Schede_Esercizi 
-                        (scheda_id, esercizio_id, macchinario_id, serie, ripetizioni, recupero_secondi, peso_kg)
-                        VALUES (?, ?, ?, ?, ?, ?, ?)
-                    """, (scheda_id, es_id, mac_id, serie, reps, rec, peso))
-
-        # Aggiungi le associazioni esercizi-muscoli
-        esercizi_muscoli = [
-            (1, 2, 'primario'),   # Panca Piana -> Pettorali
-            (2, 12, 'primario'),  # Trazioni -> Dorsali
-            (4, 7, 'primario'),   # Squat -> Quadricipiti
-            (5, 3, 'primario'),   # Curl Bicipiti -> Bicipiti
-            (6, 5, 'primario')    # Crunch -> Addominali
-        ]
-        
-        for es_id, musc_id, tipo in esercizi_muscoli:
-            cursor.execute("""
-                INSERT INTO Esercizi_Muscoli (esercizio_id, muscolo_id, tipo)
-                VALUES (?, ?, ?)
-            """, (es_id, musc_id, tipo))
 
         conn.commit()
     except Exception as e:

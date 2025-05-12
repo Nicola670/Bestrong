@@ -263,7 +263,7 @@ def add_macchinari(nome):
         cursor = conn.cursor()
 
         cursor.execute("""
-            INSERT INTO Macchinari
+            INSERT OR IGNORE INTO Macchinari
             (nome)
             VALUES
             (?)

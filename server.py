@@ -9,6 +9,9 @@ import bcrypt
 from functools import wraps
 import sqlite3
 
+# da rimuovere
+from populate_temp import populate_temp
+
 app = Flask(__name__)
 
 # Chiave segreta più sicura generata in modo casuale
@@ -421,6 +424,7 @@ if __name__ == "__main__":
     # Inizializza e popola il database
     initialize_db()
     populate_database()
+    populate_temp()
     app.run(port=5001)
     
     ''' https con certificato autofirmato
