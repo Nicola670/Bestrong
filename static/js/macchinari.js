@@ -1,79 +1,26 @@
 // Array di macchinari demo per il prototipo
-let machines = [
-    {
-        id: 1,
-        nome: "Leg Press",
-        tipologia: "forza",
-        parteCorpo: "gambe",
-        note: "Macchina molto utilizzata, verificare usura cavi ogni 3 mesi."
-    },
-    {
-        id: 2,
-        nome: "Tapis Roulant",
-        tipologia: "cardio",
-        parteCorpo: "total",
-        note: "Utilizzato principalmente nelle ore mattutine, monitorare il motore."
-    },
-    {
-        id: 3,
-        nome: "Chest Press",
-        tipologia: "isotonica",
-        parteCorpo: "petto",
-        note: "Presenta rumore anomalo durante l'utilizzo, da controllare."
-    },
-    {
-        id: 4,
-        nome: "Lat Machine",
-        tipologia: "isotonica",
-        parteCorpo: "schiena",
-        note: ""
-    },
-    {
-        id: 5,
-        nome: "Shoulder Press",
-        tipologia: "forza",
-        parteCorpo: "spalle",
-        note: "Preferito dagli utenti esperti, molto stabile."
-    },
-    {
-        id: 6,
-        nome: "Cyclette",
-        tipologia: "cardio",
-        parteCorpo: "total",
-        note: "Ideale per riscaldamento, molto silenziosa."
-    },
-    {
-        id: 7,
-        nome: "TRX",
-        tipologia: "funzionale",
-        parteCorpo: "total",
-        note: "Controllare periodicamente l'usura delle cinghie."
-    },
-    {
-        id: 8,
-        nome: "Curl Machine",
-        tipologia: "isotonica",
-        parteCorpo: "braccia",
-        note: ""
-    }
-];
+let machines = [];
 
-// Funzione per salvare i dati nel localStorage
-function saveMachines() {
-    localStorage.setItem('machines', JSON.stringify(machines));
-}
-
-// Funzione per caricare i dati dal localStorage
-function loadMachines() {
-    const savedMachines = localStorage.getItem('machines');
-    if (savedMachines) {
-        machines = JSON.parse(savedMachines);
+// Funzione per caricare i dati dal server
+async function loadMachines() {
+    try {
+        const response = await fetch('/api/machines');
+        if (!response.ok) throw new Error('Errore nel caricamento dei macchinari');
+        machines = await response.json();
+        populateMachinesGrid();
+    } catch (error) {
+        console.error('Errore:', error);
+        document.getElementById('machinesGrid').innerHTML = `
+            <div class="loading">
+                <i class="fas fa-exclamation-circle"></i>
+                <span>Errore nel caricamento dei macchinari</span>
+            </div>
+        `;
     }
 }
 
 // Funzione per generare l'HTML della card di un macchinario
 function generateMachineCard(machine) {
-    // Ottiene le prime lettere del nome del macchinario per l'avatar
     const initials = machine.nome.split(' ').map(word => word[0]).join('');
     
     return `
@@ -83,47 +30,57 @@ function generateMachineCard(machine) {
             </div>
             <div class="client-info">
                 <h3>${machine.nome}</h3>
-                <span class="client-tag tag-${machine.tipologia}">${capitalizeFirstLetter(machine.tipologia)}</span>
-                <span class="client-tag tag-${machine.parteCorpo}">${capitalizeFirstLetter(machine.parteCorpo)}</span>
             </div>
         </div>
     `;
 }
 
-// Funzione per rendere maiuscola la prima lettera
-function capitalizeFirstLetter(string) {
-    return string.charAt(0).toUpperCase() + string.slice(1);
+// Funzione per aggiungere un nuovo macchinario
+async function addNewMachine(event) {
+    event.preventDefault();
+    
+    const nome = document.getElementById('nome').value;
+    
+    try {
+        const response = await fetch('/api/machines', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ nome })
+        });
+
+        if (!response.ok) throw new Error('Errore nell\'aggiunta del macchinario');
+
+        await loadMachines();
+        closeAddMachineModal();
+        alert("Macchinario aggiunto con successo!");
+    } catch (error) {
+        console.error('Errore:', error);
+        alert("Errore durante l'aggiunta del macchinario");
+    }
 }
 
-// Funzione per popolare la griglia dei macchinari
-function populateMachinesGrid(machinesList = machines) {
-    const machinesGrid = document.getElementById('machinesGrid');
+// Funzione per eliminare un macchinario
+async function deleteMachine() {
+    const machineId = parseInt(document.getElementById('machineDetailsModal').getAttribute('data-machine-id'));
     
-    // Rimuovi il loader
-    machinesGrid.innerHTML = '';
-    
-    if (machinesList.length === 0) {
-        machinesGrid.innerHTML = `
-            <div class="loading">
-                <i class="fas fa-exclamation-circle"></i>
-                <span>Nessun macchinario trovato</span>
-            </div>
-        `;
-        return;
+    if (confirm("Sei sicuro di voler eliminare questo macchinario?")) {
+        try {
+            const response = await fetch(`/api/machines/${machineId}`, {
+                method: 'DELETE'
+            });
+
+            if (!response.ok) throw new Error('Errore nella cancellazione del macchinario');
+
+            await loadMachines();
+            closeMachineDetailsModal();
+            alert("Macchinario eliminato con successo!");
+        } catch (error) {
+            console.error('Errore:', error);
+            alert("Errore durante l'eliminazione del macchinario");
+        }
     }
-    
-    // Aggiungi le card dei clienti
-    machinesList.forEach(machine => {
-        machinesGrid.innerHTML += generateMachineCard(machine);
-    });
-    
-    // Aggiungi event listener alle card
-    document.querySelectorAll('.client-card').forEach(card => {
-        card.addEventListener('click', function() {
-            const machineId = parseInt(this.getAttribute('data-id'));
-            openMachineDetails(machineId);
-        });
-    });
 }
 
 // Funzione per aprire i dettagli di un macchinario
@@ -131,160 +88,16 @@ function openMachineDetails(machineId) {
     const machine = machines.find(m => m.id === machineId);
     if (!machine) return;
     
-    // Popola i dettagli nel modal
     document.getElementById('machineDetailsName').textContent = `Dettagli: ${machine.nome}`;
     document.getElementById('machineFullName').textContent = machine.nome;
-    document.getElementById('machineBodyPart').textContent = capitalizeFirstLetter(machine.parteCorpo);
-    document.getElementById('machineType').textContent = capitalizeFirstLetter(machine.tipologia);
-    document.getElementById('machineBodyPartDetail').textContent = capitalizeFirstLetter(machine.parteCorpo);
-    document.getElementById('machineNotes').value = machine.note || '';
     
-    // Gestione icona in base alla tipologia
-    let iconClass = 'fa-dumbbell';
-    if (machine.tipologia === 'cardio') iconClass = 'fa-running';
-    else if (machine.tipologia === 'funzionale') iconClass = 'fa-users';
+    document.getElementById('machineIcon').innerHTML = `<i class="fas fa-dumbbell"></i>`;
     
-    document.getElementById('machineIcon').innerHTML = `<i class="fas ${iconClass}"></i>`;
-    
-    // Salva l'ID del macchinario corrente per operazioni successive
     document.getElementById('machineDetailsModal').setAttribute('data-machine-id', machineId);
-    
-    // Apri il modal
     document.getElementById('machineDetailsModal').classList.add('open');
 }
 
-// Funzione per chiudere il modal dei dettagli
-function closeMachineDetailsModal() {
-    document.getElementById('machineDetailsModal').classList.remove('open');
-}
-
-// Funzione per aprire il modal di aggiunta macchinario
-function openAddMachineModal() {
-    // Resetta il form
-    document.getElementById('addMachineForm').reset();
-    
-    // Apri il modal
-    document.getElementById('addMachineModal').classList.add('open');
-}
-
-// Funzione per chiudere il modal di aggiunta macchinario
-function closeAddMachineModal() {
-    document.getElementById('addMachineModal').classList.remove('open');
-}
-
-// Funzione per aggiungere un nuovo macchinario
-function addNewMachine(event) {
-    event.preventDefault();
-    
-    // Raccogli i dati dal form
-    const nome = document.getElementById('nome').value;
-    const tipologia = document.getElementById('tipologia').value;
-    const parteCorpo = document.getElementById('parteCorpo').value;
-    
-    // Genera un nuovo ID incrementale
-    const newId = machines.length > 0 ? Math.max(...machines.map(m => m.id)) + 1 : 1;
-    
-    // Crea il nuovo oggetto macchinario
-    const newMachine = {
-        id: newId,
-        nome: nome,
-        tipologia: tipologia,
-        parteCorpo: parteCorpo,
-        note: ""
-    };
-    
-    // Aggiungi il macchinario all'array
-    machines.push(newMachine);
-    
-    // Salva i dati
-    saveMachines();
-    
-    // Aggiorna la griglia e chiudi il modal
-    populateMachinesGrid();
-    closeAddMachineModal();
-    
-    // Mostra un messaggio di conferma
-    alert("Macchinario aggiunto con successo!");
-}
-
-// Funzione per eliminare un macchinario
-function deleteMachine() {
-    const machineId = parseInt(document.getElementById('machineDetailsModal').getAttribute('data-machine-id'));
-    
-    if (confirm("Sei sicuro di voler eliminare questo macchinario?")) {
-        // Trova l'indice del macchinario nell'array
-        const index = machines.findIndex(m => m.id === machineId);
-        
-        if (index !== -1) {
-            // Rimuovi il macchinario dall'array
-            machines.splice(index, 1);
-            
-            // Salva i dati
-            saveMachines();
-            
-            // Aggiorna la griglia e chiudi il modal
-            populateMachinesGrid();
-            closeMachineDetailsModal();
-            
-            // Mostra un messaggio di conferma
-            alert("Macchinario eliminato con successo!");
-        }
-    }
-}
-
-// Funzione per salvare le note di un macchinario
-function saveMachineNotes() {
-    const machineId = parseInt(document.getElementById('machineDetailsModal').getAttribute('data-machine-id'));
-    const notes = document.getElementById('machineNotes').value;
-    
-    // Trova l'indice del macchinario nell'array
-    const index = machines.findIndex(m => m.id === machineId);
-    
-    if (index !== -1) {
-        // Aggiorna le note
-        machines[index].note = notes;
-        
-        // Salva i dati
-        saveMachines();
-        
-        // Mostra un messaggio di conferma
-        alert("Note salvate con successo!");
-    }
-}
-
-// Funzione per modificare un macchinario
-function editMachine() {
-    const machineId = parseInt(document.getElementById('machineDetailsModal').getAttribute('data-machine-id'));
-    const machine = machines.find(m => m.id === machineId);
-    
-    if (!machine) return;
-    
-    // Richiedi i nuovi dati (in un'app reale useresti un form)
-    const nome = prompt("Nome macchinario:", machine.nome);
-    if (nome === null) return;
-    
-    // Trova l'indice del macchinario nell'array
-    const index = machines.findIndex(m => m.id === machineId);
-    
-    if (index !== -1) {
-        // Aggiorna le informazioni
-        machines[index].nome = nome;
-        
-        // Salva i dati
-        saveMachines();
-        
-        // Chiudi il modal dei dettagli
-        closeMachineDetailsModal();
-        
-        // Aggiorna la griglia
-        populateMachinesGrid();
-        
-        // Mostra un messaggio di conferma
-        alert("Macchinario aggiornato con successo!");
-    }
-}
-
-// Funzione per filtrare i macchinari in base alla ricerca
+// Funzione per filtrare i macchinari
 function searchMachines(query) {
     if (!query) {
         populateMachinesGrid();
@@ -292,11 +105,8 @@ function searchMachines(query) {
     }
     
     query = query.toLowerCase();
-    
     const filteredMachines = machines.filter(machine => 
-        machine.nome.toLowerCase().includes(query) ||
-        machine.tipologia.toLowerCase().includes(query) ||
-        machine.parteCorpo.toLowerCase().includes(query)
+        machine.nome.toLowerCase().includes(query)
     );
     
     populateMachinesGrid(filteredMachines);
@@ -333,41 +143,17 @@ function setupTabs() {
 
 // Inizializzazione
 document.addEventListener('DOMContentLoaded', function() {
-    // Carica i dati dal localStorage
     loadMachines();
-    
-    // Popola la griglia dei macchinari
-    populateMachinesGrid();
-    
-    // Setup dei tab
     setupTabs();
     
-    // Event listener per il toggle della sidebar
+    // Event listeners
     document.getElementById('menuToggle').addEventListener('click', toggleSidebar);
-    
-    // Event listener per aprire il modal di aggiunta macchinario
     document.getElementById('addMachineBtn').addEventListener('click', openAddMachineModal);
-    
-    // Event listener per chiudere il modal di aggiunta macchinario
     document.getElementById('closeAddModal').addEventListener('click', closeAddMachineModal);
     document.getElementById('cancelAddMachine').addEventListener('click', closeAddMachineModal);
-    
-    // Event listener per aggiungere un nuovo macchinario
     document.getElementById('addMachineForm').addEventListener('submit', addNewMachine);
-    
-    // Event listener per chiudere il modal dei dettagli
     document.getElementById('closeDetailsModal').addEventListener('click', closeMachineDetailsModal);
-    
-    // Event listener per eliminare un macchinario
     document.getElementById('deleteMachineBtn').addEventListener('click', deleteMachine);
-    
-    // Event listener per salvare le note
-    document.getElementById('saveNotesBtn').addEventListener('click', saveMachineNotes);
-    
-    // Event listener per modificare un macchinario
-    document.getElementById('editMachineBtn').addEventListener('click', editMachine);
-    
-    // Event listener per la ricerca
     document.getElementById('searchInput').addEventListener('input', function() {
         searchMachines(this.value);
     });

@@ -853,3 +853,57 @@ def upload_media():
         return jsonify({'filename': filename})
         
     return jsonify({'error': 'Tipo file non permesso'}), 400
+
+@api.route('/api/machines', methods=['GET'])
+@login_required
+def get_machines():
+    conn = sqlite3.connect(DB_FILE)
+    cursor = conn.cursor()
+    
+    try:
+        cursor.execute("SELECT id, nome FROM Macchinari ORDER BY nome")
+        machines = cursor.fetchall()
+        return jsonify([{
+            'id': m[0],
+            'nome': m[1]
+        } for m in machines])
+    except Exception as e:
+        print(f"Errore nel recupero dei macchinari: {e}")
+        return jsonify({'error': str(e)}), 500
+    finally:
+        conn.close()
+
+@api.route('/api/machines', methods=['POST'])
+@login_required
+def add_machine():
+    data = request.json
+    conn = sqlite3.connect(DB_FILE)
+    cursor = conn.cursor()
+    
+    try:
+        cursor.execute("INSERT INTO Macchinari (nome) VALUES (?)", (data['nome'],))
+        conn.commit()
+        return jsonify({'id': cursor.lastrowid, 'nome': data['nome']}), 201
+    except Exception as e:
+        conn.rollback()
+        print(f"Errore nell'aggiunta del macchinario: {e}")
+        return jsonify({'error': str(e)}), 500
+    finally:
+        conn.close()
+
+@api.route('/api/machines/<int:machine_id>', methods=['DELETE'])
+@login_required
+def delete_machine(machine_id):
+    conn = sqlite3.connect(DB_FILE)
+    cursor = conn.cursor()
+    
+    try:
+        cursor.execute("DELETE FROM Macchinari WHERE id = ?", (machine_id,))
+        conn.commit()
+        return jsonify({'success': True})
+    except Exception as e:
+        conn.rollback()
+        print(f"Errore nella cancellazione del macchinario: {e}")
+        return jsonify({'error': str(e)}), 500
+    finally:
+        conn.close()
