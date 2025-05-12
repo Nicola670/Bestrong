@@ -397,7 +397,6 @@ async function deleteExercise() {
 function viewExercise(exerciseId) {
     const exercise = exercises.find(ex => ex.id == exerciseId);
     
-    //if (!exercise) return;
     if (!exercise) {
         console.error('Esercizio non trovato:', exerciseId);
         return;
@@ -439,10 +438,10 @@ function viewExercise(exerciseId) {
     noMedia.classList.add('d-none');
     
     if (exercise.mediaType === 'image' && exercise.mediaUrl) {
-        viewImage.src = exercise.mediaUrl;
+        viewImage.src = `/static/${exercise.mediaUrl}`;
         viewImage.classList.remove('d-none');
     } else if (exercise.mediaType === 'video' && exercise.mediaUrl) {
-        viewVideo.src = exercise.mediaUrl;
+        viewVideo.src = `/static/videos/${exercise.mediaUrl}`; // Aggiungiamo il percorso corretto
         viewVideo.classList.remove('d-none');
     } else {
         noMedia.classList.remove('d-none');
@@ -451,8 +450,16 @@ function viewExercise(exerciseId) {
     // Mostrare il modal
     const viewModal = new bootstrap.Modal(document.getElementById('viewExerciseModal'));
     viewModal.show();
-}
 
+    // Aggiungi gestore eventi per quando il modal viene chiuso
+    document.getElementById('viewExerciseModal').addEventListener('hidden.bs.modal', function () {
+        // Ferma il video quando il modal viene chiuso
+        if (viewVideo) {
+            viewVideo.pause();
+            viewVideo.currentTime = 0;
+        }
+    });
+}
 
 // Funzione per aprire il modal di modifica
 function openEditModal(exerciseId) {
