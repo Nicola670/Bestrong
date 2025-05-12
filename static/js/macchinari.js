@@ -1,4 +1,4 @@
-// Array di macchinari demo per il prototipo
+// Array per memorizzare i macchinari
 let machines = [];
 
 // Funzione per caricare i dati dal server
@@ -7,7 +7,7 @@ async function loadMachines() {
         const response = await fetch('/api/machines');
         if (!response.ok) throw new Error('Errore nel caricamento dei macchinari');
         machines = await response.json();
-        populateMachinesGrid();
+        populateMachinesGrid(machines);
     } catch (error) {
         console.error('Errore:', error);
         document.getElementById('machinesGrid').innerHTML = `
@@ -19,46 +19,62 @@ async function loadMachines() {
     }
 }
 
-// Funzione per generare l'HTML della card di un macchinario
-function generateMachineCard(machine) {
-    const initials = machine.nome.split(' ').map(word => word[0]).join('');
-    
-    return `
-        <div class="client-card" data-id="${machine.id}">
-            <div class="client-avatar">
-                <span>${initials}</span>
+// Funzione per popolare la griglia dei macchinari
+function populateMachinesGrid(machinesData) {
+    const machinesGrid = document.getElementById('machinesGrid');
+    machinesGrid.innerHTML = '';
+
+    if (machinesData.length === 0) {
+        machinesGrid.innerHTML = `
+            <div class="no-results">
+                <i class="fas fa-search"></i>
+                <p>Nessun macchinario trovato</p>
             </div>
-            <div class="client-info">
-                <h3>${machine.nome}</h3>
-            </div>
-        </div>
-    `;
+        `;
+        return;
+    }
+
+    machinesData.forEach(machine => {
+        const card = createMachineCard(machine);
+        machinesGrid.appendChild(card);
+    });
 }
 
-// Funzione per aggiungere un nuovo macchinario
-async function addNewMachine(event) {
-    event.preventDefault();
-    
-    const nome = document.getElementById('nome').value;
-    
-    try {
-        const response = await fetch('/api/machines', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({ nome })
-        });
+// Funzione per creare una card macchinario
+function createMachineCard(machine) {
+    const card = document.createElement('div');
+    card.className = 'client-card';
+    card.dataset.machineId = machine.id;
 
-        if (!response.ok) throw new Error('Errore nell\'aggiunta del macchinario');
+    card.innerHTML = `
+        <div class="client-avatar">
+            <i class="fas fa-dumbbell"></i>
+        </div>
+        <div class="client-info">
+            <h3>${machine.nome}</h3>
+        </div>
+    `;
 
-        await loadMachines();
-        closeAddMachineModal();
-        alert("Macchinario aggiunto con successo!");
-    } catch (error) {
-        console.error('Errore:', error);
-        alert("Errore durante l'aggiunta del macchinario");
-    }
+    card.addEventListener('click', () => showMachineDetails(machine));
+    return card;
+}
+
+// Funzione per mostrare il modal di aggiunta macchinario
+function openAddMachineModal() {
+    document.getElementById('addMachineModal').classList.add('open');
+}
+
+// Funzione per chiudere il modal di aggiunta macchinario
+function closeAddMachineModal() {
+    document.getElementById('addMachineModal').classList.remove('open');
+    document.getElementById('addMachineForm').reset();
+}
+
+// Funzione per mostrare i dettagli del macchinario
+function showMachineDetails(machine) {
+    const modal = document.getElementById('machineDetailsModal');
+    document.getElementById('machineFullName').textContent = machine.nome;
+    modal.classList.add('open');
 }
 
 // Funzione per eliminare un macchinario
@@ -100,7 +116,7 @@ function openMachineDetails(machineId) {
 // Funzione per filtrare i macchinari
 function searchMachines(query) {
     if (!query) {
-        populateMachinesGrid();
+        populateMachinesGrid(machines);
         return;
     }
     
@@ -151,11 +167,50 @@ document.addEventListener('DOMContentLoaded', function() {
     document.getElementById('addMachineBtn').addEventListener('click', openAddMachineModal);
     document.getElementById('closeAddModal').addEventListener('click', closeAddMachineModal);
     document.getElementById('cancelAddMachine').addEventListener('click', closeAddMachineModal);
-    document.getElementById('addMachineForm').addEventListener('submit', addNewMachine);
+    document.getElementById('addMachineForm').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const nome = document.getElementById('nome').value;
+        
+        try {
+            const response = await fetch('/api/machines', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ nome })
+            });
+
+            if (!response.ok) throw new Error('Errore nell\'aggiunta del macchinario');
+
+            await loadMachines();
+            closeAddMachineModal();
+            alert('Macchinario aggiunto con successo!');
+        } catch (error) {
+            console.error('Errore:', error);
+            alert('Errore durante l\'aggiunta del macchinario');
+        }
+    });
     document.getElementById('closeDetailsModal').addEventListener('click', closeMachineDetailsModal);
     document.getElementById('deleteMachineBtn').addEventListener('click', deleteMachine);
-    document.getElementById('searchInput').addEventListener('input', function() {
-        searchMachines(this.value);
+    document.getElementById('searchInput').addEventListener('input', (e) => {
+        const searchValue = e.target.value.toLowerCase();
+        const filteredMachines = machines.filter(machine => 
+            machine.nome.toLowerCase().includes(searchValue)
+        );
+        populateMachinesGrid(filteredMachines);
+    });
+
+    // Chiusura dei modal cliccando fuori
+    window.addEventListener('click', (e) => {
+        const addModal = document.getElementById('addMachineModal');
+        const detailsModal = document.getElementById('machineDetailsModal');
+        
+        if (e.target === addModal) {
+            closeAddMachineModal();
+        }
+        if (e.target === detailsModal) {
+            detailsModal.classList.remove('open');
+        }
     });
 });
 
@@ -184,3 +239,8 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 });
+
+// Funzione per ottenere le iniziali dal nome e cognome
+function getInitials(nome, cognome) {
+    return nome.charAt(0) + cognome.charAt(0);
+}
