@@ -1,7 +1,87 @@
 import sqlite3
 import bcrypt
+import os
+import cv2
 
 DB_FILE = "database.db"
+
+def generate_thumbnail(video_path, output_path):
+    """
+    Genera una thumbnail da un video prendendo un frame significativo
+    
+    Args:
+        video_path (str): Percorso del file video
+        output_path (str): Percorso dove salvare la thumbnail
+        
+    Returns:
+        bool: True se la generazione è avvenuta con successo, False altrimenti
+    """
+    try:
+        # Apri il video
+        video = cv2.VideoCapture(video_path)
+        
+        # Verifica che il video sia stato aperto correttamente
+        if not video.isOpened():
+            print(f"Impossibile aprire il video: {video_path}")
+            return False
+
+        # Ottieni il numero totale di frame
+        total_frames = int(video.get(cv2.CAP_PROP_FRAME_COUNT))
+        if total_frames <= 0:
+            print(f"Video non valido: {video_path}")
+            return False
+
+        # Prova a prendere un frame a circa 1/3 del video
+        target_frame = total_frames // 3
+        video.set(cv2.CAP_PROP_POS_FRAMES, target_frame)
+        success, frame = video.read()
+
+        # Se il frame non è valido, prova frames successivi
+        attempts = 0
+        while not success and attempts < 10:
+            target_frame += total_frames // 10
+            if target_frame >= total_frames:
+                target_frame = total_frames - 1
+            video.set(cv2.CAP_PROP_POS_FRAMES, target_frame)
+            success, frame = video.read()
+            attempts += 1
+
+        if not success:
+            print(f"Impossibile leggere un frame valido dal video: {video_path}")
+            return False
+
+        # Verifica che il frame non sia completamente nero o bianco
+        if frame is not None:
+            # Calcola la luminosità media del frame
+            brightness = cv2.mean(frame)[0]
+            
+            # Se il frame è troppo scuro o troppo chiaro, prova a trovarne uno migliore
+            if brightness < 30 or brightness > 225:  # valori soglia per scuro/chiaro
+                for i in range(0, total_frames, total_frames // 10):
+                    video.set(cv2.CAP_PROP_POS_FRAMES, i)
+                    success, new_frame = video.read()
+                    if success:
+                        new_brightness = cv2.mean(new_frame)[0]
+                        if 30 < new_brightness < 225:
+                            frame = new_frame
+                            break
+
+        # Salva il frame come immagine
+        success = cv2.imwrite(output_path, frame)
+        if not success:
+            print(f"Impossibile salvare la thumbnail: {output_path}")
+            return False
+            
+        video.release()
+        return True
+        
+    except Exception as e:
+        print(f"Errore durante la generazione della thumbnail: {e}")
+        return False
+    finally:
+        if 'video' in locals():
+            video.release()
+
 
 # Se il database non esiste, lo inizializza creando le tabelle basiche
 def initialize_db():
@@ -279,19 +359,42 @@ def populate_database():
 
         # --- INSERIMENTO ESERCIZI ---
         exercises = [
-            ('Panca Piana', 'Distendersi sulla panca e spingere il bilanciere', 'video.mp4', 1, 2),
-            ('Trazioni', 'Trazione alla sbarra', 'video.mp4', 1, 3),
-            ('Military Press', 'Press sopra la testa', 'video.mp4', 1, 2),
-            ('Squat', 'Piegamenti gambe con bilanciere', 'video.mp4', 3, 2),
-            ('Curl Bicipiti', 'Curl con manubri', 'video.mp4', 1, 1),
-            ('Crunch', 'Addominali a terra', 'video.mp4', 2, 1)
+            ('Panca Piana', 'Distendersi sulla panca e spingere il bilanciere', 'AffondiBulgari.mp4', 1, 2),
+            ('Trazioni', 'Trazione alla sbarra', 'AffondiBulgari.mp4', 1, 3),
+            ('Military Press', 'Press sopra la testa', 'AffondiBulgari.mp4', 1, 2),
+            ('Squat', 'Piegamenti gambe con bilanciere', 'AffondiBulgari.mp4', 3, 2),
+            ('Curl Bicipiti', 'Curl con manubri', 'AffondiBulgari.mp4', 1, 1),
+            ('Crunch', 'Addominali a terra', 'AffondiBulgari.mp4', 2, 1)
         ]
+
+        # Definisci i percorsi delle directory
+        videos_dir = os.path.join('static', 'videos')
+        thumbnails_dir = os.path.join('static', 'thumbnails')
+        
+        # Crea le directory se non esistono
+        os.makedirs(videos_dir, exist_ok=True)
+        os.makedirs(thumbnails_dir, exist_ok=True)
         
         for nome, descrizione, video_url, obiettivo_id, difficolta_id in exercises:
+            # Genera il percorso del video e della thumbnail
+            video_path = os.path.join(videos_dir, video_url)
+            thumbnail_name = os.path.splitext(video_url)[0] + '.jpg'
+            thumbnail_path = os.path.join(thumbnails_dir, thumbnail_name)
+            
+            # Genera la thumbnail se il video esiste
+            if os.path.exists(video_path):
+                generate_thumbnail(video_path, thumbnail_path)
+                relative_thumbnail_path = os.path.join('thumbnails', thumbnail_name)
+            else:
+                relative_thumbnail_path = None
+
+            # Inserisci l'esercizio con il percorso della thumbnail
             cursor.execute("""
-                INSERT OR IGNORE INTO Esercizi (nome, descrizione, video_url, obiettivo_id, difficolta_id)
-                VALUES (?, ?, ?, ?, ?)
-            """, (nome, descrizione, video_url, obiettivo_id, difficolta_id))
+                INSERT OR IGNORE INTO Esercizi (
+                    nome, descrizione, video_url, immagine_url, obiettivo_id, difficolta_id
+                )
+                VALUES (?, ?, ?, ?, ?, ?)
+            """, (nome, descrizione, video_url, relative_thumbnail_path, obiettivo_id, difficolta_id))
 
         # --- INSERIMENTO SCHEDE ---
         # Prima otteniamo alcuni ID necessari
