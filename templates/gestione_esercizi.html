@@ -8,7 +8,7 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
 
     <link rel="stylesheet" href="{{ url_for('static', filename='css/gestione_esercizi.css') }}">
-    <!-- <link rel="stylesheet" href="{{ url_for('static', filename='js/gestione_esercizi.js') }}"> -->
+
 </head>
 <body>
     <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
@@ -109,140 +109,14 @@
                             <div class="col-md-6">
                                 <label class="form-label">Gruppi Muscolari Primari</label>
                                 <div id="primary-muscles" class="border rounded p-3" style="max-height: 200px; overflow-y: auto;">
-                                    <div class="form-check">
-                                        <input class="form-check-input" type="checkbox" value="Spalle" id="pm-spalle">
-                                        <label class="form-check-label" for="pm-spalle">Spalle</label>
-                                    </div>
-                                    <div class="form-check">
-                                        <input class="form-check-input" type="checkbox" value="Pettorali" id="pm-pettorali">
-                                        <label class="form-check-label" for="pm-pettorali">Pettorali</label>
-                                    </div>
-                                    <div class="form-check">
-                                        <input class="form-check-input" type="checkbox" value="Bicipiti" id="pm-bicipiti">
-                                        <label class="form-check-label" for="pm-bicipiti">Bicipiti</label>
-                                    </div>
-                                    <div class="form-check">
-                                        <input class="form-check-input" type="checkbox" value="Avambracci" id="pm-avambracci">
-                                        <label class="form-check-label" for="pm-avambracci">Avambracci</label>
-                                    </div>
-                                    <div class="form-check">
-                                        <input class="form-check-input" type="checkbox" value="Addominali" id="pm-addominali">
-                                        <label class="form-check-label" for="pm-addominali">Addominali</label>
-                                    </div>
-                                    <div class="form-check">
-                                        <input class="form-check-input" type="checkbox" value="Abduttori" id="pm-abduttori">
-                                        <label class="form-check-label" for="pm-abduttori">Abduttori</label>
-                                    </div>
-                                    <div class="form-check">
-                                        <input class="form-check-input" type="checkbox" value="Quadricipiti" id="pm-quadricipiti">
-                                        <label class="form-check-label" for="pm-quadricipiti">Quadricipiti</label>
-                                    </div>
-                                    <div class="form-check">
-                                        <input class="form-check-input" type="checkbox" value="Cardio" id="pm-cardio">
-                                        <label class="form-check-label" for="pm-cardio">Cardio</label>
-                                    </div>
-                                    <div class="form-check">
-                                        <input class="form-check-input" type="checkbox" value="Stretching" id="pm-stretching">
-                                        <label class="form-check-label" for="pm-stretching">Stretching</label>
-                                    </div>
-                                    <div class="form-check">
-                                        <input class="form-check-input" type="checkbox" value="Trapezi" id="pm-trapezi">
-                                        <label class="form-check-label" for="pm-trapezi">Trapezi</label>
-                                    </div>
-                                    <div class="form-check">
-                                        <input class="form-check-input" type="checkbox" value="Tricipiti" id="pm-tricipiti">
-                                        <label class="form-check-label" for="pm-tricipiti">Tricipiti</label>
-                                    </div>
-                                    <div class="form-check">
-                                        <input class="form-check-input" type="checkbox" value="Dorsali" id="pm-dorsali">
-                                        <label class="form-check-label" for="pm-dorsali">Dorsali</label>
-                                    </div>
-                                    <div class="form-check">
-                                        <input class="form-check-input" type="checkbox" value="Glutei" id="pm-glutei">
-                                        <label class="form-check-label" for="pm-glutei">Glutei</label>
-                                    </div>
-                                    <div class="form-check">
-                                        <input class="form-check-input" type="checkbox" value="Adduttori" id="pm-adduttori">
-                                        <label class="form-check-label" for="pm-adduttori">Adduttori</label>
-                                    </div>
-                                    <div class="form-check">
-                                        <input class="form-check-input" type="checkbox" value="Femorali" id="pm-femorali">
-                                        <label class="form-check-label" for="pm-femorali">Femorali</label>
-                                    </div>
-                                    <div class="form-check">
-                                        <input class="form-check-input" type="checkbox" value="Polpacci" id="pm-polpacci">
-                                        <label class="form-check-label" for="pm-polpacci">Polpacci</label>
-                                    </div>
+                                    <!-- I checkbox verranno inseriti qui dinamicamente -->
                                 </div>
                             </div>
 
                             <div class="col-md-6">
                                 <label class="form-label">Gruppi Muscolari Secondari</label>
                                 <div id="secondary-muscles" class="border rounded p-3" style="max-height: 200px; overflow-y: auto;">
-                                    <div class="form-check">
-                                        <input class="form-check-input" type="checkbox" value="Spalle" id="sm-spalle">
-                                        <label class="form-check-label" for="sm-spalle">Spalle</label>
-                                    </div>
-                                    <div class="form-check">
-                                        <input class="form-check-input" type="checkbox" value="Pettorali" id="sm-pettorali">
-                                        <label class="form-check-label" for="sm-pettorali">Pettorali</label>
-                                    </div>
-                                    <div class="form-check">
-                                        <input class="form-check-input" type="checkbox" value="Bicipiti" id="sm-bicipiti">
-                                        <label class="form-check-label" for="sm-bicipiti">Bicipiti</label>
-                                    </div>
-                                    <div class="form-check">
-                                        <input class="form-check-input" type="checkbox" value="Avambracci" id="sm-avambracci">
-                                        <label class="form-check-label" for="sm-avambracci">Avambracci</label>
-                                    </div>
-                                    <div class="form-check">
-                                        <input class="form-check-input" type="checkbox" value="Addominali" id="sm-addominali">
-                                        <label class="form-check-label" for="sm-addominali">Addominali</label>
-                                    </div>
-                                    <div class="form-check">
-                                        <input class="form-check-input" type="checkbox" value="Abduttori" id="sm-abduttori">
-                                        <label class="form-check-label" for="sm-abduttori">Abduttori</label>
-                                    </div>
-                                    <div class="form-check">
-                                        <input class="form-check-input" type="checkbox" value="Quadricipiti" id="sm-quadricipiti">
-                                        <label class="form-check-label" for="sm-quadricipiti">Quadricipiti</label>
-                                    </div>
-                                    <div class="form-check">
-                                        <input class="form-check-input" type="checkbox" value="Cardio" id="sm-cardio">
-                                        <label class="form-check-label" for="sm-cardio">Cardio</label>
-                                    </div>
-                                    <div class="form-check">
-                                        <input class="form-check-input" type="checkbox" value="Stretching" id="sm-stretching">
-                                        <label class="form-check-label" for="sm-stretching">Stretching</label>
-                                    </div>
-                                    <div class="form-check">
-                                        <input class="form-check-input" type="checkbox" value="Trapezi" id="sm-trapezi">
-                                        <label class="form-check-label" for="sm-trapezi">Trapezi</label>
-                                    </div>
-                                    <div class="form-check">
-                                        <input class="form-check-input" type="checkbox" value="Tricipiti" id="sm-tricipiti">
-                                        <label class="form-check-label" for="sm-tricipiti">Tricipiti</label>
-                                    </div>
-                                    <div class="form-check">
-                                        <input class="form-check-input" type="checkbox" value="Dorsali" id="sm-dorsali">
-                                        <label class="form-check-label" for="sm-dorsali">Dorsali</label>
-                                    </div>
-                                    <div class="form-check">
-                                        <input class="form-check-input" type="checkbox" value="Glutei" id="sm-glutei">
-                                        <label class="form-check-label" for="sm-glutei">Glutei</label>
-                                    </div>
-                                    <div class="form-check">
-                                        <input class="form-check-input" type="checkbox" value="Adduttori" id="sm-adduttori">
-                                        <label class="form-check-label" for="sm-adduttori">Adduttori</label>
-                                    </div>
-                                    <div class="form-check">
-                                        <input class="form-check-input" type="checkbox" value="Femorali" id="sm-femorali">
-                                        <label class="form-check-label" for="sm-femorali">Femorali</label>
-                                    </div>
-                                    <div class="form-check">
-                                        <input class="form-check-input" type="checkbox" value="Polpacci" id="sm-polpacci">
-                                        <label class="form-check-label" for="sm-polpacci">Polpacci</label>
-                                    </div>
+                                    <!-- I checkbox verranno inseriti qui dinamicamente -->
                                 </div>
                             </div>
                         </div>
@@ -252,20 +126,14 @@
                                 <label for="exercise-goal" class="form-label">Obiettivo</label>
                                 <select class="form-select" id="exercise-goal" required>
                                     <option value="" selected disabled>Seleziona un obiettivo</option>
-                                    <option value="Dimagrimento">Dimagrimento</option>
-                                    <option value="Tonificazione">Tonificazione</option>
-                                    <option value="Massa muscolare">Massa muscolare</option>
-                                    <option value="Mobilità">Mobilità</option>
-                                    <option value="Propriocezione">Propriocezione</option>
+                                    <!-- Le opzioni verranno inserite qui dinamicamente -->
                                 </select>
                             </div>
                             <div class="col-md-6">
                                 <label for="exercise-difficulty" class="form-label">Difficoltà</label>
                                 <select class="form-select" id="exercise-difficulty" required>
                                     <option value="" selected disabled>Seleziona una difficoltà</option>
-                                    <option value="Facile">Facile</option>
-                                    <option value="Medio">Medio</option>
-                                    <option value="Difficile">Difficile</option>
+                                    <!-- Le opzioni verranno inserite qui dinamicamente -->
                                 </select>
                             </div>
                         </div>
@@ -373,7 +241,6 @@
         </div>
     </div>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
-    <script src="static/js/gestione_esercizi.js"></script>
-    <!-- <script src="{{ url_for('static', filename='js/gestione_esercizi.js') }}"></script> -->
+    <script src="{{ url_for('static', filename='js/gestione_esercizi.js') }}"></script>
 </body>
 </html>

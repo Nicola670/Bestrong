@@ -49,7 +49,8 @@ async function loadFilterMetadata() {
                 </div>
             `;
         });
-
+        
+        populateExerciseForms(metadata)
         // Riattacca gli event listener dopo aver popolato i filtri
         setupFilterEventListeners();
         
@@ -664,4 +665,44 @@ function renderExercises() {
             button.addEventListener('click', () => openEditModal(button.dataset.id));
         });
     }
+}
+
+function populateExerciseForms(metadata) {
+    // Popola i gruppi muscolari primari
+    const primaryMuscles = document.getElementById('primary-muscles');
+    primaryMuscles.innerHTML = metadata.muscles.map(muscle => `
+        <div class="form-check">
+            <input class="form-check-input" type="checkbox" 
+                   value="${muscle}" id="pm-${muscle.toLowerCase().replace(/\s+/g, '')}">
+            <label class="form-check-label" for="pm-${muscle.toLowerCase().replace(/\s+/g, '')}">${muscle}</label>
+        </div>
+    `).join('');
+
+    // Popola i gruppi muscolari secondari
+    const secondaryMuscles = document.getElementById('secondary-muscles');
+    secondaryMuscles.innerHTML = metadata.muscles.map(muscle => `
+        <div class="form-check">
+            <input class="form-check-input" type="checkbox" 
+                   value="${muscle}" id="sm-${muscle.toLowerCase().replace(/\s+/g, '')}">
+            <label class="form-check-label" for="sm-${muscle.toLowerCase().replace(/\s+/g, '')}">${muscle}</label>
+        </div>
+    `).join('');
+
+    // Popola il select degli obiettivi
+    const goalSelect = document.getElementById('exercise-goal');
+    goalSelect.innerHTML = `
+        <option value="" selected disabled>Seleziona un obiettivo</option>
+        ${metadata.goals.map(goal => `
+            <option value="${goal}">${goal}</option>
+        `).join('')}
+    `;
+
+    // Popola il select delle difficoltà
+    const difficultySelect = document.getElementById('exercise-difficulty');
+    difficultySelect.innerHTML = `
+        <option value="" selected disabled>Seleziona una difficoltà</option>
+        ${metadata.difficulties.map(difficulty => `
+            <option value="${difficulty}">${difficulty}</option>
+        `).join('')}
+    `;
 }
