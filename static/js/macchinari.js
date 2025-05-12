@@ -74,6 +74,8 @@ function closeAddMachineModal() {
 function showMachineDetails(machine) {
     const modal = document.getElementById('machineDetailsModal');
     document.getElementById('machineFullName').textContent = machine.nome;
+    // Aggiungi l'ID del macchinario al modal
+    modal.setAttribute('data-machine-id', machine.id);
     modal.classList.add('open');
 }
 
@@ -84,8 +86,15 @@ function closeMachineDetailsModal() {
 
 // Funzione per eliminare un macchinario
 async function deleteMachine() {
-    const machineId = parseInt(document.getElementById('machineDetailsModal').getAttribute('data-machine-id'));
+    // Ottieni l'ID del macchinario dal modal
+    const modal = document.getElementById('machineDetailsModal');
+    const machineId = modal.getAttribute('data-machine-id');
     
+    if (!machineId) {
+        console.error('ID macchinario non trovato');
+        return;
+    }
+
     if (confirm("Sei sicuro di voler eliminare questo macchinario?")) {
         try {
             const response = await fetch(`/api/machines/${machineId}`, {
