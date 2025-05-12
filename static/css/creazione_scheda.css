@@ -512,10 +512,12 @@ body {
 #btnBack {
     display: inline-flex;
     align-items: center;
+    justify-content: center;
     gap: 0.5rem;
     padding: 0.5rem 1rem;
     font-weight: 500;
     transition: all 0.3s ease;
+    line-height: 1;
 }
 
 #btnBack:hover {
@@ -528,13 +530,24 @@ body {
     font-size: 1.1rem;
 }
 
-/* Aggiungi l'icona della freccia */
+/* Modifica gli stili dell'icona */
+.bi-arrow-left {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 20px;
+    height: 20px;
+    line-height: 1;
+    margin-right: 4px;
+}
+
 .bi-arrow-left::before {
-    display: inline-block;
     content: "";
-    width: 1em;
-    height: 1em;
+    display: block;
+    width: 20px;
+    height: 20px;
     background-image: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'><path fill='currentColor' d='M15 8a.5.5 0 0 0-.5-.5H2.707l3.147-3.146a.5.5 0 1 0-.708-.708l-4 4a.5.5 0 0 0 0 .708l4 4a.5.5 0 0 0 .708-.708L2.707 8.5H14.5A.5.5 0 0 0 15 8z'/></svg>");
     background-repeat: no-repeat;
-    background-size: 1rem 1rem;
+    background-position: center;
+    background-size: contain;
 }
