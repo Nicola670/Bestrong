@@ -1,5 +1,0 @@
-# Ignora la cartella __pycache__
-__pycache__
-
-# Ignora la cartella della sessione di flask
-flask_session

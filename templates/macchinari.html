@@ -4,7 +4,13 @@
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<<<<<<< HEAD:templates/dashboard.html
         <title>Dashboard-bestrong</title>
+=======
+        <title>Macchinari-bestrong</title>
+
+        <link rel="stylesheet" href="{{ url_for('static', filename='css/macchinari.css') }}">
+>>>>>>> macchinari:templates/macchinari.html
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
         <link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard.css') }}"> 
         <meta name="csrf-token" content="{{ csrf_token() if csrf_token else '' }}">
@@ -23,7 +29,12 @@
                     <nav class="nav-menu">
                         <ul>
                             <li><a href="{{ url_for('dashboard') }}"><i class="fas fa-home"></i> <span>Clienti</span></a></li>
+<<<<<<< HEAD:templates/dashboard.html
                             <li><a href="{{ url_for('esercizi') }}"><i class="fas fa-calendar-alt"></i> <span>Gestisci esercizi</span></a></li>
+=======
+                            <li><a href="{{ url_for('creazione_scheda') }}"><i class="fas fa-calendar-alt"></i> <span>Schede</span></a></li>
+                            <li class="active"><a href="{{ url_for('macchinari') }}"><i class="fas fa-cogs"></i> <span>Macchinari</span></a></li>
+>>>>>>> macchinari:templates/macchinari.html
                             <li><a href="{{ url_for('about') }}"><i class="fas fa-users"></i> <span>About</span></a></li>
                             <li><a href="{{ url_for('machines') }}"><i class="fas fa-user"></i> <span>Macchinari</span></a></li>
                             <li><a href="{{ url_for('profile') }}"><i class="fas fa-user"></i> <span>Profilo</span></a></li>
@@ -51,48 +62,54 @@
             <!-- Main Content -->
             <main class="main-content">
                 <header class="content-header">
-                    <h1>Gestione Clienti</h1>
+                    <h1>Gestione Macchinari</h1>
                     <div class="search-container">
-                        <input type="text" id="searchInput" placeholder="Cerca cliente...">
+                        <input type="text" id="searchInput" placeholder="Cerca macchinario...">
                         <i class="fas fa-search"></i>
                     </div>
-                    <button class="add-client-btn" id="addClientBtn">
+                    <button class="add-client-btn" id="addMachineBtn">
                         <i class="fas fa-plus"></i>
-                        <span>Nuovo Cliente</span>
+                        <span>Nuovo Macchinario</span>
                     </button>
                 </header>
     
-                <!-- Client Grid -->
-                <section class="clients-grid" id="clientsGrid">
+                <!-- Machines Grid -->
+                <section class="clients-grid" id="machinesGrid">
                     <!-- Contenuto generato dinamicamente da JavaScript -->
                     <div class="loading">
                         <i class="fas fa-spinner fa-spin"></i>
-                        <span>Caricamento clienti...</span>
+                        <span>Caricamento macchinari...</span>
                     </div>
                 </section>
             </main>
         </div>
         
-
-    
-    <!-- Modal per Aggiungere un Cliente -->
-    <div class="modal" id="addClientModal">
+    <!-- Modal per Aggiungere un Macchinario -->
+    <div class="modal" id="addMachineModal">
         <div class="modal-content">
             <div class="modal-header">
-                <h2>Aggiungi Nuovo Cliente</h2>
+                <h2>Aggiungi Nuovo Macchinario</h2>
                 <span class="close-modal" id="closeAddModal">&times;</span>
             </div>
             <div class="modal-body">
-                <form id="addClientForm">
+                <form id="addMachineForm">
                     <div class="form-group">
-                        <label for="nome">Nome</label>
+                        <label for="nome">Nome Macchinario</label>
                         <input type="text" id="nome" name="nome" required>
                     </div>
                     <div class="form-group">
-                        <label for="cognome">Cognome</label>
-                        <input type="text" id="cognome" name="cognome" required>
+                        <label for="tipologia">Tipologia</label>
+                        <select id="tipologia" name="tipologia" required>
+                            <option value="">Seleziona una tipologia</option>
+                            <option value="cardio">Cardio</option>
+                            <option value="forza">Forza</option>
+                            <option value="isotonica">Isotonica</option>
+                            <option value="elastica">Elastica</option>
+                            <option value="funzionale">Funzionale</option>
+                        </select>
                     </div>
                     <div class="form-group">
+<<<<<<< HEAD:templates/dashboard.html
                         <label for="email">Email</label>
                         <input type="email" id="email" name="email" required>
                     </div>
@@ -108,40 +125,50 @@
                         <label for="obiettivo">Obiettivo</label>
                         <select id="obiettivo" name="obiettivo" required>
                             <option value=""> Caricamento obiettivi... </option>
+=======
+                        <label for="parteCorpo">Parte del Corpo</label>
+                        <select id="parteCorpo" name="parteCorpo" required>
+                            <option value="">Seleziona parte del corpo</option>
+                            <option value="petto">Petto</option>
+                            <option value="spalle">Spalle</option>
+                            <option value="braccia">Braccia</option>
+                            <option value="schiena">Schiena</option>
+                            <option value="gambe">Gambe</option>
+                            <option value="core">Core</option>
+                            <option value="total">Total Body</option>
+>>>>>>> macchinari:templates/macchinari.html
                         </select>
                     </div>
                     <div class="form-actions">
-                        <button type="button" class="btn-cancel" id="cancelAddClient">Annulla</button>
-                        <button type="submit" class="btn-submit">Salva Cliente</button>
+                        <button type="button" class="btn-cancel" id="cancelAddMachine">Annulla</button>
+                        <button type="submit" class="btn-submit">Salva Macchinario</button>
                     </div>
                 </form>
             </div>
         </div>
     </div>
 
-    <!-- Modal per Visualizzare i Dettagli Cliente -->
-    <div class="modal" id="clientDetailsModal">
+    <!-- Modal per Visualizzare i Dettagli Macchinario -->
+    <div class="modal" id="machineDetailsModal">
         <div class="modal-content modal-large">
             <div class="modal-header">
-                <h2 id="clientDetailsName">Dettagli Cliente</h2>
+                <h2 id="machineDetailsName">Dettagli Macchinario</h2>
                 <span class="close-modal" id="closeDetailsModal">&times;</span>
             </div>
             <div class="modal-body client-details">
                 <div class="client-details-header">
                     <div class="client-avatar large">
-                        <span id="clientInitials"></span>
+                        <span id="machineIcon"><i class="fas fa-dumbbell"></i></span>
                     </div>
                     <div class="client-summary">
-                        <h3 id="clientFullName"></h3>
-                        <p id="clientEmail"></p>
-                        <p id="clientPhone"></p>
-                        <span class="client-objective" id="clientObjective"></span>
+                        <h3 id="machineFullName"></h3>
+                        <span class="client-objective" id="machineBodyPart"></span>
                     </div>
                     <div class="client-actions">
-                        <button class="btn-edit">
+                        <button class="btn-edit" id="editMachineBtn">
                             <i class="fas fa-edit"></i> Modifica
                         </button>
-                        <button class="btn-delete">
+                        <button class="btn-delete" id="deleteMachineBtn">
                             <i class="fas fa-trash"></i> Elimina
                         </button>
                     </div>
@@ -150,17 +177,21 @@
                 <div class="client-tabs">
                     <ul class="tabs-nav">
                         <li class="active" data-tab="info">Informazioni</li>
+<<<<<<< HEAD:templates/dashboard.html
                         <li data-tab="programs">Schede</li>
+=======
+>>>>>>> macchinari:templates/macchinari.html
                         <li data-tab="notes">Note</li>
                     </ul>
 
                     <div class="tab-content active" id="info">
                         <div class="info-grid">
                             <div class="info-item">
-                                <h4>Età</h4>
-                                <p id="clientAge">--</p>
+                                <h4>Tipologia</h4>
+                                <p id="machineType">--</p>
                             </div>
                             <div class="info-item">
+<<<<<<< HEAD:templates/dashboard.html
                                 <h4>Data di Nascita</h4>
                                 <p id="clientBirthday">--</p>
                             </div>
@@ -182,6 +213,10 @@
                                 <button class="btn-primary" onclick="createNewWorkout()">
                                     <span>Assegna</span>
                                 </button>
+=======
+                                <h4>Parte del Corpo</h4>
+                                <p id="machineBodyPartDetail">--</p>
+>>>>>>> macchinari:templates/macchinari.html
                             </div>
                         </div>
                     </div>
@@ -190,8 +225,8 @@
                         <div class="notes-container">
                             <h3>Note e Osservazioni</h3>
                             <div class="notes-editor">
-                                <textarea id="clientNotes" placeholder="Aggiungi note sul cliente..."></textarea>
-                                <button class="btn-save-notes">Salva Note</button>
+                                <textarea id="machineNotes" placeholder="Aggiungi note sul macchinario..."></textarea>
+                                <button class="btn-save-notes" id="saveNotesBtn">Salva Note</button>
                             </div>
                         </div>
                     </div>
@@ -200,6 +235,7 @@
         </div>
     </div>
 
+<<<<<<< HEAD:templates/dashboard.html
     <!-- Modal per Visualizzare i Dettagli Scheda -->
     <div class="modal" id="workoutDetailsModal">
         <div class="modal-content modal-large">
@@ -228,6 +264,9 @@
             </div>
         </div>
     </div>
+=======
+    <script src="{{ url_for('static', filename='js/macchinari.js') }}"></script>
+>>>>>>> macchinari:templates/macchinari.html
 
     <script src="{{ url_for('static', filename='js/dashboard.js') }}"></script>
     </body>
