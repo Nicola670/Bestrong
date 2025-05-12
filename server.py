@@ -7,6 +7,7 @@ from init_db import initialize_db, populate_database
 import db_operations as database
 import bcrypt
 from functools import wraps
+import sqlite3
 
 app = Flask(__name__)
 
@@ -280,15 +281,34 @@ def schermata_esecuzione():
 
 @app.route('/modifica_scheda')
 @login_required
-@trainer_required
 def modifica_scheda():
-    scheda_id = request.args.get('scheda_id')
-    if not scheda_id:
-        flash('ID scheda non valido')
+    try:
+        scheda_id = request.args.get('scheda_id')
+        print(f"Tentativo di modifica scheda: {scheda_id}")  # Debug log
+        
+        if not scheda_id:
+            print("ID scheda mancante")  # Debug log
+            flash('ID scheda non valido')
+            return redirect(url_for('dashboard'))
+        
+        # Verifica che la scheda esista
+        conn = sqlite3.connect("database.db")
+        cursor = conn.cursor()
+        cursor.execute("SELECT id FROM Schede WHERE id = ?", (scheda_id,))
+        if not cursor.fetchone():
+            flash('Scheda non trovata')
+            return redirect(url_for('dashboard'))
+            
+        user_data = database.get_user_template_data(current_user.id)
+        print(f"Dati utente recuperati: {user_data}")  # Debug log
+        user_data['scheda_id'] = scheda_id
+        
+        return render_template('modifica_scheda.html', **user_data)
+        
+    except Exception as e:
+        print(f"Errore: {e}")
+        flash('Si è verificato un errore')
         return redirect(url_for('dashboard'))
-    
-    user_data = database.get_user_template_data(current_user.id)
-    return render_template('modifica_scheda.html', scheda_id=scheda_id, **user_data)
 
 @app.route('/about')
 @login_required

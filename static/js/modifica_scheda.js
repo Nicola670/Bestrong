@@ -350,3 +350,13 @@ async function salvaModifiche() {
     }
 }
 
+    document.addEventListener('DOMContentLoaded', function() {
+        // Ottieni l'ID della scheda dall'URL
+        const urlParams = new URLSearchParams(window.location.search);
+        const schedaId = urlParams.get('scheda_id');
+        
+        if (!schedaId) {
+            alert('ID scheda non valido');
+            window.history.back();
+        }
+    });

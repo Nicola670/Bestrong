@@ -296,7 +296,7 @@ function startWorkout(schedaId) {
 }
 
 function editWorkout(schedaId) {
-    // Reindirizza alla pagina di modifica scheda passando l'ID come parametro
+    // Usa un path relativo invece del path completo
     window.location.href = `/modifica_scheda?scheda_id=${schedaId}`;
 }
 
