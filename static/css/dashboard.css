@@ -428,8 +428,9 @@ button {
 
 .modal.open {
     display: flex;
-    align-items: center;
+    align-items: flex-start; /* Cambiato da center a flex-start */
     justify-content: center;
+    padding-top: 5vh; /* Aggiunto padding-top per spostare il modal più in basso */
 }
 
 .modal-content {
@@ -440,6 +441,7 @@ button {
     box-shadow: var(--shadow-xl);
     animation: modalFadeIn 0.3s ease forwards;
     overflow: hidden;
+    margin-bottom: 2rem; /* Aggiunto margin-bottom per spazio sotto */
 }
 
 .modal-content.modal-large {
@@ -476,6 +478,11 @@ button {
     cursor: pointer;
     color: var(--gray-500);
     transition: color var(--transition-speed) ease;
+    padding: 0.5rem; /* Aggiunto padding per area di click più grande */
+    line-height: 1; /* Aggiunto per centrare meglio la X */
+    display: flex; /* Aggiunto per centrare meglio la X */
+    align-items: center;
+    justify-content: center;
 }
 
 .close-modal:hover {
@@ -484,6 +491,42 @@ button {
 
 .modal-body {
     padding: 1.5rem;
+}
+
+/* Modal actions buttons styling */
+.modal-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 1rem;
+    margin-top: 1.5rem;
+}
+
+.modal-actions .btn-edit,
+.modal-actions .btn-delete {
+    min-width: 120px;
+    padding: 0.75rem 1.25rem;
+}
+
+.modal-actions .btn-edit {
+    background-color: var(--gray-200);
+    color: var(--gray-700);
+}
+
+.modal-actions .btn-edit:hover {
+    background-color: var(--gray-300);
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
+}
+
+.modal-actions .btn-delete {
+    background-color: var(--danger-color);
+    color: white;
+}
+
+.modal-actions .btn-delete:hover {
+    background-color: #e11d48;
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
 }
 
 /* Form Styles */
@@ -848,6 +891,39 @@ button {
     gap: 1rem;
     font-size: 0.9rem;
     color: #666;
+}
+
+/* Aggiungi questi stili per i pulsanti nella sezione Programs */
+.btn-view, .btn-primary {
+    padding: 0.6rem 1rem;
+    border-radius: var(--border-radius);
+    font-weight: 600;
+    font-size: 0.9rem;
+    transition: all var(--transition-speed) ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    color: white;
+    background-color: var(--primary-color);
+    border: none;
+    cursor: pointer;
+}
+
+.btn-view:hover, .btn-primary:hover {
+    background-color: var(--primary-dark);
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
+}
+
+.btn-view i, .btn-primary i {
+    font-size: 0.9rem;
+}
+
+/* Stili specifici per il pulsante Assegna nella sezione programmi */
+.program-actions .btn-primary {
+    min-width: 120px;
+    margin-top: 1rem;
 }
 
 /* Animations */
