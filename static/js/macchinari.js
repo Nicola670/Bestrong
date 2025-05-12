@@ -158,3 +158,29 @@ document.addEventListener('DOMContentLoaded', function() {
         searchMachines(this.value);
     });
 });
+
+// Aggiunge la classe active al link corrispondente alla pagina corrente
+document.addEventListener('DOMContentLoaded', function() {
+    const currentPath = window.location.pathname;
+    const navLinks = document.querySelectorAll('.nav-menu li a');
+    const sidebar = document.getElementById('sidebar');
+
+    navLinks.forEach(link => {
+        if (link.getAttribute('href') === currentPath) {
+            link.parentElement.classList.add('active');
+        }
+    });
+
+    menuToggle.addEventListener('click', () => {
+        sidebar.classList.toggle('collapsed');
+    });
+
+    // Chiudi il menu quando si clicca fuori
+    document.addEventListener('click', (e) => {
+        if (window.innerWidth < 768) {
+            if (!sidebar.contains(e.target) && !menuToggle.contains(e.target)) {
+                sidebar.classList.add('collapsed');
+            }
+        }
+    });
+});
