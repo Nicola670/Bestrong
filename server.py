@@ -1,4 +1,4 @@
-from flask import Flask, request, render_template, redirect, url_for, flash, jsonify, session
+from flask import Flask, request, render_template, redirect, url_for, flash, jsonify, session, make_response
 from flask_login import LoginManager, UserMixin, login_user, login_required, logout_user, current_user
 from datetime import timedelta, datetime
 import secrets
@@ -340,7 +340,12 @@ def logout():
     session.clear()
     logout_user()
     flash('Logout effettuato con successo')
-    return redirect(url_for('login'))
+    response = make_response(redirect(url_for('login')))
+    # Aggiungi header no-cache
+    response.headers['Cache-Control'] = 'no-cache, no-store, must-revalidate'
+    response.headers['Pragma'] = 'no-cache'
+    response.headers['Expires'] = '0'
+    return response
 
 @app.route('/change_password', methods=['GET', 'POST'])
 @login_required
