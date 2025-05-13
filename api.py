@@ -34,7 +34,7 @@ def generate_video_stream(video_path):
 
 # --- ENDPOINTS PER TRAINER ---
 @api.route('/api/clients', methods=['GET'])
-#@login_required  # Riabilitare quando il login sarà implementato
+@login_required  # Riabilitare quando il login sarà implementato
 def get_clients():
     conn = sqlite3.connect(DB_FILE)
     cursor = conn.cursor()
@@ -73,7 +73,7 @@ def get_clients():
         conn.close()
 
 @api.route('/api/client/<int:client_id>', methods=['GET'])
-#@login_required
+@login_required
 def get_client_by_id(client_id):
     """
     if not current_user.is_trainer:

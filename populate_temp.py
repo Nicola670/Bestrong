@@ -6,7 +6,7 @@ def populate_temp():
     conn = sqlite3.connect(database.DB_FILE)
     cursor = conn.cursor()
 
-    temp_password = "temp123"
+    temp_password = "test123"
     hashed_password = database.hash_password(temp_password)
 
     try:
