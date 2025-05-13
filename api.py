@@ -88,9 +88,8 @@ def get_client_by_id(client_id):
         cursor.execute("""
             SELECT Utenti.id, Utenti.username, Utenti.surname, Utenti.email, Utenti.phone, Utenti.date_of_birth
             FROM Utenti
-            INNER JOIN Clienti_Trainer ON Utenti.id = Clienti_Trainer.cliente_id
-            WHERE Clienti_Trainer.cliente_id = ? AND Clienti_Trainer.trainer_id = ?
-        """, (client_id, 1)) # sostituire con current_user.id quando viene implementato le sessioni
+            WHERE Utenti.id = ?
+        """, (client_id,))
         client = cursor.fetchone()
     
         # Controlla se il cliente esiste
