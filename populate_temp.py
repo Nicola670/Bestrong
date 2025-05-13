@@ -47,9 +47,8 @@ def populate_temp():
     # Inserimento trainer
     cursor.execute('''
     INSERT INTO Utenti (is_trainer, username, surname, email, phone, date_of_birth, password_hash) VALUES 
-    (TRUE, 'Marco', 'Rossi', 'marco.rossi@example.com', '+393331234567', '1985-05-12', ?),
-    (TRUE, 'Laura', 'Bianchi', 'laura.bianchi@example.com', '+393337654321', '1990-10-22', ?)
-    ''', (hashed_password, hashed_password))
+    (TRUE, 'Marco', 'Rossi', 'marco.rossi@example.com', '+393331234567', '1985-05-12', ?)
+    ''', (hashed_password,))
 
     # Inserimento clienti
     cursor.execute('''
@@ -68,13 +67,6 @@ def populate_temp():
     (5, 1),
     (7, 1)
     ''')
-
-    cursor.execute('''
-    INSERT INTO Clienti_Trainer (cliente_id, trainer_id) VALUES 
-    (4, 2),
-    (6, 2)
-    ''')
-
 
 
     # Associazione esercizi-muscoli
