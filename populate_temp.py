@@ -11,9 +11,6 @@ def populate_temp():
     hashed_password = database.hash_password(temp_password)
 
     try:
-        cursor.execute('DELETE FROM Storico_Schede')
-        cursor.execute('DELETE FROM Schede_Esercizi')
-        cursor.execute('DELETE FROM Schede')
         cursor.execute('DELETE FROM Clienti_Trainer')
         cursor.execute('DELETE FROM Utenti')
         conn.commit()
