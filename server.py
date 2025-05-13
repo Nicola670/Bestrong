@@ -324,8 +324,11 @@ def about():
 @login_required
 @trainer_required
 def esercizi():
+    import time
     clients = database.get_clients_by_trainer(current_user.id)
-    return render_template('gestione_esercizi.html', clients=clients)
+    return render_template('gestione_esercizi.html', 
+                         clients=clients,
+                         timestamp=int(time.time()))
 
 @app.route('/creazione_scheda')
 @login_required
@@ -340,12 +343,7 @@ def logout():
     session.clear()
     logout_user()
     flash('Logout effettuato con successo')
-    response = make_response(redirect(url_for('login')))
-    # Aggiungi header no-cache
-    response.headers['Cache-Control'] = 'no-cache, no-store, must-revalidate'
-    response.headers['Pragma'] = 'no-cache'
-    response.headers['Expires'] = '0'
-    return response
+    return redirect(url_for('login'))
 
 @app.route('/change_password', methods=['GET', 'POST'])
 @login_required
