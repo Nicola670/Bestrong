@@ -72,12 +72,16 @@ function setupFilterEventListeners() {
 }
 
 // Verificare se ci sono esercizi salvati nel localStorage
-document.addEventListener('DOMContentLoaded', () => {
-    loadFilterMetadata
-    loadExercises();
-    setupEventListeners();
-    renderExercises();
-}); 
+document.addEventListener('DOMContentLoaded', async () => {
+    try {
+        await loadFilterMetadata(); // Aggiungi await qui
+        await loadExercises();     // Aggiungi await qui
+        setupEventListeners();
+        renderExercises();         // Questa verrà eseguita dopo il caricamento
+    } catch (error) {
+        console.error('Errore durante l\'inizializzazione:', error);
+    }
+});
 
 // Caricare gli esercizi da localStorage
 async function loadExercises() {
@@ -564,13 +568,10 @@ function renderExercises() {
     const container = document.getElementById('exercises-container');
     const noExercises = document.getElementById('no-exercises');
     
-    // Controllo se gli elementi esistono nel DOM
-    if (!container || !noExercises) {
-        console.error('Elementi mancanti nel DOM: exercises-container o no-exercises');
-        return;
-    }
+    // Pulisci il container prima di aggiungere nuove card
+    container.innerHTML = '';
     
-    // Ottenere i filtri selezionati
+    // Ottienere i filtri selezionati
     const selectedMuscles = Array.from(document.querySelectorAll('.filter-muscle:checked')).map(input => input.value);
     const selectedGoals = Array.from(document.querySelectorAll('.filter-goal:checked')).map(input => input.value);
     const selectedDifficulties = Array.from(document.querySelectorAll('.filter-difficulty:checked')).map(input => input.value);
@@ -580,7 +581,6 @@ function renderExercises() {
     // Applicare i filtri
     let filteredExercises = exercises;
     
-    // Filtro per termine di ricerca
     if (searchTerm) {
         filteredExercises = filteredExercises.filter(exercise => 
             (exercise.name && exercise.name.toLowerCase().includes(searchTerm)) ||
@@ -588,7 +588,6 @@ function renderExercises() {
         );
     }
     
-    // Filtro per gruppo muscolare
     if (selectedMuscles.length > 0) {
         filteredExercises = filteredExercises.filter(exercise => {
             const allMuscles = [...(exercise.primaryMuscles || []), ...(exercise.secondaryMuscles || [])];
@@ -596,68 +595,62 @@ function renderExercises() {
         });
     }
     
-    // Filtro per obiettivo
     if (selectedGoals.length > 0) {
         filteredExercises = filteredExercises.filter(exercise => 
             exercise.goal && selectedGoals.includes(exercise.goal)
         );
     }
     
-    // Filtro per difficoltà
     if (selectedDifficulties.length > 0) {
         filteredExercises = filteredExercises.filter(exercise => 
             exercise.difficulty && selectedDifficulties.includes(exercise.difficulty)
         );
     }
     
-    // Mostrare risultati
-    container.innerHTML = '';
-    
     if (filteredExercises.length === 0) {
         noExercises.classList.remove('d-none');
-    } else {
-        noExercises.classList.add('d-none');
+        return;
+    }
+    
+    noExercises.classList.add('d-none');
+    
+    filteredExercises.forEach(exercise => {
+        const difficultyClass = exercise.difficulty?.toLowerCase().replace(/\s+/g, '-') || 'medio';
+        const goalClass = exercise.goal?.toLowerCase().replace(/\s+/g, '-') || 'general';
         
-        filteredExercises.forEach(exercise => {
-            // Controlliamo che difficulty e goal siano definiti prima di usare toLowerCase()
-            const difficultyClass = exercise.difficulty && typeof exercise.difficulty === 'string' ? 
-                exercise.difficulty.toLowerCase().replace(/\s+/g, '-') : 'medio';
-            const goalClass = exercise.goal && typeof exercise.goal === 'string' ? 
-                exercise.goal.toLowerCase().replace(/\s+/g, '-') : 'general';
-            
-            const card = document.createElement('div');
-            card.className = 'col-md-6 col-lg-4 fade-in';
-            card.innerHTML = `
-                <div class="card exercise-card shadow-sm h-100">
-                    <div class="exercise-image-container">
-                        ${exercise.mediaType === 'video' ? 
-                            `<div class="video-thumbnail">
-                                <img src="/static/${exercise.immagine_url}" alt="${exercise.name || 'Esercizio'}" class="card-img-top">
-                            </div>` :
-                            exercise.mediaType === 'image' ? 
-                            `<img src="/static/${exercise.mediaUrl}" alt="${exercise.name || 'Esercizio'}" class="card-img-top">` :
-                            `<div class="no-media">
-                                <i class="fas fa-dumbbell fa-3x mb-2"></i>
-                                <div>Nessun media</div>
-                            </div>`
-                        }
+        const card = document.createElement('div');
+        card.className = 'col-md-6 col-lg-4 fade-in';
+        card.innerHTML = `
+            <div class="card exercise-card shadow-sm h-100">
+                <div class="exercise-image-container">
+                    ${exercise.mediaType === 'video' ? 
+                        `<div class="video-thumbnail">
+                            <img src="/static/${exercise.immagine_url}" alt="${exercise.name || 'Esercizio'}" class="card-img-top">
+                        </div>` :
+                        exercise.mediaType === 'image' ? 
+                        `<img src="/static/${exercise.mediaUrl}" alt="${exercise.name || 'Esercizio'}" class="card-img-top">` :
+                        `<div class="no-media">
+                            <i class="fas fa-dumbbell fa-3x mb-2"></i>
+                            <div>Nessun media</div>
+                        </div>`
+                    }
+                </div>
+                <div class="card-body d-flex flex-column">
+                    <h5 class="card-title">${exercise.name || 'Esercizio senza nome'}</h5>
+                    <p class="card-text text-truncate">${exercise.description || 'Nessuna descrizione'}</p>
+                    
+                    <div class="mb-2">
+                        <span class="badge badge-${difficultyClass}">${exercise.difficulty || 'Medio'}</span>
+                        <span class="badge badge-${goalClass}">${exercise.goal || 'General'}</span>
                     </div>
-                    <div class="card-body d-flex flex-column">
-                        <h5 class="card-title">${exercise.name || 'Esercizio senza nome'}</h5>
-                        <p class="card-text text-truncate">${exercise.description || 'Nessuna descrizione'}</p>
-                        
-                        <div class="mb-2">
-                           <span class="badge badge-${difficultyClass}">${exercise.difficulty || 'Medio'}</span>
-                            <span class="badge badge-${goalClass}">${exercise.goal || 'General'}</span>
-                        </div>
-                        
-                        <div class="mb-2">
-                            ${(exercise.primaryMuscles || []).map(muscle => 
-                                `<span class="badge badge-primary-muscle">${muscle}</span>`
-                            ).join('')}
-                        </div>
-                        
-                        <div class="mt-auto">
+                    
+                    <div class="mb-2">
+                        ${(exercise.primaryMuscles || []).map(muscle => 
+                            `<span class="badge badge-primary-muscle">${muscle}</span>`
+                        ).join('')}
+                    </div>
+                    
+                    <div class="mt-auto">
                         <div class="btn-group w-100">
                             <button class="btn btn-outline-primary btn-sm" onclick="viewExercise('${exercise.id}')">
                                 <i class="fas fa-eye me-1"></i>Visualizza
@@ -667,25 +660,12 @@ function renderExercises() {
                             </button>
                         </div>
                     </div>
-                    </div>
                 </div>
-            `;
-            
-            
-            container.appendChild(card);
-        });
+            </div>
+        `;
         
-        
-
-        // Aggiungere listener per i bottoni
-        document.querySelectorAll('.view-exercise').forEach(button => {
-            button.addEventListener('click', () => viewExercise(button.dataset.id));
-        });
-        
-        document.querySelectorAll('.edit-exercise').forEach(button => {
-            button.addEventListener('click', () => openEditModal(button.dataset.id));
-        });
-    }
+        container.appendChild(card);
+    });
 }
 
 function populateExerciseForms(metadata) {
