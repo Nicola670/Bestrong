@@ -289,7 +289,6 @@ def populate_database():
             ('Alzate Laterali', 'Sollevamento manubri ai lati', 'AlzateLaterali.mp4', 2, 1),
             ('Arnold Press', 'Pressa manubri con rotazione', 'ArnoldPress.mp4', 3, 3),
             ('Bench Press', 'Distensioni su panca con bilanciere', 'BenchPress.mp4', 3, 2),
-            ('Croci con Manubri', 'Aperture laterali su panca inclinata', 'CrociManubri.mp4', 2, 2),
             ('Crunch Laterale', 'Addominali obliqui con torsione', 'CrunchLaterale.mp4', 2, 1),
             ('Curl Alternato', 'Flessioni alternate con manubri', 'CurlAlternato.mp4', 2, 1),
             ('Curl Bilanciere', 'Flessioni avambracci con bilanciere', 'CurlBilanciere.mp4', 3, 2),
@@ -307,7 +306,6 @@ def populate_database():
             ('Plank', 'Tenuta isometrica addominale', 'Plank.mp4', 2, 1),
             ('Pull Over', 'Estensione bracci con manubrio', 'PullOver.mp4', 2, 2),
             ('Push Down', 'Spinte cavo alto', 'PushDown.mp4', 2, 1),
-            ('Push-Up', 'Piegamenti a corpo libero', 'PushUp.mp4', 2, 1),
             ('Rematore', 'Trazione bilanciere a busto flesso', 'Rematore.mp4', 3, 2),
             ('Rope Crunch', 'Crunch con corda alla pulley', 'RopeCrunch.mp4', 2, 2),
             ('RussianTwist', 'Torsioni russe con peso', 'RussianTwist.mp4', 2, 1),
@@ -344,23 +342,6 @@ def populate_database():
                 )
                 VALUES (?, ?, ?, ?, ?, ?)
             """, (nome, descrizione, video_url, relative_thumbnail_path, obiettivo_id, difficolta_id))
-        #---
-        cursor.execute("""
-            UPDATE Esercizi 
-            SET immagine_url = ? 
-            WHERE nome = ?
-        """, ('thumbnails\CrociManubri.jpg', 'Croci con Manubri'))
-
-        cursor.execute("""
-            UPDATE Esercizi 
-            SET immagine_url = ? 
-            WHERE nome = ?
-        """, ('thumbnails\PushUp.jpg', 'PushUp'))
-        
-        conn.commit()
-        print(f"Immagine aggiornata con successo")
-        
-        #----
         conn.commit()
     except Exception as e:
         print(f"Errore durante il popolamento del database: {e}")
