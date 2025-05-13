@@ -281,6 +281,8 @@ def populate_database():
         # --- INSERIMENTO ESERCIZI ---
 
         # Inserimento esercizi
+        cursor.execute('DELETE FROM Esercizi')  # Pulisce la tabella Esercizi prima di inserire nuovi dati
+
         exercises = [
             ('AffondiBulgari', 'Affondi in camminata mantenendo equilibrio', 'AffondiBulgari.mp4', 3, 2),
             ('Alzate Frontali', 'Sollevamento manubri davanti al corpo', 'AlzateFrontali.mp4', 2, 1),
@@ -342,9 +344,23 @@ def populate_database():
                 )
                 VALUES (?, ?, ?, ?, ?, ?)
             """, (nome, descrizione, video_url, relative_thumbnail_path, obiettivo_id, difficolta_id))
+        #---
+        cursor.execute("""
+            UPDATE Esercizi 
+            SET immagine_url = ? 
+            WHERE nome = ?
+        """, ('thumbnails\CrociManubri.jpg', 'Croci con Manubri'))
 
-
-
+        cursor.execute("""
+            UPDATE Esercizi 
+            SET immagine_url = ? 
+            WHERE nome = ?
+        """, ('thumbnails\PushUp.jpg', 'PushUp'))
+        
+        conn.commit()
+        print(f"Immagine aggiornata con successo")
+        
+        #----
         conn.commit()
     except Exception as e:
         print(f"Errore durante il popolamento del database: {e}")
