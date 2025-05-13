@@ -278,6 +278,73 @@ def populate_database():
         for diff in difficulties:
             cursor.execute("INSERT OR IGNORE INTO Difficolta (livello) VALUES (?)", (diff,))
 
+        # --- INSERIMENTO ESERCIZI ---
+
+        # Inserimento esercizi
+        exercises = [
+            ('AffondiBulgari', 'Affondi in camminata mantenendo equilibrio', 'AffondiBulgari.mp4', 3, 2),
+            ('Alzate Frontali', 'Sollevamento manubri davanti al corpo', 'AlzateFrontali.mp4', 2, 1),
+            ('Alzate Laterali', 'Sollevamento manubri ai lati', 'AlzateLaterali.mp4', 2, 1),
+            ('Arnold Press', 'Pressa manubri con rotazione', 'ArnoldPress.mp4', 3, 3),
+            ('Bench Press', 'Distensioni su panca con bilanciere', 'BenchPress.mp4', 3, 2),
+            ('Croci con Manubri', 'Aperture laterali su panca inclinata', 'CrociManubri.mp4', 2, 2),
+            ('Crunch Laterale', 'Addominali obliqui con torsione', 'CrunchLaterale.mp4', 2, 1),
+            ('Curl Alternato', 'Flessioni alternate con manubri', 'CurlAlternato.mp4', 2, 1),
+            ('Curl Bilanciere', 'Flessioni avambracci con bilanciere', 'CurlBilanciere.mp4', 3, 2),
+            ('Dip Parallele', 'Discesa sulle parallele', 'DipParallele.mp4', 3, 3),
+            ('Distensioni', 'Distensioni su panca piana', 'Distensioni.mp4', 3, 2),
+            ('French Press', 'Estensioni dietro la testa con bilanciere', 'FrenchPress.mp4', 2, 2),
+            ('Lat Pulldown', 'Trazioni alla lat machine', 'LatPulldown.mp4', 3, 2),
+            ('Leg Curl', 'Flessioni gambe alla macchina', 'LegCurl.mp4', 3, 1),
+            ('Leg Extension', 'Estensioni gambe alla macchina', 'LegExtension.mp4', 3, 1),
+            ('Leg Press', 'Spinta carico con gambe', 'LegPress.mp4', 3, 2),
+            ('Leg Raises', 'Sollevamento gambe sospesi', 'LegRaises.mp4', 2, 2),
+            ('Lento Avanti', 'Distensione sopra la testa', 'LentoAvanti.mp4', 3, 2),
+            ('Low Pulley', 'Trazioni cavo basso', 'LowPulley.mp4', 2, 2),
+            ('Panca Piana', 'Distensioni su panca orizzontale', 'PancaPiana.mp4', 3, 2),
+            ('Plank', 'Tenuta isometrica addominale', 'Plank.mp4', 2, 1),
+            ('Pull Over', 'Estensione bracci con manubrio', 'PullOver.mp4', 2, 2),
+            ('Push Down', 'Spinte cavo alto', 'PushDown.mp4', 2, 1),
+            ('Push-Up', 'Piegamenti a corpo libero', 'PushUp.mp4', 2, 1),
+            ('Rematore', 'Trazione bilanciere a busto flesso', 'Rematore.mp4', 3, 2),
+            ('Rope Crunch', 'Crunch con corda alla pulley', 'RopeCrunch.mp4', 2, 2),
+            ('RussianTwist', 'Torsioni russe con peso', 'RussianTwist.mp4', 2, 1),
+            ('Shoulder Press', 'Distensione sopra la testa', 'ShoulderPress.mp4', 3, 2),
+            ('Squat', 'Piegamento gambe con bilanciere', 'Squat.mp4', 3, 3),
+            ('Trazioni', 'Trazioni alla sbarra', 'Trazioni.mp4', 3, 3)
+        ]
+
+        # Definisci i percorsi delle directory
+        videos_dir = os.path.join('static', 'videos')
+        thumbnails_dir = os.path.join('static', 'thumbnails')
+        
+        # Crea le directory se non esistono
+        os.makedirs(videos_dir, exist_ok=True)
+        os.makedirs(thumbnails_dir, exist_ok=True)
+        
+        for nome, descrizione, video_url, obiettivo_id, difficolta_id in exercises:
+            # Genera il percorso del video e della thumbnail
+            video_path = os.path.join(videos_dir, video_url)
+            thumbnail_name = os.path.splitext(video_url)[0] + '.jpg'
+            thumbnail_path = os.path.join(thumbnails_dir, thumbnail_name)
+            
+            # Genera la thumbnail se il video esiste
+            if os.path.exists(video_path):
+                generate_thumbnail(video_path, thumbnail_path)
+                relative_thumbnail_path = os.path.join('thumbnails', thumbnail_name)
+            else:
+                relative_thumbnail_path = None
+
+            # Inserisci l'esercizio con il percorso della thumbnail
+            cursor.execute("""
+                INSERT OR IGNORE INTO Esercizi (
+                    nome, descrizione, video_url, immagine_url, obiettivo_id, difficolta_id
+                )
+                VALUES (?, ?, ?, ?, ?, ?)
+            """, (nome, descrizione, video_url, relative_thumbnail_path, obiettivo_id, difficolta_id))
+
+
+
         conn.commit()
     except Exception as e:
         print(f"Errore durante il popolamento del database: {e}")

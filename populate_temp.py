@@ -1,4 +1,5 @@
 import sqlite3
+import os
 
 import db_operations as database 
 
@@ -74,86 +75,101 @@ def populate_temp():
     (6, 2)
     ''')
 
-    # Inserimento esercizi
-    cursor.execute('''
-    INSERT INTO Esercizi (nome, descrizione, obiettivo_id, difficolta_id) VALUES
-    ('Burpees', 'Esercizio completo che coinvolge tutto il corpo. Partire in piedi, scendere in posizione di plank, fare un piegamento, tornare in posizione accovacciata e saltare verso l alto.', 1, 3),
-    ('Jumping Jacks', 'In piedi con le gambe unite e le braccia lungo i fianchi, saltare allargando le gambe e sollevando le braccia sopra la testa, poi tornare alla posizione iniziale.', 1, 1),
-    ('Mountain Climbers', 'In posizione di plank, portare alternativamente le ginocchia al petto con un movimento rapido.', 1, 2),
-    ('Plank', 'Mantenere la posizione di plank sui gomiti, con il corpo allineato dalla testa ai piedi.', 2, 2),
-    ('Squat', 'Piegare le ginocchia mantenendo la schiena dritta, come se ci si stesse per sedere, poi risalire.', 2, 1),
-    ('Push-ups', 'Piegamenti sulle braccia, mantenendo il corpo rigido dalla testa ai piedi.', 2, 2),
-    ('Bench Press', 'Distesi sulla panca, abbassare e sollevare il bilanciere all altezza del petto.', 3, 2),
-    ('Deadlift', 'Sollevare un bilanciere da terra fino ad avere il corpo completamente eretto.', 3, 3),
-    ('Pull-ups', 'Trazione alla sbarra, partendo con le braccia distese e tirando fino a portare il mento sopra la sbarra.', 3, 3),
-    ('Hip Opener', 'Esercizio per migliorare la mobilità dell anca.', 4, 1),
-    ('Shoulder Dislocates', 'Esercizio con banda elastica per migliorare la mobilità delle spalle.', 4, 2),
-    ('Ankle Mobility', 'Esercizio per migliorare la mobilità delle caviglie.', 4, 1),
-    ('Single Leg Balance', 'Mantenere l equilibrio su una gamba sola.', 5, 1),
-    ('Bosu Ball Squats', 'Eseguire squat stando in equilibrio su una Bosu Ball.', 5, 3),
-    ('Stability Ball Plank', 'Eseguire il plank con i gomiti appoggiati su una palla da stabilità.', 5, 2)
-    ''')
+
 
     # Associazione esercizi-muscoli
     cursor.execute('''
     INSERT OR IGNORE INTO Esercizi_Muscoli (esercizio_id, muscolo_id, tipo) VALUES
-    (1, 2, 'primario'), (1, 5, 'primario'), (1, 7, 'primario'), (1, 13, 'secondario'), (1, 8, 'secondario'),
-    (2, 1, 'secondario'), (2, 7, 'primario'), (2, 8, 'primario'),
-    (3, 5, 'primario'), (3, 8, 'primario'), (3, 7, 'secondario'),
-    (4, 5, 'primario'), (4, 1, 'secondario'), (4, 13, 'secondario'),
-    (5, 7, 'primario'), (5, 13, 'primario'), (5, 15, 'secondario'),
-    (6, 2, 'primario'), (6, 11, 'secondario'), (6, 5, 'secondario'),
-    (7, 2, 'primario'), (7, 11, 'secondario'), (7, 1, 'secondario'),
-    (8, 12, 'primario'), (8, 13, 'primario'), (8, 15, 'primario'), (8, 5, 'secondario'),
-    (9, 12, 'primario'), (9, 3, 'secondario'), (9, 10, 'secondario'),
-    (10, 13, 'primario'), (10, 6, 'primario'), (10, 14, 'primario'),
-    (11, 1, 'primario'), (11, 10, 'secondario'),
-    (12, 16, 'primario'), (12, 9, 'primario'),
-    (13, 7, 'secondario'), (13, 16, 'secondario'),
-    (14, 7, 'primario'), (14, 13, 'primario'), (14, 5, 'secondario'),
-    (15, 5, 'primario'), (15, 1, 'secondario'), (15, 2, 'secondario')
+        -- AffondiBulgari (id: 1)
+        (1, 7, 'primario'), -- Quadricipiti
+        (1, 13, 'primario'), -- Glutei  
+        (1, 15, 'secondario'), -- Femorali
+
+        -- Alzate Frontali (id: 2)
+        (2, 1, 'primario'), -- Spalle
+        (2, 3, 'secondario'), -- Bicipiti
+
+        -- Bench Press (id: 5)
+        (5, 2, 'primario'), -- Pettorali
+        (5, 11, 'secondario'), -- Tricipiti
+
+        -- Lat Pulldown (id: 13)
+        (13, 12, 'primario'), -- Dorsali
+        (13, 3, 'secondario'), -- Bicipiti
+
+        -- Squat (id: 29)
+        (29, 7, 'primario'), -- Quadricipiti
+        (29, 13, 'primario'), -- Glutei
+        (29, 15, 'secondario'), -- Femorali
+        (29, 16, 'secondario'), -- Polpacci
+
+        -- Shoulder Press (id: 28)
+        (28, 1, 'primario'), -- Spalle
+        (28, 11, 'secondario'), -- Tricipiti
+
+        -- Leg Press (id: 16)
+        (16, 7, 'primario'), -- Quadricipiti
+        (16, 13, 'secondario'), -- Glutei
+
+        -- Push-Up (id: 24)
+        (24, 2, 'primario'), -- Pettorali
+        (24, 11, 'secondario'), -- Tricipiti
+
+        -- Rematore (id: 25)
+        (25, 12, 'primario'), -- Dorsali
+        (25, 3, 'secondario'), -- Bicipiti
+
+        -- Plank (id: 21)
+        (21, 5, 'primario') -- Addominali
     ''')
 
     # Creazione schede
-    cursor.execute('''INSERT INTO Schede (cliente_id, trainer_id) VALUES (3, 1)''')
-    
     cursor.execute('''
-    INSERT INTO Schede_Esercizi (scheda_id, esercizio_id, macchinario_id, ripetizioni, serie, recupero_secondi) VALUES
-    (1, 1, NULL, 15, 3, 45), (1, 2, NULL, 30, 4, 30), (1, 3, NULL, 20, 3, 45), (1, 5, NULL, 15, 3, 60)
+    INSERT INTO Schede (cliente_id, trainer_id) VALUES
+        (3, 1), -- Giovanni Verdi - Marco Rossi
+        (4, 2), -- Francesca Neri - Laura Bianchi
+        (5, 1), -- Alessandro Gialli - Marco Rossi
+        (6, 2), -- Claudia Blu - Laura Bianchi
+        (7, 1)  -- Roberto Viola - Marco Rossi
     ''')
 
-    cursor.execute('''INSERT INTO Schede (cliente_id, trainer_id) VALUES (4, 2)''')
-    
+    # Inserimento esercizi nelle schede
     cursor.execute('''
-    INSERT INTO Schede_Esercizi (scheda_id, esercizio_id, macchinario_id, ripetizioni, serie, recupero_secondi) VALUES
-    (2, 4, NULL, 60, 3, 45), (2, 5, NULL, 15, 4, 60), (2, 6, NULL, 10, 3, 60), (2, 14, NULL, 12, 3, 90)
-    ''')
+    INSERT INTO Schede_Esercizi (scheda_id, esercizio_id, macchinario_id, serie, ripetizioni, peso_kg, recupero_secondi) VALUES
+        -- Scheda 1 (Giovanni Verdi - Dimagrimento)
+        (1, 13, 2, 3, 12, 40, 60),  -- Lat Pulldown
+        (1, 16, 1, 4, 15, 80, 90),  -- Leg Press
+        (1, 21, NULL, 3, 30, NULL, 45),  -- Plank
 
-    cursor.execute('''INSERT INTO Schede (cliente_id, trainer_id) VALUES (5, 1)''')
-    
-    cursor.execute('''
-    INSERT INTO Schede_Esercizi (scheda_id, esercizio_id, macchinario_id, ripetizioni, serie, recupero_secondi, peso_kg) VALUES
-    (3, 7, 3, 8, 4, 120, 80), (3, 8, 15, 6, 3, 180, 100), (3, 9, NULL, 8, 3, 120, NULL), (3, 5, 18, 10, 4, 120, 60)
-    ''')
+        -- Scheda 2 (Francesca Neri - Tonificazione)
+        (2, 24, NULL, 3, 12, NULL, 60),  -- Push-Up
+        (2, 2, 14, 3, 15, 5, 45),   -- Alzate Frontali
+        (2, 21, NULL, 3, 45, NULL, 30),  -- Plank
 
-    cursor.execute('''INSERT INTO Schede (cliente_id, trainer_id) VALUES (6, 2)''')
-    
-    cursor.execute('''
-    INSERT INTO Schede_Esercizi (scheda_id, esercizio_id, macchinario_id, ripetizioni, serie, recupero_secondi) VALUES
-    (4, 5, NULL, 15, 3, 60), (4, 6, NULL, 10, 3, 45), (4, 4, NULL, 45, 4, 30), (4, 13, NULL, 30, 3, 60)
-    ''')
+        -- Scheda 3 (Alessandro Gialli - Massa muscolare)
+        (3, 5, 3, 4, 8, 70, 120),   -- Bench Press
+        (3, 29, 15, 4, 8, 100, 120), -- Squat
+        (3, 25, 15, 4, 10, 60, 90),  -- Rematore
 
-    cursor.execute('''INSERT INTO Schede (cliente_id, trainer_id) VALUES (7, 1)''')
-    
-    cursor.execute('''
-    INSERT INTO Schede_Esercizi (scheda_id, esercizio_id, macchinario_id, durata_secondi, serie, recupero_secondi) VALUES
-    (5, 10, NULL, 60, 3, 30), (5, 11, NULL, 45, 4, 30), (5, 12, NULL, 60, 3, 30), (5, 9, NULL, 30, 2, 60)
+        -- Scheda 4 (Claudia Blu - Tonificazione)
+        (4, 1, NULL, 3, 12, NULL, 60),   -- Affondi Bulgari
+        (4, 28, 6, 3, 12, 20, 60),   -- Shoulder Press
+        (4, 21, NULL, 3, 40, NULL, 30),  -- Plank
+
+        -- Scheda 5 (Roberto Viola - Mobilità)
+        (5, 16, 1, 3, 15, 60, 60),   -- Leg Press
+        (5, 24, NULL, 3, 10, NULL, 45),  -- Push-Up
+        (5, 21, NULL, 4, 30, NULL, 30)   -- Plank
     ''')
 
     # Inserimento storico schede
     cursor.execute('''
-    INSERT INTO Storico_Schede (scheda_id, cliente_id, trainer_id, data_salvataggio) VALUES
-    (1, 3, 1, '2024-04-10 10:15:30')
+    INSERT INTO Storico_Schede (scheda_id, cliente_id, trainer_id) VALUES
+        (1, 3, 1),
+        (2, 4, 2),
+        (3, 5, 1),
+        (4, 6, 2),
+        (5, 7, 1)
     ''')
 
     conn.commit()
