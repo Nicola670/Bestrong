@@ -18,6 +18,7 @@ def populate_temp():
         print(f"Errore durante la pulizia del database: {e}")
         conn.rollback()
 
+
     # Inserimento macchinari
     cursor.execute('''
     INSERT OR IGNORE INTO Macchinari (nome) VALUES 
