@@ -1,4 +1,4 @@
-# Never Give Up – Progetto Palestra
+# Progetto Palestra
 
 ## 🧠 Descrizione del progetto
 
@@ -99,52 +99,6 @@ Esempi di ispirazione:
 
 ---
 
-## 📢 Presentazione finale
-
-### 🎓 Parte tecnica (7 min – programmatori)
-
-- Struttura DB
-- Struttura Backend
-- Struttura Frontend
-
-### 💼 Parte prodotto (7 min – cliente)
-
-- Dimostrazione funzionalità
-- Responsività del sito
-
-### 🗂 Parte progettuale (5 min – project manager)
-
-- Divisione lavoro e ruoli
-- Progettazione iniziale (Project Charter)
-- Difficoltà principali
-- Migliorie e sviluppi futuri
-
----
-
-## 📝 Documentazione di progetto
-
-Seguire esempio del libro (pag. 336), inclusi:
-
-- Obiettivi
-- Osservazioni iniziali (committente, rischi, ecc.)
-- **Project Charter** (con WBS, Gantt, PERT)
-- Analisi dei rischi
-- Budget:
-  - Consulenze (prof), team, servizi accessori
-  - HW, SW, spazio online
-  - Costo per task, test, riserva per rischi
-- Ruoli
-- Conclusioni
-
----
-
-## 🗂 Gestione del progetto
-
-- Utilizzo di **Git** obbligatorio per versionamento
-- La **repository** Git sarà il solo documento da consegnare
-- Durante lo sviluppo, è previsto un **meeting settimanale** per confrontare l'avanzamento col Gantt
-
----
 
 ## ✅ Extra consigliati
 
